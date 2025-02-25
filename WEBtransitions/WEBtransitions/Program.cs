@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WEBtransitions.Components;
-using WEBtransitions.DB.DataContext.Models;
+using WEBtransitions.ClassLibraryDatabase.DBContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
