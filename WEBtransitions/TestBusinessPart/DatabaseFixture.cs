@@ -8,6 +8,9 @@ using WEBtransitions.ClassLibraryDatabase.DBContext;
 
 namespace TestBusinessPart
 {
+    /// <summary>
+    ///   <see cref="https://medium.com/bina-nusantara-it-division/a-comprehensive-guide-to-implementing-xunit-tests-in-c-net-b2eea43b48b"/>
+    /// </summary>
     public class DatabaseFixture : IDisposable
     {
         // Replace these strings with your paths to the original database and the current copy of a database

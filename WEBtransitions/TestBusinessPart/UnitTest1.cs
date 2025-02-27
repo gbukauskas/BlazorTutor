@@ -8,6 +8,10 @@ using Xunit;
 
 namespace TestBusinessPart
 {
+    /// <summary>
+    ///   <see cref="https://medium.com/bina-nusantara-it-division/a-comprehensive-guide-to-implementing-xunit-tests-in-c-net-b2eea43b48b"/>
+    /// </summary>
+    [Collection("DatabaseCollection")]
     public class UnitTest1: IClassFixture<DatabaseFixture>
     {
         private readonly DatabaseFixture _fixture;
