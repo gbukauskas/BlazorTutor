@@ -52,7 +52,7 @@
               "RelativeDocumentMoniker": "TestBusinessPart\\UnitTest1.cs",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\TestBusinessPart\\UnitTest1.cs",
               "RelativeToolTip": "TestBusinessPart\\UnitTest1.cs",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAnwB4AAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAQAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-23T08:44:08.555Z",
               "EditorCaption": ""
@@ -67,8 +67,7 @@
               "RelativeToolTip": "ClassLibraryDatabase\\DBContext\\NorthwindContext.cs",
               "ViewState": "AgIAAEAAAAAAAAAAAAAowFUAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-23T08:24:43.555Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-23T08:24:43.555Z"
             },
             {
               "$type": "Document",
