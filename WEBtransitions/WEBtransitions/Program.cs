@@ -14,6 +14,12 @@ builder.Services.AddDbContext<NorthwindContext>(options =>
             options.UseSqlite(
                 builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+
+// options.UseSqlite(
+// options.UseSqlServer(
+// options.UseMySql(
+// options.UseNpgsql(
+
 */
 builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 {
@@ -33,8 +39,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>();
+//    .AddInteractiveServerRenderMode();
 
 app.Run();
 
