@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "J46i1UELSW+/IdNmvi+3538AE9sfJQrJwZS0Smmbps0=",
+  "Hash": "9VMBlu7mVLKRjMbqaBJ0AOFE72MbIy+fzKVvmyRKs24=",
   "Source": "WEBtransitions",
   "BasePath": "_content/WEBtransitions",
   "Mode": "Default",
@@ -393,6 +393,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
+    },
+    {
+      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\gudaxu3v86-elh7keenqz.gz",
+      "SourceId": "WEBtransitions",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/WEBtransitions",
+      "RelativePath": "js/customExpander#[.{fingerprint=elh7keenqz}]?.js.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "8an6gpr9g5",
+      "Integrity": "oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js"
     },
     {
       "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\h6v1krjka9-aexeepp0ev.gz",
@@ -1086,6 +1107,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.png"
+    },
+    {
+      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
+      "SourceId": "WEBtransitions",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\",
+      "BasePath": "_content/WEBtransitions",
+      "RelativePath": "js/customExpander#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "elh7keenqz",
+      "Integrity": "Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\customExpander.js"
     },
     {
       "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
@@ -2390,6 +2432,304 @@
         {
           "Name": "integrity",
           "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.elh7keenqz.js",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\gudaxu3v86-elh7keenqz.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.002227171492"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "448"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "elh7keenqz"
+        },
+        {
+          "Name": "label",
+          "Value": "js/customExpander.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.elh7keenqz.js",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "955"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "elh7keenqz"
+        },
+        {
+          "Name": "label",
+          "Value": "js/customExpander.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.elh7keenqz.js.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\gudaxu3v86-elh7keenqz.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "448"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "elh7keenqz"
+        },
+        {
+          "Name": "label",
+          "Value": "js/customExpander.js.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.js",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\gudaxu3v86-elh7keenqz.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.002227171492"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "448"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.js",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "955"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Ln/URt/v863ohgmXejKlXlUxLNNsOkiV1emgNLo+QNQ="
+        }
+      ]
+    },
+    {
+      "Route": "js/customExpander.js.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\gudaxu3v86-elh7keenqz.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "448"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 28 Mar 2025 19:57:03 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oEDMup+6N7Kvs1cPBfIgNVjwyVVl4EPgNHhTD9A/Gxc="
         }
       ]
     },
@@ -15530,7 +15870,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15583,7 +15923,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15620,7 +15960,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15667,7 +16007,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15728,7 +16068,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15773,7 +16113,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15828,7 +16168,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15889,7 +16229,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15934,7 +16274,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15989,7 +16329,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -16042,7 +16382,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -16079,7 +16419,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 26 Feb 2025 16:02:43 GMT"
+          "Value": "Thu, 03 Apr 2025 08:50:43 GMT"
         },
         {
           "Name": "Cache-Control",

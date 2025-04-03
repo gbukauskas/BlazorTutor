@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\favicon.png"
     },
     {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
+      "PackagePath": "staticwebassets\\js\\customExpander.js"
+    },
+    {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
     },

@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DB\DataContext\**" />
+    <Content Remove="DB\DataContext\**" />
+    <EmbeddedResource Remove="DB\DataContext\**" />
+    <None Remove="DB\DataContext\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -18,10 +25,6 @@
     <None Update="DB\northwind.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DB\DataContext\Models\" />
   </ItemGroup>
 
   <ItemGroup>
