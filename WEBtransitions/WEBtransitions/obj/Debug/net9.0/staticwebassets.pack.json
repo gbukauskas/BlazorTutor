@@ -2,7 +2,7 @@
   "Files": [
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css",
-      "PackagePath": "staticwebassets\\WEBtransitions.g94h3le16b.bundle.scp.css"
+      "PackagePath": "staticwebassets\\WEBtransitions.lrxf4hnfji.bundle.scp.css"
     },
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\app.css",
@@ -11,10 +11,6 @@
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
-    },
-    {
-      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\js\\customExpander.js",
-      "PackagePath": "staticwebassets\\js\\customExpander.js"
     },
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",

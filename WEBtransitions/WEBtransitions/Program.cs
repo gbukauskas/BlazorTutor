@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using WEBtransitions.Components;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents();
-    //.AddInteractiveServerComponents();
+//.AddInteractiveServerComponents();
 
 /* It is possible but dangerous. Use AddDbContext in single-thread environment, use DbContextFactory in all other cases.
 builder.Services.AddDbContext<NorthwindContext>(options =>
@@ -26,6 +27,11 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//builder.Services.Configure<AppSettings>(
+//    builder.Configuration.GetSection(nameof(AppSettings)));
+
+builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, DatabaseEmployeeSvc>();
 
 var app = builder.Build();
 

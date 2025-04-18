@@ -1,8 +1,70 @@
 ﻿@page "/Employees"
+
+@using System.Globalization
+@using Microsoft.Extensions.Configuration;
+@using Microsoft.Extensions.Options
+@using WEBtransitions.Services
+@using Microsoft.EntityFrameworkCore
+
 @attribute [StreamRendering]
 
-<h3>Employees</h3>
+@inject IDatabaseSvc<Employee, string> dbSVC
+@inject IConfiguration Configuration
+
+@* @inject IOptions<AppSettings> AppConfiguration *@
+
+<PageTitle>Employees</PageTitle>
+
+@if (CurrentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table empTable">
+        <caption>Employees</caption>
+        <thead>
+            <tr>
+                <th class="sort_link">Last name</th>
+                <th class="sort_link">First name</th>
+                <th class="sort_link">Title</th>
+                <th class="sort_link">Title of Courtesy</th>
+                <th class="sort_link">Birth date</th>
+                <th class="sort_link">Hire date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in CurrentPage)
+            {
+                <tr>
+                    <td>@emp.LastName</td>
+                    <td>@emp.FirstName</td>
+                    <td>@emp.Title</td>
+                    <td>@emp.TitleOfCourtesy</td>
+                    <td>@emp.BirthDate?.ToString(ActiveCulture)</td>
+                    <td>@emp.HireDate?.ToString(ActiveCulture)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private Employee[]? CurrentPage;
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
 
+    protected override async Task OnInitializedAsync()
+    {
+        //        ActiveCulture = new CultureInfo("lt-LT");   // Yne can set to any another value. You 
+        //        string activeCultureStr = Configuration.ActiveCulture ?? "en-US";
+        //        ActiveCulture = new CultureInfo(activeCultureStr);
+        // string activeCultureStr = AppConfiguration?.Value?.ActiveCulture ?? "en-US";
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        ActiveCulture = new CultureInfo(activeCultureStr);
+        CurrentPage = await dbSVC.GetAllEntities().ToArrayAsync();
+    }
+
+
+    // https://learn.microsoft.com/en-us/aspnet/core/blazor/blazor-ef-core?view=aspnetcore-5.0#new-dbcontext-instances-5x
 }

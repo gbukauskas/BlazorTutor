@@ -1,0 +1,29 @@
+/*
+    table.empTable > thead th {
+    background-color: lightskyblue;
+}
+table.empTable > tbody > tr:nth-child(even) > td {
+    background-color: #f2f2f2;
+}
+
+*/
+table.empTable > thead > tr[b-cl86h9i2cv] {
+    background-color: lightskyblue;
+}
+table.empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
+    background-color: #f2f2f2;
+}
+th[b-cl86h9i2cv], td[b-cl86h9i2cv] {
+    background-color: inherit;
+}
+
+table > caption[b-cl86h9i2cv] {
+    caption-side: top;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sort_link:hover[b-cl86h9i2cv] {
+    cursor: pointer;
+}

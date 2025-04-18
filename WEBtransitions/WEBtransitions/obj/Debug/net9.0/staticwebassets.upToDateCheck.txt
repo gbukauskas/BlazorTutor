@@ -15,7 +15,6 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\c
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\js\customExpander.js
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
@@ -46,7 +45,6 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\c
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
 wwwroot\app.css
 wwwroot\favicon.png
-wwwroot\js\customExpander.js
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap.min.css

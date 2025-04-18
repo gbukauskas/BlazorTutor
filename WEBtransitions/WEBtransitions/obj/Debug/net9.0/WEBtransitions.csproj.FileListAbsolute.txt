@@ -238,6 +238,7 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\System.Comp
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\System.Composition.Hosting.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\System.Composition.Runtime.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\System.Composition.TypedParts.dll
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\System.Text.Json.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\cs\Microsoft.CodeAnalysis.resources.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\de\Microsoft.CodeAnalysis.resources.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\bin\Debug\net9.0\es\Microsoft.CodeAnalysis.resources.dll
@@ -338,7 +339,6 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\C
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\bundle\WEBtransitions.styles.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\projectbundle\WEBtransitions.bundle.scp.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\c7bb2sgg7v-khy4lop6wu.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\gudaxu3v86-elh7keenqz.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\do7sxxvj1j-bqjiyaj88i.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\lz7qdgnops-c2jlpeoesf.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\32fsf7j8gk-erw9l3u2r3.gz
@@ -383,8 +383,6 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\bq1nvj01v5-h1s4sie4z3.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\jhfdvixxl4-63fj8s7r0e.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\j0ekhluxzc-0j3bgjxly4.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-g94h3le16b.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-g94h3le16b.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.build.json
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.development.json
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.build.endpoints.json
@@ -401,3 +399,6 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\refint\WEBt
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.pdb
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.genruntimeconfig.cache
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\ref\WEBtransitions.dll
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\Pages\Employees.razor.rz.scp.css
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-lrxf4hnfji.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-lrxf4hnfji.gz
