@@ -3,16 +3,20 @@
   "WorkspaceRootPath": "D:\\darbas\\BlazorTutor\\WEBtransitions\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF98F9C2-C73A-45A9-81E7-CD43C3F62730}|ClassLibraryDatabase\\ClassLibraryDatabase.csproj|d:\\darbas\\blazortutor\\webtransitions\\classlibrarydatabase\\dbcontext\\models\\employee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BF98F9C2-C73A-45A9-81E7-CD43C3F62730}|ClassLibraryDatabase\\ClassLibraryDatabase.csproj|solutionrelative:classlibrarydatabase\\dbcontext\\models\\employee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -25,10 +29,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\services\\appsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\services\\appsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF98F9C2-C73A-45A9-81E7-CD43C3F62730}|ClassLibraryDatabase\\ClassLibraryDatabase.csproj|d:\\darbas\\blazortutor\\webtransitions\\classlibrarydatabase\\dbcontext\\models\\employee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BF98F9C2-C73A-45A9-81E7-CD43C3F62730}|ClassLibraryDatabase\\ClassLibraryDatabase.csproj|solutionrelative:classlibrarydatabase\\dbcontext\\models\\employee.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\customers.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -50,11 +50,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 227,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "App.razor",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\App.razor",
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\App.razor",
@@ -62,12 +62,11 @@
               "RelativeToolTip": "WEBtransitions\\Components\\App.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-17T08:26:03.358Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-17T08:26:03.358Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "AppSettings.cs",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Services\\AppSettings.cs",
               "RelativeDocumentMoniker": "WEBtransitions\\Services\\AppSettings.cs",
@@ -79,7 +78,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Program.cs",
               "RelativeDocumentMoniker": "WEBtransitions\\Program.cs",
@@ -91,7 +90,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\appsettings.json",
               "RelativeDocumentMoniker": "WEBtransitions\\appsettings.json",
@@ -127,39 +126,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
               "Title": "Employee.cs",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\ClassLibraryDatabase\\DBContext\\Models\\Employee.cs",
               "RelativeDocumentMoniker": "ClassLibraryDatabase\\DBContext\\Models\\Employee.cs",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\ClassLibraryDatabase\\DBContext\\Models\\Employee.cs",
               "RelativeToolTip": "ClassLibraryDatabase\\DBContext\\Models\\Employee.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAC4AAAAAAAAAAAA0wGcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-10T17:53:58.591Z"
+              "WhenOpened": "2025-04-10T17:53:58.591Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Employees.razor.css",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor.css",
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\Pages\\Employees.razor.css",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor.css",
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Employees.razor.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2025-04-12T16:22:20.698Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Employees.razor",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor",
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\Pages\\Employees.razor",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor",
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Employees.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAmwBsAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-10T13:18:57.109Z"
+              "WhenOpened": "2025-04-10T13:18:57.109Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

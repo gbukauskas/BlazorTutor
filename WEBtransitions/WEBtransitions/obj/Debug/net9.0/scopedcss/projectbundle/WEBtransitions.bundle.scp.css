@@ -223,7 +223,11 @@ table.empTable > tbody > tr:nth-child(even) > td {
 table.empTable > thead > tr[b-cl86h9i2cv] {
     background-color: lightskyblue;
 }
-table.empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
+table.empTable > thead > tr a[b-cl86h9i2cv] {
+    text-decoration: none;
+    color: black;
+}
+table .empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
     background-color: #f2f2f2;
 }
 th[b-cl86h9i2cv], td[b-cl86h9i2cv] {
@@ -236,7 +240,13 @@ table > caption[b-cl86h9i2cv] {
     font-weight: bold;
     text-align: center;
 }
-
-.sort_link:hover[b-cl86h9i2cv] {
+/*
+.sort_link:hover {
     cursor: pointer;
 }
+*/
+
+/*
+    https://www.youtube.com/watch?v=7fd00baexBQ
+    https://github.com/MackinnonBuck/blazor-page-script
+*/

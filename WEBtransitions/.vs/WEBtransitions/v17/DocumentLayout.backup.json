@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\darbas\\BlazorTutor\\WEBtransitions\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\pages\\employees.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|solutionrelative:webtransitions\\components\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{20872114-ADFD-4850-B49D-8E1706ACFB89}|WEBtransitions\\WEBtransitions.csproj|d:\\darbas\\blazortutor\\webtransitions\\webtransitions\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,11 +50,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 227,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "App.razor",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\App.razor",
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\App.razor",
@@ -62,8 +62,7 @@
               "RelativeToolTip": "WEBtransitions\\Components\\App.razor",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-17T08:26:03.358Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-17T08:26:03.358Z"
             },
             {
               "$type": "Document",
@@ -145,22 +144,22 @@
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\Pages\\Employees.razor.css",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor.css",
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Employees.razor.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAA3AAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABMAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-04-12T16:22:20.698Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-12T16:22:20.698Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Employees.razor",
               "DocumentMoniker": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor",
               "RelativeDocumentMoniker": "WEBtransitions\\Components\\Pages\\Employees.razor",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Components\\Pages\\Employees.razor",
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Employees.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAmwFwAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-04-10T13:18:57.109Z"
+              "WhenOpened": "2025-04-10T13:18:57.109Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

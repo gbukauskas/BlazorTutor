@@ -10,7 +10,11 @@ table.empTable > tbody > tr:nth-child(even) > td {
 table.empTable > thead > tr {
     background-color: lightskyblue;
 }
-table.empTable > tbody > tr:nth-child(even) {
+table.empTable > thead > tr a {
+    text-decoration: none;
+    color: black;
+}
+table .empTable > tbody > tr:nth-child(even) {
     background-color: #f2f2f2;
 }
 th, td {
@@ -23,11 +27,11 @@ table > caption {
     font-weight: bold;
     text-align: center;
 }
-
+/*
 .sort_link:hover {
     cursor: pointer;
 }
-
+*/
 
 /*
     https://www.youtube.com/watch?v=7fd00baexBQ
