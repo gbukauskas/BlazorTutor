@@ -227,6 +227,14 @@ table.empTable > thead > tr a[b-cl86h9i2cv] {
     text-decoration: none;
     color: black;
 }
+
+table.empTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
+    content: "\21E7\00a0";
+}
+table.empTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
+    content: "\21E9\00a0";
+}
+
 table .empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
     background-color: #f2f2f2;
 }

@@ -400,5 +400,5 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransiti
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.genruntimeconfig.cache
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\ref\WEBtransitions.dll
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\Pages\Employees.razor.rz.scp.css
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-fw9b6no1fa.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-fw9b6no1fa.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-oj5yiq3npo.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-oj5yiq3npo.gz

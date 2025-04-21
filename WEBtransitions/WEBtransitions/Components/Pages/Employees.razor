@@ -3,6 +3,8 @@
 @using System.Globalization
 @using Microsoft.Extensions.Configuration;
 @using Microsoft.Extensions.Options
+@using System.Reflection
+@using System.Linq.Expressions
 @using WEBtransitions.Services
 @using Microsoft.EntityFrameworkCore
 
@@ -25,12 +27,24 @@ else
         <caption>Employees</caption>
         <thead>
             <tr>
-                <th name="last_name"><a href="/Employees/@SortParameter[0]">Last name</a></th>
-                <th name="first_name"><a href="/Employees/@SortParameter[1]">First name</a></th>
-                <th name="title"><a href="/Employees/@SortParameter[2]">Title</a></th>
-                <th name="title_courtesy"><a href="/Employees/@SortParameter[3]">Title of Courtesy</a></th>
-                <th name="birth_date"><a href="/Employees/@SortParameter[4]">Birth date</a></th>
-                <th name="hire_date"><a href="/Employees/@SortParameter[5]">Hire date</a></th>
+                <th name="LastName" data-sort="@SortParameter[0].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[0]">Last name</a>
+                </th>
+                <th name="FirstName" data-sort="@SortParameter[1].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[1]">First name</a>
+                </th>
+                <th name="Title" data-sort="@SortParameter[2].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[2]">Title</a>
+                </th>
+                <th name="TitleOfCourtesy" data-sort="@SortParameter[3].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[3]">Title of Courtesy</a>
+                </th>
+                <th name="BirthDate" data-sort="@SortParameter[4].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[4]">Birth date</a>
+                </th>
+                <th name="HireDate" data-sort="@SortParameter[5].Substring(0, 1)">
+                    <a href="/Employees/@SortParameter[5]">Hire date</a>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -53,7 +67,7 @@ else
     private Employee[]? CurrentPage;
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
 
-    private static readonly string[] FieldNames = { "last_name", "first_name", "title", "title_courtesy", "birth_date", "hire_date" };
+    private static readonly string[] FieldNames = { "LastName", "FirstName", "Title", "TitleOfCourtesy", "BirthDate", "HireDate" };
     public List<string> SortParameter; 
 
     /// <summary>
@@ -99,13 +113,43 @@ else
                 }
                 else
                 {
-                    string sortPrefix = sortDefinition.Item1.StartsWith("a") ? "d" : "a";   // d or n <-- > a
-                    SortParameter.Add($"{sortPrefix}_{FieldNames[i]}");
+//                    string sortPrefix = sortDefinition.Item1.StartsWith("a") ? "d" : "a";   // d or n <-- > a
+                    SortParameter.Add($"{sortDefinition.Item1}_{FieldNames[i]}");
                 }
             }
-            CurrentPage = await page.ToArrayAsync();    // TODO
+            if (sortDefinition.Item1.StartsWith("n"))
+            {
+                CurrentPage = await page.ToArrayAsync();    // no sort
+            }
+            else
+            {
+                // a --> ascending, d --> descending
+                PropertyInfo propInfo = typeof(Employee).GetProperty(sortDefinition.Item2, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (propInfo == null)
+                {
+                    CurrentPage = await page.ToArrayAsync();    // Invalid name of the field
+                }
+                else
+                {
+                    var x = await page.ToListAsync();
+                    if (sortDefinition.Item1.StartsWith("a"))
+                    {
+                        CurrentPage = x.OrderBy(e => propInfo.GetValue(e)).ToArray();
+                    }
+                    else
+                    {
+                        CurrentPage = x.OrderByDescending(e => propInfo.GetValue(e)).ToArray();
+                    }
+                }
+            }
         }
 
+    }
+
+    private async Task OrderByField(string fieldName, string sortDirection)
+    {
+        PropertyInfo? info = typeof(Employee).GetProperty(fieldName);
     }
 
     private void ResetSort()
@@ -118,7 +162,17 @@ else
 
     private Tuple<string, string> SetSort(string sortParameter)
     {
-        string sortDirection = sortParameter.Substring(0, 1);
+        string sortDirection;
+        switch (sortParameter.Substring(0, 1))
+        {
+            case "n": sortDirection = "a";
+                break;
+            case "a": sortDirection = "d";
+                break;
+            default:
+                sortDirection = "n";
+                break;
+        }
         string sortName = sortParameter.Substring(2);
         return new Tuple<string, string>(sortDirection, sortName);
     }
