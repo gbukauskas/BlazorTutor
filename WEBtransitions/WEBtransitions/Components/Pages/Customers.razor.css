@@ -1,0 +1,27 @@
+﻿table.reportTable > thead > tr {
+    background-color: lightskyblue;
+}
+
+th {
+    background-color: inherit;
+}
+
+table.reportTable > thead > tr a {
+    text-decoration: none;
+    color: black;
+}
+
+table.reportTable > thead > tr > th[data-sort="a"] > a::before {
+    content: "\21E7\00a0";
+}
+
+table.reportTable > thead > tr > th[data-sort="d"] > a::before {
+    content: "\21E9\00a0";
+}
+
+table > caption {
+    caption-side: top;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+}

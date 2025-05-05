@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClassLibraryDatabase\ClassLibraryDatabase.csproj" />
+    <ProjectReference Include="..\WEBtransitions\WEBtransitions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

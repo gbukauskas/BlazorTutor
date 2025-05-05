@@ -1,0 +1,44 @@
+﻿div.pager {
+    float: left;
+    margin-left: 2em;
+    padding: 4px;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+a.custom-link {
+    width: 24px;
+    display: inline-block;
+    text-align: center;
+}
+
+a.selected-label {
+    text-decoration: none;
+    font-weight: bolder;
+    color: red;
+}
+
+a.selected-label:hover {
+    cursor: unset;
+}
+
+a.custom-link[disabled] {
+    text-decoration: none;
+    cursor: unset;
+    opacity: 0.5;
+}
+
+span.set-info {
+    display: inline-block;
+    opacity: 0.6;
+}
+
+button[type="submit"] {
+    margin-bottom: 2px;
+    margin-left: 0.5em;
+}
+
+span.text-danger {
+    display: inline-block;
+    padding-left: 0.5em !important;
+}

@@ -1,0 +1,292 @@
+﻿@namespace WEBtransitions
+@inject NavigationManager NavManager
+
+@using System.Text
+@using Microsoft.AspNetCore.Http.Extensions
+@using WEBtransitions.ClassLibraryDatabase.CustomPager
+
+<div class="pager">
+    @foreach (var link in PrintableButtons)
+    {
+        <a class="custom-link @GetClassName(link)" href="@GenerateURL(link)" title="@GetTitle(link)" disabled=@link.IsDisabled>
+            @GenerateLabel(link)
+        </a>
+    }
+    <span class="set-info">@TotalRecords rec. in @PageCount pages.</span>
+
+@* 
+    <EditForm Model="Model" OnSubmit="Submit" FormName="PagerNavigate" class="form-inline">
+        <span>Go to page</span>
+        <InputText @bind-Value="Model!.Id" style="width: 6em;" />
+
+        <input type="hidden" name="MaxButtons" value="@Model!.MaxButtons" />
+        <input type="hidden" name="PageCount" value="@Model!.PageCount" />
+        <input type="hidden" name="PageNumber" value="@Model!.PageNumber" />
+        <input type="hidden" name="PageSize" value="@Model!.PageSize" />
+        <input type="hidden" name="BaseUrl" value="@Model!.BaseUrl" />
+
+        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+        @if (!String.IsNullOrEmpty(ErrorMessage))
+        {
+            <span class="text-danger">@DecodeMsg(ErrorMessage)</span>
+        }
+
+    </EditForm>
+
+ *@
+
+    <form method="GET" action="/@Model!.BaseUrl/1/@Model!.PageSize" @formname="PagerNavigate" class="form-inline" name="pager-input">
+        <AntiforgeryToken />
+        <span>Go to page</span>
+        <InputText @bind-Value="Model!.Id" style="width: 6em;" name="current-page"/>
+        <button class="btn btn-primary btn-sm" onclick="replaceAction('pager-input')">Submit</button>
+        @if (!String.IsNullOrEmpty(ErrorMessage))
+        {
+            <span class="text-danger">@DecodeMsg(ErrorMessage)</span>
+        }
+    </form>
+
+    <script type="text/javascript">
+        function replaceAction(formName) {
+            var elements = document.querySelectorAll(`[name="${formName}"]`);
+            if (elements.length > 0) {
+                let element = elements[0]; // Access the first element with the given name
+                
+                let inputField = element.querySelector("[name='current-page']");
+                let pageNumber = inputField ? inputField.value : 1;
+                let newAction = `/@Model!.BaseUrl/${pageNumber}/@Model!.PageSize`;
+
+                element.setAttribute('action', newAction);
+                element.submit();
+            }
+        }
+    </script>
+</div>
+
+@code {
+    // https://havit.blazor.eu/components/HxPager
+    // https://github.com/radzenhq/radzen-blazor/blob/master/Radzen.Blazor/RadzenPager.razor.cs
+
+    // https://learn.microsoft.com/en-us/aspnet/core/blazor/forms/input-components?view=aspnetcore-8.0
+    // https://amarozka.dev/blazor-editform-validation/
+
+    [SupplyParameterFromForm]
+    public PgPostData? Model { get; set; }
+
+    /// <summary>
+    /// Number of pages. Default value is 1.
+    /// </summary>
+    [Parameter]
+    public int MaxButtons { get; set; } = 10;
+
+    /// <summary>
+    /// Number of pages. Default value is 1.
+    /// </summary>
+    [Parameter]
+    public int PageCount { get; set; } = 1;
+
+    /// <summary>
+    /// Current page. Default value is 1
+    /// </summary>
+    [Parameter]
+    public int PageNumber { get; set; } = 1;
+
+    /// <summary>
+    /// Number of rows in the page. Default value is 15
+    /// </summary>
+    [Parameter]
+    public int PageSize { get; set; } = 15;
+
+    /// <summary>
+    /// Base address. Mandatory parameter. Leading and trailng slashes are optional.
+    /// <code>showcustomers</code>, <code>/showcustomers</code>, <code>showcustomers/</code>, <code>/showcustomers/</code> are identical addresses
+    /// </summary>
+    [Parameter]
+    public string BaseUrl { get; set; } = "";
+
+    /// <summary>
+    /// URL encoded error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    /// <summary>
+    /// Total numer of records
+    /// </summary>
+    [Parameter]
+    public string TotalRecords { get; set; } = "";
+
+
+    private List<PgData> PrintableButtons = new List<PgData>();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (String.IsNullOrEmpty(BaseUrl))
+        {
+            throw new ArgumentException("Base URL is empty");
+        }
+
+        Model ??= new();
+        Model.Id = PageNumber.ToString();
+        Model.MaxButtons = this.MaxButtons;
+        Model.PageCount = this.PageCount;
+        Model.PageNumber = this.PageNumber;
+        Model.PageSize = this.PageSize;
+        Model.BaseUrl = this.BaseUrl;
+
+        PrepareButtonList();
+        InsertPrevButtons();
+        AppendTrailButtons();
+    }
+
+    private string GetClassName(PgData page)
+    {
+        return (page.IsSelected) ? "selected-label" : "common-label";
+    }
+
+    /// <summary>
+    /// The function generates href parameter for the <code>NavLink</code> component
+    /// </summary>
+    /// <param name="page">Data for the current page.</param>
+    /// <see cref="PgData" />
+    /// <returns>URL</returns>
+    private string GenerateURL(PgData page)
+    {
+        int pgIndex;
+        switch (page.PageIndex)
+        {
+            case "L":
+                pgIndex = 1;                                    // First page
+                break;
+            case "l":
+                pgIndex = Math.Max(PageNumber - 1, 1);          // Previous page
+                break;
+            case "r":
+                pgIndex = Math.Min(PageNumber + 1, PageCount);  // Next page
+                break;
+            case "R":
+                pgIndex = PageCount;                            // Last page
+                break;
+            default:
+                pgIndex = page.Id;                              // Go to page defined in the Id propery
+                break;
+        }
+        var rzlt = new StringBuilder($"/{BaseUrl}/{pgIndex}/{PageSize}");
+        return rzlt.ToString();
+    }
+
+    private string GetTitle(PgData page)
+    {
+        string rzlt;
+        switch (page.PageIndex)
+        {
+            case "L":
+                rzlt = "Go back to first page";    // Go to first
+                break;
+            case "l":
+                rzlt = "Go back one page";      // Go to previous page
+                break;
+            case "r":
+                rzlt = "Go to the next page";    // Go to next page
+                break;
+            case "R":
+                rzlt = "Go to the last page";    // Go to last page
+                break;
+            default:
+                rzlt = $"Go to page # {page.PageIndex}";  // Go to the page, page.PageIndex is index of the page
+                break;
+        }
+        return rzlt;
+    }
+
+    /// <summary>
+    /// The returns label string.
+    /// </summary>
+    /// <param name="page">Current page</param>
+    /// <returns>The label</returns>
+    private string GenerateLabel(PgData page)
+    {
+        string rzlt;
+        switch (page.PageIndex)
+        {
+            case "L":
+                rzlt = "\u2BEC";    // Go to first
+                break;
+            case "l":
+                rzlt = "\u2B9C";    // Go to previous
+                break;
+            case "r":
+                rzlt = "\u2B9E";    // Go to next
+                break;
+            case "R":
+                rzlt = "\u2BEE";    // Go to last
+                break;
+            default:
+                rzlt = page.PageIndex;  // Go to the page, page.PageIndex is index of the page
+                break;
+        }
+        return rzlt;
+    }
+
+    private string DecodeMsg(string message)
+    {
+        return String.IsNullOrEmpty(message) ? "" : System.Net.WebUtility.UrlDecode(message);
+    }
+
+    /// <summary>
+    /// The function collects <code>PagerData</code> structures in the <code>PrintableButtons</code> list.
+    /// The collection must be no longer than the value stated in the parameter <code>MaxButtons</code>.
+    /// The function shifts to left <code>PrintableButtons</code> if current page (item with <code>PageNumber</code>) is not visible.
+    /// </summary>
+    private void PrepareButtonList()
+    {
+        bool currentPageIsVisible = false;
+        for (int i = 1; i <= PageCount; i++)
+        {
+            if (PrintableButtons.Count >= MaxButtons)
+            {
+                if (currentPageIsVisible)
+                {
+                    break;
+                }
+                PrintableButtons = PrintableButtons.Skip(1).Take(PrintableButtons.Count - 1).ToList();
+            }
+
+            var item = new PgData(i, i == PageNumber, i == PageNumber);
+            if (item.IsSelected)
+            {
+                currentPageIsVisible = true;
+            }
+            PrintableButtons.Add(item);
+
+        }
+    }
+
+    /// <summary>
+    /// The function inserts 2 buttons: "Go to previous page" and "Go to first".
+    /// </summary>
+    private void InsertPrevButtons()
+    {
+        var item = new PgData(PageNumber - 1, false, PageNumber < 2);
+        item.PageIndex = "l";
+        PrintableButtons.Insert(0, item);
+        item = new PgData(1, false, PageNumber < 2);
+        item.PageIndex = "L";
+        PrintableButtons.Insert(0, item);
+    }
+
+    /// <summary>
+    /// The function appends 2 buttons: "Go to next" and "Go to last"
+    /// </summary>
+    private void AppendTrailButtons()
+    {
+        var item = new PgData(PageNumber + 1, false, PageNumber >= PageCount);
+        item.PageIndex = "r";
+        PrintableButtons.Add(item);
+        item = new PgData(PageCount, false, PageNumber >= PageCount);
+        item.PageIndex = "R";
+        PrintableButtons.Add(item);
+    }
+
+}

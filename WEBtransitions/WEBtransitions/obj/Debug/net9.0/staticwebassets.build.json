@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "88dSCuup5bU6PHLj5LJXJtdwxH/5UNcViJF9MwA84bU=",
+  "Hash": "uazXQo8PCz5hNnZifZ9ZeGf2Dc96SUbSB2sqGaOwyYw=",
   "Source": "WEBtransitions",
   "BasePath": "_content/WEBtransitions",
   "Mode": "Default",
@@ -290,12 +290,12 @@
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\app.css"
     },
     {
-      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-oj5yiq3npo.gz",
+      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-f3zhqil3z9.gz",
       "SourceId": "WEBtransitions",
       "SourceType": "Computed",
       "ContentRoot": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/WEBtransitions",
-      "RelativePath": "WEBtransitions#[.{fingerprint=oj5yiq3npo}]?.styles.css.gz",
+      "RelativePath": "WEBtransitions#[.{fingerprint=f3zhqil3z9}]?.styles.css.gz",
       "AssetKind": "All",
       "AssetMode": "CurrentProject",
       "AssetRole": "Alternative",
@@ -304,8 +304,8 @@
       "RelatedAsset": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\bundle\\WEBtransitions.styles.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "dnn37s0tqz",
-      "Integrity": "eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=",
+      "Fingerprint": "pvm8y9tlr8",
+      "Integrity": "K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\bundle\\WEBtransitions.styles.css"
@@ -878,12 +878,12 @@
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
     },
     {
-      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-oj5yiq3npo.gz",
+      "Identity": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-f3zhqil3z9.gz",
       "SourceId": "WEBtransitions",
       "SourceType": "Computed",
       "ContentRoot": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\",
       "BasePath": "_content/WEBtransitions",
-      "RelativePath": "WEBtransitions#[.{fingerprint=oj5yiq3npo}]!.bundle.scp.css.gz",
+      "RelativePath": "WEBtransitions#[.{fingerprint=f3zhqil3z9}]!.bundle.scp.css.gz",
       "AssetKind": "All",
       "AssetMode": "Reference",
       "AssetRole": "Alternative",
@@ -892,8 +892,8 @@
       "RelatedAsset": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "dnn37s0tqz",
-      "Integrity": "eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=",
+      "Fingerprint": "pvm8y9tlr8",
+      "Integrity": "K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css"
@@ -1018,8 +1018,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ApplicationBundle",
-      "Fingerprint": "oj5yiq3npo",
-      "Integrity": "bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=",
+      "Fingerprint": "f3zhqil3z9",
+      "Integrity": "FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\bundle\\WEBtransitions.styles.css"
@@ -1039,8 +1039,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ProjectBundle",
-      "Fingerprint": "oj5yiq3npo",
-      "Integrity": "bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=",
+      "Fingerprint": "f3zhqil3z9",
+      "Integrity": "FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css"
@@ -15507,12 +15507,12 @@
     },
     {
       "Route": "WEBtransitions.bundle.scp.css",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-oj5yiq3npo.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-f3zhqil3z9.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000418060201"
+          "Quality": "0.000388048118"
         }
       ],
       "ResponseHeaders": [
@@ -15522,15 +15522,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15550,13 +15550,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "W/\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
@@ -15571,7 +15571,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8094"
+          "Value": "9365"
         },
         {
           "Name": "Content-Type",
@@ -15579,11 +15579,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15593,13 +15593,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
       "Route": "WEBtransitions.bundle.scp.css.gz",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-oj5yiq3npo.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-f3zhqil3z9.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -15608,7 +15608,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "Content-Type",
@@ -15616,11 +15616,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15638,18 +15638,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk="
+          "Value": "sha256-K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.bundle.scp.css",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-oj5yiq3npo.gz",
+      "Route": "WEBtransitions.f3zhqil3z9.bundle.scp.css",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-f3zhqil3z9.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000418060201"
+          "Quality": "0.000388048118"
         }
       ],
       "ResponseHeaders": [
@@ -15659,15 +15659,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15687,13 +15687,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "W/\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15701,12 +15701,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.bundle.scp.css",
+      "Route": "WEBtransitions.f3zhqil3z9.bundle.scp.css",
       "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -15716,7 +15716,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8094"
+          "Value": "9365"
         },
         {
           "Name": "Content-Type",
@@ -15724,11 +15724,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15738,7 +15738,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15746,13 +15746,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.bundle.scp.css.gz",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-oj5yiq3npo.gz",
+      "Route": "WEBtransitions.f3zhqil3z9.bundle.scp.css.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\whourv7wsk-f3zhqil3z9.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -15761,7 +15761,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "Content-Type",
@@ -15769,11 +15769,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15791,7 +15791,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15799,18 +15799,18 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk="
+          "Value": "sha256-K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.styles.css",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-oj5yiq3npo.gz",
+      "Route": "WEBtransitions.f3zhqil3z9.styles.css",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-f3zhqil3z9.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000418060201"
+          "Quality": "0.000388048118"
         }
       ],
       "ResponseHeaders": [
@@ -15820,15 +15820,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15848,13 +15848,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "W/\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15862,12 +15862,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.styles.css",
+      "Route": "WEBtransitions.f3zhqil3z9.styles.css",
       "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\bundle\\WEBtransitions.styles.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -15877,7 +15877,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8094"
+          "Value": "9365"
         },
         {
           "Name": "Content-Type",
@@ -15885,11 +15885,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15899,7 +15899,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15907,13 +15907,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
-      "Route": "WEBtransitions.oj5yiq3npo.styles.css.gz",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-oj5yiq3npo.gz",
+      "Route": "WEBtransitions.f3zhqil3z9.styles.css.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-f3zhqil3z9.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -15922,7 +15922,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "Content-Type",
@@ -15930,11 +15930,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -15952,7 +15952,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "oj5yiq3npo"
+          "Value": "f3zhqil3z9"
         },
         {
           "Name": "label",
@@ -15960,18 +15960,18 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk="
+          "Value": "sha256-K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA="
         }
       ]
     },
     {
       "Route": "WEBtransitions.styles.css",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-oj5yiq3npo.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-f3zhqil3z9.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000418060201"
+          "Quality": "0.000388048118"
         }
       ],
       "ResponseHeaders": [
@@ -15981,15 +15981,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -16009,13 +16009,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "W/\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
@@ -16030,7 +16030,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "8094"
+          "Value": "9365"
         },
         {
           "Name": "Content-Type",
@@ -16038,11 +16038,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g=\""
+          "Value": "\"FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -16052,13 +16052,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-bMWn/+cDV83dPQau03kpDVtO1FoLac3DNAnyVqR6m4g="
+          "Value": "sha256-FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00="
         }
       ]
     },
     {
       "Route": "WEBtransitions.styles.css.gz",
-      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-oj5yiq3npo.gz",
+      "AssetFile": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\compressed\\d7lw0opibz-f3zhqil3z9.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -16067,7 +16067,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2391"
+          "Value": "2576"
         },
         {
           "Name": "Content-Type",
@@ -16075,11 +16075,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk=\""
+          "Value": "\"K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Mon, 21 Apr 2025 09:04:09 GMT"
+          "Value": "Mon, 05 May 2025 08:58:38 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -16097,7 +16097,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-eTGjRtH5DdYLhx9SOMQpUqZBfpbRUflxSuP5jiCy5Xk="
+          "Value": "sha256-K6SXHE20YVegzFQdJ9zimiHNj3wJmIYEeregYXsNCEA="
         }
       ]
     }

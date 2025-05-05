@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
-using Xunit;
 
 // https://medium.com/bina-nusantara-it-division/a-comprehensive-guide-to-implementing-xunit-tests-in-c-net-b2eea43b48b
 // https://xunit.net/docs/shared-context

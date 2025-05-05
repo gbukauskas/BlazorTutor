@@ -210,36 +210,97 @@ main[b-ux8mjcf7zc] {
         overflow-y: auto;
     }
 }
-/* _content/WEBtransitions/Components/Pages/Employees.razor.rz.scp.css */
-/*
-    table.empTable > thead th {
-    background-color: lightskyblue;
-}
-table.empTable > tbody > tr:nth-child(even) > td {
-    background-color: #f2f2f2;
+/* _content/WEBtransitions/Components/PagerControl.razor.rz.scp.css */
+div.pager[b-zclfvl0kf0] {
+    float: left;
+    margin-left: 2em;
+    padding: 4px;
+    border: 1px solid black;
+    border-radius: 8px;
 }
 
-*/
-table.empTable > thead > tr[b-cl86h9i2cv] {
+a.custom-link[b-zclfvl0kf0] {
+    width: 24px;
+    display: inline-block;
+    text-align: center;
+}
+
+a.selected-label[b-zclfvl0kf0] {
+    text-decoration: none;
+    font-weight: bolder;
+    color: red;
+}
+
+a.selected-label:hover[b-zclfvl0kf0] {
+    cursor: unset;
+}
+
+a.custom-link[disabled][b-zclfvl0kf0] {
+    text-decoration: none;
+    cursor: unset;
+    opacity: 0.5;
+}
+
+span.set-info[b-zclfvl0kf0] {
+    display: inline-block;
+    opacity: 0.6;
+}
+
+button[type="submit"][b-zclfvl0kf0] {
+    margin-bottom: 2px;
+    margin-left: 0.5em;
+}
+
+span.text-danger[b-zclfvl0kf0] {
+    display: inline-block;
+    padding-left: 0.5em !important;
+}
+/* _content/WEBtransitions/Components/Pages/Customers.razor.rz.scp.css */
+table.reportTable > thead > tr[b-cdadiud3w0] {
     background-color: lightskyblue;
 }
-table.empTable > thead > tr a[b-cl86h9i2cv] {
+
+th[b-cdadiud3w0] {
+    background-color: inherit;
+}
+
+table.reportTable > thead > tr a[b-cdadiud3w0] {
     text-decoration: none;
     color: black;
 }
 
-table.empTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
+table.reportTable > thead > tr > th[data-sort="a"] > a[b-cdadiud3w0]::before {
     content: "\21E7\00a0";
 }
-table.empTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
+
+table.reportTable > thead > tr > th[data-sort="d"] > a[b-cdadiud3w0]::before {
     content: "\21E9\00a0";
 }
 
-table .empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
-    background-color: #f2f2f2;
+table > caption[b-cdadiud3w0] {
+    caption-side: top;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
 }
-th[b-cl86h9i2cv], td[b-cl86h9i2cv] {
+/* _content/WEBtransitions/Components/Pages/Employees.razor.rz.scp.css */
+
+table.reportTable > thead > tr[b-cl86h9i2cv] {
+    background-color: lightskyblue;
+}
+table.reportTable > thead > tr a[b-cl86h9i2cv] {
+    text-decoration: none;
+    color: black;
+}
+table.reportTable > thead > tr > th[b-cl86h9i2cv] {
     background-color: inherit;
+}
+
+table.reportTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
+    content: "\21E7\00a0";
+}
+table.reportTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
+    content: "\21E9\00a0";
 }
 
 table > caption[b-cl86h9i2cv] {
@@ -248,11 +309,6 @@ table > caption[b-cl86h9i2cv] {
     font-weight: bold;
     text-align: center;
 }
-/*
-.sort_link:hover {
-    cursor: pointer;
-}
-*/
 
 /*
     https://www.youtube.com/watch?v=7fd00baexBQ

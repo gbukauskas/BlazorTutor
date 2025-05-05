@@ -2,12 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using WEBtransitions.Components;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Services;
+using WEBtransitions.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents();
-//.AddInteractiveServerComponents();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
 /* It is possible but dangerous. Use AddDbContext in single-thread environment, use DbContextFactory in all other cases.
 builder.Services.AddDbContext<NorthwindContext>(options =>
@@ -31,7 +32,10 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 //builder.Services.Configure<AppSettings>(
 //    builder.Configuration.GetSection(nameof(AppSettings)));
 
-builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, DatabaseEmployeeSvc>();
+builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, EmployeeSvc>();
+//builder.Services.AddSingleton<IDatabaseSvc<Customer, string>, CustomerSvc>();
+builder.Services.AddSingleton<CustomerSvc>();
+
 
 var app = builder.Build();
 
@@ -45,8 +49,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAntiforgery();
 
 app.MapStaticAssets();
-app.MapRazorComponents<App>();
-    //.AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();
 

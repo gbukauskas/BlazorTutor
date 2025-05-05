@@ -36,10 +36,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Customers.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDdXN0b21lcnMucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -71,6 +67,14 @@ build_metadata.AdditionalFiles.CssScope = b-ux8mjcf7zc
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-mt5kdcdwg5
+
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/PagerControl.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlckNvbnRyb2wucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-zclfvl0kf0
+
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Customers.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDdXN0b21lcnMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-cdadiud3w0
 
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Employees.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFbXBsb3llZXMucmF6b3I=

@@ -1,32 +1,20 @@
-/*
-    table.empTable > thead th {
-    background-color: lightskyblue;
-}
-table.empTable > tbody > tr:nth-child(even) > td {
-    background-color: #f2f2f2;
-}
 
-*/
-table.empTable > thead > tr[b-cl86h9i2cv] {
+table.reportTable > thead > tr[b-cl86h9i2cv] {
     background-color: lightskyblue;
 }
-table.empTable > thead > tr a[b-cl86h9i2cv] {
+table.reportTable > thead > tr a[b-cl86h9i2cv] {
     text-decoration: none;
     color: black;
 }
+table.reportTable > thead > tr > th[b-cl86h9i2cv] {
+    background-color: inherit;
+}
 
-table.empTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
+table.reportTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
     content: "\21E7\00a0";
 }
-table.empTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
+table.reportTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
     content: "\21E9\00a0";
-}
-
-table .empTable > tbody > tr:nth-child(even)[b-cl86h9i2cv] {
-    background-color: #f2f2f2;
-}
-th[b-cl86h9i2cv], td[b-cl86h9i2cv] {
-    background-color: inherit;
 }
 
 table > caption[b-cl86h9i2cv] {
@@ -35,11 +23,6 @@ table > caption[b-cl86h9i2cv] {
     font-weight: bold;
     text-align: center;
 }
-/*
-.sort_link:hover {
-    cursor: pointer;
-}
-*/
 
 /*
     https://www.youtube.com/watch?v=7fd00baexBQ

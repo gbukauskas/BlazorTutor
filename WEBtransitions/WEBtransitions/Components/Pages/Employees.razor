@@ -1,17 +1,19 @@
 ﻿@page "/Employees/{sortname?}"
 
 @using System.Globalization
+@using System.Linq.Expressions
+@using System.Reflection
+@using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Configuration;
 @using Microsoft.Extensions.Options
-@using System.Reflection
-@using System.Linq.Expressions
 @using WEBtransitions.Services
-@using Microsoft.EntityFrameworkCore
+@using WEBtransitions.Services.Interfaces
 
-@attribute [StreamRendering]
+@attribute [StreamRendering(true)]
 
 @inject IDatabaseSvc<Employee, string> dbSVC
 @inject IConfiguration Configuration
+@rendermode InteractiveServer
 
 @* @inject IOptions<AppSettings> AppConfiguration *@
 
@@ -23,7 +25,7 @@
 }
 else
 {
-    <table class="table empTable">
+    <table class="table reportTable" name="list-of-employees">
         <caption>Employees</caption>
         <thead>
             <tr>
@@ -81,12 +83,14 @@ else
     [Parameter]
     public string? SortName { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         //        ActiveCulture = new CultureInfo("lt-LT");   // Yne can set to any another value. You 
         //        string activeCultureStr = Configuration.ActiveCulture ?? "en-US";
         //        ActiveCulture = new CultureInfo(activeCultureStr);
         // string activeCultureStr = AppConfiguration?.Value?.ActiveCulture ?? "en-US";
+
+        // await Task.Delay(1000);  // Test for stream rendering
 
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
         ActiveCulture = new CultureInfo(activeCultureStr);
@@ -113,7 +117,6 @@ else
                 }
                 else
                 {
-//                    string sortPrefix = sortDefinition.Item1.StartsWith("a") ? "d" : "a";   // d or n <-- > a
                     SortParameter.Add($"{sortDefinition.Item1}_{FieldNames[i]}");
                 }
             }
@@ -124,11 +127,12 @@ else
             else
             {
                 // a --> ascending, d --> descending
+#pragma warning disable CS8600
                 PropertyInfo propInfo = typeof(Employee).GetProperty(sortDefinition.Item2, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
+#pragma warning restore CS8600
                 if (propInfo == null)
                 {
-                    CurrentPage = await page.ToArrayAsync();    // Invalid name of the field
+                    CurrentPage = await page.ToArrayAsync();    // Invalid name of the field: no sorting
                 }
                 else
                 {
@@ -147,13 +151,9 @@ else
 
     }
 
-    private async Task OrderByField(string fieldName, string sortDirection)
-    {
-        PropertyInfo? info = typeof(Employee).GetProperty(fieldName);
-    }
-
     private void ResetSort()
     {
+        SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
         {
             SortParameter.Add($"n_{FieldNames[i]}");

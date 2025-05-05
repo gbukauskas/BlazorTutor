@@ -11,6 +11,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibraryDatabase", "ClassLibraryDatabase\ClassLibraryDatabase.csproj", "{BF98F9C2-C73A-45A9-81E7-CD43C3F62730}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBusinessPart", "TestBusinessPart\TestBusinessPart.csproj", "{593D9F36-4EAF-4711-8D44-DB8EE2B9A6CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{20872114-ADFD-4850-B49D-8E1706ACFB89} = {20872114-ADFD-4850-B49D-8E1706ACFB89}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

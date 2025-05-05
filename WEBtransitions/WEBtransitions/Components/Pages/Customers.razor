@@ -1,8 +1,169 @@
-﻿@page "/Customers"
-@attribute [StreamRendering]
+﻿@page "/Customers/{pagenumber:int?}/{pagesize:int?}/{errormessage?}"
 
-<h3>Customers</h3>
+@using System.Globalization
+@using System.Reflection
+@using Microsoft.EntityFrameworkCore
+@using WEBtransitions.ClassLibraryDatabase.CustomPager
+@using WEBtransitions.Services
+@using WEBtransitions.Services.Interfaces
+
+@attribute [StreamRendering(true)]
+
+@inject CustomerSvc dbSVC
+@inject IConfiguration Configuration
+
+<PageTitle>Customers</PageTitle>
+
+@if (currentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table reportTable" name="list-of-Customers">
+        <caption>Customers</caption>
+        <thead>
+            <tr>
+                @* 
+                <th name="CompanyName" data-sort="@SortParameter[0].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[0]">Company name</a>
+                </th>
+                <th name="ContactName" data-sort="@SortParameter[1].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[1]">Contact name</a>
+                </th>
+                <th name="ContactTitle" data-sort="@SortParameter[2].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[2]">Contact Title</a>
+                </th>
+                <th name="Address" data-sort="@SortParameter[3].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[3]">Address</a>
+                </th>
+                <th name="City" data-sort="@SortParameter[4].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[4]">City</a>
+                </th>
+                <th name="Region" data-sort="@SortParameter[5].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[5]">Region</a>
+                </th>
+                <th name="PostalCode" data-sort="@SortParameter[6].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[6]">Postal Code</a>
+                </th>
+                <th name="Country" data-sort="@SortParameter[7].Substring(0, 1)">
+                    <a href="/Customers/@SortParameter[7]">Country</a>
+                </th>
+ *@
+                <th name="CompanyName">Company name</th>
+                <th name="ContactName">Contact name</th>
+                <th name="ContactTitle">Contact Title</th>
+                <th name="Address">Address</th>
+                <th name="City">City</th>
+                <th name="Region">Region</th>
+                <th name="PostalCode">Postal Code</th>
+                <th name="Country">Country</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cust in currentPage.Items)
+            {
+                <tr>
+                    <td>@cust.CompanyName</td>
+                    <td>@cust.ContactName</td>
+                    <td>@cust.ContactTitle</td>
+                    <td>@cust.Address</td>
+                    <td>@cust.City</td>
+                    <td>@cust.Region</td>
+                    <td>@cust.PostalCode</td>
+                    <td>@cust.Country</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <PagerControl MaxButtons=5 PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() PageNumber=@currentPage.PageNumber
+    PageSize="@currentPage.PageSize" BaseUrl="Customers" ErrorMessage="@ErrorMessage"/>
+
+}
 
 @code {
+    //    private Customer[]? CurrentPage;
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+
+    /// <summary>
+    /// Number of rows in the page
+    /// </summary>
+    [Parameter]
+    public int? PageSize { get; set; } = null;
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    private int pageNumber;
+    private int pageSize;
+    private PgResponse<Customer>? currentPage = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //        await Task.Delay(1000);  // Test for stream rendering
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        string defaultPageSizeStr = Configuration == null ? "9" : (Configuration["AppSettings:defaultPgSize"] ?? "9");
+        if (!int.TryParse(defaultPageSizeStr, out this.pageSize))
+        {
+            this.pageSize = 9;
+        }
+        ActiveCulture = new CultureInfo(activeCultureStr);
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        pageNumber = PageNumber ?? 1;
+        if (PageSize.HasValue)
+        {
+            pageSize = PageSize.Value;
+        }
+
+        var tmp = dbSVC.GetAllEntities();
+        currentPage = await dbSVC.GetPageAsync(tmp, pageSize, pageNumber);
+
+/*
+        var CustomerSvc = new CustomerSvc();
+
+        using (var context = factory.CreateDbContext())
+        {
+            var tmp = CustomerSvc.GetAllEntities(context);
+            currentPage = await CustomerSvc.GetPageAsync(tmp, pageSize, pageNumber);
+            }
+*/
+        return;
+    }
+
+    private Tuple<string, string> SetSort(string sortParameter)
+    {
+        string sortDirection;
+        switch (sortParameter.Substring(0, 1))
+        {
+            case "n":
+                sortDirection = "a";
+                break;
+            case "a":
+                sortDirection = "d";
+                break;
+            default:
+                sortDirection = "n";
+                break;
+        }
+        string sortName = sortParameter.Substring(2);
+        return new Tuple<string, string>(sortDirection, sortName);
+    }
 
 }
