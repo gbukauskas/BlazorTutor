@@ -14,32 +14,12 @@
     }
     <span class="set-info">@TotalRecords rec. in @PageCount pages.</span>
 
-@* 
-    <EditForm Model="Model" OnSubmit="Submit" FormName="PagerNavigate" class="form-inline">
-        <span>Go to page</span>
-        <InputText @bind-Value="Model!.Id" style="width: 6em;" />
-
-        <input type="hidden" name="MaxButtons" value="@Model!.MaxButtons" />
-        <input type="hidden" name="PageCount" value="@Model!.PageCount" />
-        <input type="hidden" name="PageNumber" value="@Model!.PageNumber" />
-        <input type="hidden" name="PageSize" value="@Model!.PageSize" />
-        <input type="hidden" name="BaseUrl" value="@Model!.BaseUrl" />
-
-        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-        @if (!String.IsNullOrEmpty(ErrorMessage))
-        {
-            <span class="text-danger">@DecodeMsg(ErrorMessage)</span>
-        }
-
-    </EditForm>
-
- *@
-
-    <form method="GET" action="/@Model!.BaseUrl/1/@Model!.PageSize" @formname="PagerNavigate" class="form-inline" name="pager-input">
+    <form method="GET" action="/@Model!.BaseUrl/@Model!.PageSize/" @formname="PagerNavigate" class="form-inline" name="pager-input">
         <AntiforgeryToken />
         <span>Go to page</span>
-        <InputText @bind-Value="Model!.Id" style="width: 6em;" name="current-page"/>
-        <button class="btn btn-primary btn-sm" onclick="replaceAction('pager-input')">Submit</button>
+        <InputText @bind-Value="Model!.Id" style="width: 6em;" name="current-page" type="number"/>
+        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+
         @if (!String.IsNullOrEmpty(ErrorMessage))
         {
             <span class="text-danger">@DecodeMsg(ErrorMessage)</span>
@@ -51,7 +31,7 @@
             var elements = document.querySelectorAll(`[name="${formName}"]`);
             if (elements.length > 0) {
                 let element = elements[0]; // Access the first element with the given name
-                
+
                 let inputField = element.querySelector("[name='current-page']");
                 let pageNumber = inputField ? inputField.value : 1;
                 let newAction = `/@Model!.BaseUrl/${pageNumber}/@Model!.PageSize`;
@@ -61,6 +41,7 @@
             }
         }
     </script>
+
 </div>
 
 @code {
@@ -172,7 +153,7 @@
                 pgIndex = page.Id;                              // Go to page defined in the Id propery
                 break;
         }
-        var rzlt = new StringBuilder($"/{BaseUrl}/{pgIndex}/{PageSize}");
+        var rzlt = new StringBuilder($"/{BaseUrl}/{PageSize}/{pgIndex}/");
         return rzlt.ToString();
     }
 

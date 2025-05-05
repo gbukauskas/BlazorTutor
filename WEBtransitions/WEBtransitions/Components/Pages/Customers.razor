@@ -1,7 +1,8 @@
-﻿@page "/Customers/{pagenumber:int?}/{pagesize:int?}/{errormessage?}"
+﻿@page "/Customers/{pagesize:int?}/{pagenumber:int?}/{errormessage?}"
 
 @using System.Globalization
 @using System.Reflection
+@using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.EntityFrameworkCore
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Services
@@ -11,6 +12,7 @@
 
 @inject CustomerSvc dbSVC
 @inject IConfiguration Configuration
+@inject NavigationManager NavManager
 
 <PageTitle>Customers</PageTitle>
 
@@ -126,6 +128,12 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+        {
+            PageNumber = Convert.ToInt32(_initialCount);
+        }
         pageNumber = PageNumber ?? 1;
         if (PageSize.HasValue)
         {
@@ -134,16 +142,6 @@ else
 
         var tmp = dbSVC.GetAllEntities();
         currentPage = await dbSVC.GetPageAsync(tmp, pageSize, pageNumber);
-
-/*
-        var CustomerSvc = new CustomerSvc();
-
-        using (var context = factory.CreateDbContext())
-        {
-            var tmp = CustomerSvc.GetAllEntities(context);
-            currentPage = await CustomerSvc.GetPageAsync(tmp, pageSize, pageNumber);
-            }
-*/
         return;
     }
 
