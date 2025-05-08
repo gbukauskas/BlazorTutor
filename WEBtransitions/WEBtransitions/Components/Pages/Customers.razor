@@ -1,9 +1,20 @@
-﻿@page "/Customers/{pagesize:int?}/{pagenumber:int?}/{errormessage?}"
+﻿@page "/Customers/{action?}/{pagesize:int?}/{pagenumber:int?}/{errormessage?}"
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <code>sort</code> - sort parameters
+        <code>page</code> - parameters for pager
+        <code>filter</code> - filtering
+        <code>none<code> - start page, no parameters
+    </list>
+*@
 
 @using System.Globalization
 @using System.Reflection
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.EntityFrameworkCore
+@using System.Diagnostics
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
@@ -13,6 +24,7 @@
 @inject CustomerSvc dbSVC
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
+@inject IStateData state
 
 <PageTitle>Customers</PageTitle>
 
@@ -79,14 +91,20 @@ else
         </tbody>
     </table>
 
-    <PagerControl MaxButtons=5 PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() PageNumber=@currentPage.PageNumber
-    PageSize="@currentPage.PageSize" BaseUrl="Customers" ErrorMessage="@ErrorMessage"/>
+    <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() PageNumber=@currentPage.PageNumber
+    PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage"/>
 
 }
 
 @code {
     //    private Customer[]? CurrentPage;
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
 
     /// <summary>
     /// Current page
@@ -108,8 +126,9 @@ else
 
     private int pageNumber;
     private int pageSize;
+    private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
-
+    private StateForComponent? currentState = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,28 +140,56 @@ else
         {
             this.pageSize = 9;
         }
+        string maxButtonsStr = Configuration == null ? "10" : (Configuration["AppSettings:maxButtons"] ?? "10");
+        if (!int.TryParse(maxButtonsStr, out this.buttonCount))
+        {
+            this.buttonCount = 10;
+        }
+
         ActiveCulture = new CultureInfo(activeCultureStr);
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Read state and parameters 
+    /// </summary>
+    /// <returns></returns>
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+        this.currentState = state.GetState("Customers", buttonCount, this.pageSize);
+        if (String.IsNullOrEmpty(Action))
         {
-            PageNumber = Convert.ToInt32(_initialCount);
-        }
-        pageNumber = PageNumber ?? 1;
-        if (PageSize.HasValue)
-        {
-            pageSize = PageSize.Value;
+            this.Action = "page";
         }
 
+        if (this.Action == "page")
+        {
+            await ProcessCurrentPage();
+            Debug.Assert(this.currentState.PagerState != null);
+            state.SetPagerState("Customers", this.currentState.PagerState);
+        }
+        return;
+    }
+
+    private async Task ProcessCurrentPage()
+    {
+#pragma warning disable CS8602
+        if (!this.PageNumber.HasValue && this.currentState.PagerState != null)
+        {
+            this.PageNumber = this.currentState.PagerState.PageNumber;
+        }
+        this.pageNumber = this.PageNumber ?? 1;
+
+        ModifyPagerState();
         var tmp = dbSVC.GetAllEntities();
         currentPage = await dbSVC.GetPageAsync(tmp, pageSize, pageNumber);
-        return;
+
+        this.currentState.PagerState.PageCount = currentPage.TotalPages;
+        this.currentState.PagerState.PageNumber = currentPage.PageNumber;
+        this.currentState.PagerState.PageSize = currentPage.PageSize;
+#pragma warning restore CS8602
+
     }
 
     private Tuple<string, string> SetSort(string sortParameter)
@@ -164,4 +211,19 @@ else
         return new Tuple<string, string>(sortDirection, sortName);
     }
 
+    private void ModifyPagerState()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+        {
+            this.PageNumber = Convert.ToInt32(_initialCount);
+        }
+        pageNumber = this.PageNumber ?? 1;
+        if (this.PageSize.HasValue)
+        {
+            pageSize = this.PageSize.Value;  // The user changed size of the page 
+        }
+
+        // Debug.Assert(this.currentState != null && this.currentState.PagerState == null);
+    }
 }

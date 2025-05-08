@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Http.Extensions
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 
-<div class="pager">
+<div class="pager" name="customer-pager">
     @foreach (var link in PrintableButtons)
     {
         <a class="custom-link @GetClassName(link)" href="@GenerateURL(link)" title="@GetTitle(link)" disabled=@link.IsDisabled>
@@ -34,14 +34,13 @@
 
                 let inputField = element.querySelector("[name='current-page']");
                 let pageNumber = inputField ? inputField.value : 1;
-                let newAction = `/@Model!.BaseUrl/${pageNumber}/@Model!.PageSize`;
+                let newAction = `/@Model!.BaseUrl/page/@Model!.PageSize/${pageNumber}`;
 
                 element.setAttribute('action', newAction);
                 element.submit();
             }
         }
     </script>
-
 </div>
 
 @code {
@@ -58,7 +57,7 @@
     /// Number of pages. Default value is 1.
     /// </summary>
     [Parameter]
-    public int MaxButtons { get; set; } = 10;
+    public int MaxButtons { get; set; } = 10;   // TODO:
 
     /// <summary>
     /// Number of pages. Default value is 1.
@@ -108,7 +107,7 @@
             throw new ArgumentException("Base URL is empty");
         }
 
-        Model ??= new();
+        Model ??= new PgPostData("Customers");
         Model.Id = PageNumber.ToString();
         Model.MaxButtons = this.MaxButtons;
         Model.PageCount = this.PageCount;

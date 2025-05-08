@@ -1,6 +1,0 @@
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\DB\northwind.db
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\runtimes\linux-musl-arm\native\libe_sqlite3.so
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\runtimes\linux-ppc64le\native\libe_sqlite3.so
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\runtimes\linux-x86\native\libe_sqlite3.so
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\runtimes\osx-x64\native\libe_sqlite3.dylib
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\runtimes\win-x64\native\e_sqlite3.dll
