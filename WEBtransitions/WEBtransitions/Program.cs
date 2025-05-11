@@ -37,7 +37,6 @@ builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, EmployeeSvc>();
 builder.Services.AddScoped<CustomerSvc>();
 builder.Services.AddSingleton<IStateData, StateData>();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

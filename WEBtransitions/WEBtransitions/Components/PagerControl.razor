@@ -17,7 +17,7 @@
     <form method="GET" action="/@Model!.BaseUrl/@Model!.PageSize/" @formname="PagerNavigate" class="form-inline" name="pager-input">
         <AntiforgeryToken />
         <span>Go to page</span>
-        <InputText @bind-Value="Model!.Id" style="width: 6em;" name="current-page" type="number"/>
+        <InputText @bind-Value="Model!.PageNumberStr" style="width: 6em;" name="current-page" type="number" />
         <button type="submit" class="btn btn-primary btn-sm">Submit</button>
 
         @if (!String.IsNullOrEmpty(ErrorMessage))
@@ -28,17 +28,17 @@
 
     <script type="text/javascript">
         function replaceAction(formName) {
-            var elements = document.querySelectorAll(`[name="${formName}"]`);
-            if (elements.length > 0) {
-                let element = elements[0]; // Access the first element with the given name
+        var elements = document.querySelectorAll(`[name="${formName}"]`);
+        if (elements.length > 0) {
+        let element = elements[0]; // Access the first element with the given name
 
-                let inputField = element.querySelector("[name='current-page']");
-                let pageNumber = inputField ? inputField.value : 1;
-                let newAction = `/@Model!.BaseUrl/page/@Model!.PageSize/${pageNumber}`;
+        let inputField = element.querySelector("[name='current-page']");
+        let pageNumber = inputField ? inputField.value : 1;
+        let newAction = `/@Model!.BaseUrl/page/@Model!.PageSize/${pageNumber}`;
 
-                element.setAttribute('action', newAction);
-                element.submit();
-            }
+        element.setAttribute('action', newAction);
+        element.submit();
+        }
         }
     </script>
 </div>
@@ -108,7 +108,7 @@
         }
 
         Model ??= new PgPostData("Customers");
-        Model.Id = PageNumber.ToString();
+        Model.Id = "PagerNavigate";             // Input form name
         Model.MaxButtons = this.MaxButtons;
         Model.PageCount = this.PageCount;
         Model.PageNumber = this.PageNumber;
@@ -237,6 +237,7 @@
             if (item.IsSelected)
             {
                 currentPageIsVisible = true;
+                Model!.PageNumber = PageNumber;
             }
             PrintableButtons.Add(item);
 

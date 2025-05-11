@@ -1,12 +1,17 @@
-﻿@page "/Customers/{action?}/{pagesize:int?}/{pagenumber:int?}/{errormessage?}"
+﻿@page "/Customers/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
 
 @*
   Parameter action defines type of parameters:
     <list type="bullet">
-        <code>sort</code> - sort parameters
-        <code>page</code> - parameters for pager
-        <code>filter</code> - filtering
-        <code>none<code> - start page, no parameters
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>filter</code> - filtering</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</<code></item>
+        <item>Page size when <code>action == 'page'</<code> </item>
     </list>
 *@
 
@@ -38,43 +43,34 @@ else
         <caption>Customers</caption>
         <thead>
             <tr>
-                @* 
                 <th name="CompanyName" data-sort="@SortParameter[0].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[0]">Company name</a>
+                    <a href="/Customers/sort/@SortParameter[0]">Company name</a>
                 </th>
                 <th name="ContactName" data-sort="@SortParameter[1].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[1]">Contact name</a>
+                    <a href="/Customers/sort/@SortParameter[1]">Contact name</a>
                 </th>
                 <th name="ContactTitle" data-sort="@SortParameter[2].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[2]">Contact Title</a>
+                    <a href="/Customers/sort/@SortParameter[2]">Contact Title</a>
                 </th>
                 <th name="Address" data-sort="@SortParameter[3].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[3]">Address</a>
+                    <a href="/Customers/sort/@SortParameter[3]">Address</a>
                 </th>
                 <th name="City" data-sort="@SortParameter[4].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[4]">City</a>
+                    <a href="/Customers/sort/@SortParameter[4]">City</a>
                 </th>
                 <th name="Region" data-sort="@SortParameter[5].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[5]">Region</a>
+                    <a href="/Customers/sort/@SortParameter[5]">Region</a>
                 </th>
                 <th name="PostalCode" data-sort="@SortParameter[6].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[6]">Postal Code</a>
+                    <a href="/Customers/sort/@SortParameter[6]">Postal Code</a>
                 </th>
                 <th name="Country" data-sort="@SortParameter[7].Substring(0, 1)">
-                    <a href="/Customers/@SortParameter[7]">Country</a>
+                    <a href="/Customers/sort/@SortParameter[7]">Country</a>
                 </th>
- *@
-                <th name="CompanyName">Company name</th>
-                <th name="ContactName">Contact name</th>
-                <th name="ContactTitle">Contact Title</th>
-                <th name="Address">Address</th>
-                <th name="City">City</th>
-                <th name="Region">Region</th>
-                <th name="PostalCode">Postal Code</th>
-                <th name="Country">Country</th>
             </tr>
         </thead>
         <tbody>
+
             @foreach (var cust in currentPage.Items)
             {
                 <tr>
@@ -97,8 +93,9 @@ else
 }
 
 @code {
-    //    private Customer[]? CurrentPage;
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+    private static readonly string[] FieldNames = { "CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country" };
+    public List<string>? SortParameter;
 
     /// <summary>
     /// Current page
@@ -107,16 +104,17 @@ else
     public string? Action { get; set; } = null;
 
     /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
     /// Current page
     /// </summary>
     [Parameter]
     public int? PageNumber { get; set; } = null;
 
-    /// <summary>
-    /// Number of rows in the page
-    /// </summary>
-    [Parameter]
-    public int? PageSize { get; set; } = null;
 
     /// <summary>
     /// Error message
@@ -124,8 +122,18 @@ else
     [Parameter]
     public string ErrorMessage { get; set; } = "";
 
+    /// <summary>
+    /// Number of rows in the page
+    /// </summary>
+    internal int? PageSize { get; set; } = null;
+
+    /// <summary>
+    /// Sort definition
+    /// </summary>
+    internal string? SortDefinition { get; set; } = null;   // ??
+
     private int pageNumber;
-    private int pageSize;
+    private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
     private StateForComponent? currentState = null;
@@ -134,11 +142,17 @@ else
     {
         //        await Task.Delay(1000);  // Test for stream rendering
 
+        SortParameter = new List<string>();
+        for (int i = 0; i < FieldNames.Length; i++)
+        {
+            SortParameter.Add($"n_{FieldNames[i]}");
+        }
+
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
         string defaultPageSizeStr = Configuration == null ? "9" : (Configuration["AppSettings:defaultPgSize"] ?? "9");
-        if (!int.TryParse(defaultPageSizeStr, out this.pageSize))
+        if (!int.TryParse(defaultPageSizeStr, out this.defaultPageSize))
         {
-            this.pageSize = 9;
+            this.defaultPageSize = 9;
         }
         string maxButtonsStr = Configuration == null ? "10" : (Configuration["AppSettings:maxButtons"] ?? "10");
         if (!int.TryParse(maxButtonsStr, out this.buttonCount))
@@ -157,23 +171,68 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        this.currentState = state.GetState("Customers", buttonCount, this.pageSize);
+        this.currentState = state.GetState("Customers", buttonCount, this.defaultPageSize);
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                SortDefinition = Argument;  // ??
+                Tuple<string?, string> newSort = SetSort(Argument, true);
+                this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                int pageSize;
+                if (int.TryParse(Argument, out pageSize))
+                {
+                    this.PageSize = pageSize;
+                }
+                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+                {
+                    this.PageNumber = Convert.ToInt32(_initialCount);
+                }
+                if (this.currentState.PagerState == null)
+                {
+                    this.currentState.PagerState = new PgPostData("PagerNavigate", this.buttonCount);
+                }
+                this.currentState.PagerState.PageNumber = this.PageNumber ?? 1;
+                this.currentState.PagerState.PageSize = this.PageSize ?? this.defaultPageSize;
+                this.currentState.PagerState.BaseUrl = "Customers/page";
+            }
+        }
+
         if (String.IsNullOrEmpty(Action))
         {
             this.Action = "page";
         }
 
-        if (this.Action == "page")
-        {
-            await ProcessCurrentPage();
-            Debug.Assert(this.currentState.PagerState != null);
-            state.SetPagerState("Customers", this.currentState.PagerState);
-        }
-        return;
+        await ProcessCurrentPage();
+        state.SetState(this.currentState);
     }
 
+    // private async Task ProcessCurrentPage(string? sortDefitionOriginal = null)
     private async Task ProcessCurrentPage()
     {
+        Debug.Assert(this.currentState != null);
+        Tuple<string?, string> sortDefinition = SetSort(this.currentState.SortState, false);
+        if (!String.IsNullOrEmpty(sortDefinition.Item1))
+        {
+            SortParameter = new List<string>();
+            for (int i = 0; i < FieldNames.Length; i++)
+            {
+                if (FieldNames[i] == sortDefinition.Item2)
+                {
+                    SortParameter.Add($"{sortDefinition.Item1}_{sortDefinition.Item2}");
+                }
+                else
+                {
+                    SortParameter.Add($"n_{FieldNames[i]}");
+                }
+            }
+        }
+
 #pragma warning disable CS8602
         if (!this.PageNumber.HasValue && this.currentState.PagerState != null)
         {
@@ -181,49 +240,83 @@ else
         }
         this.pageNumber = this.PageNumber ?? 1;
 
-        ModifyPagerState();
         var tmp = dbSVC.GetAllEntities();
-        currentPage = await dbSVC.GetPageAsync(tmp, pageSize, pageNumber);
-
+        if (sortDefinition.Item1 != null && (sortDefinition.Item1 == "a" || sortDefinition.Item1 == "d"))
+        {
+            IEnumerable<Customer>? tmpList = SortThePage(sortDefinition, tmp);
+            this.currentState.SortState = $"{sortDefinition.Item1}_{sortDefinition.Item2}";
+            currentPage = await dbSVC.GetPageAsync(tmpList, this.currentState.PagerState.PageSize, this.currentState.PagerState.PageNumber);
+        }
+        else
+        {
+            currentPage = await dbSVC.GetPageAsync(tmp, this.currentState.PagerState.PageSize, this.currentState.PagerState.PageNumber);
+        }
         this.currentState.PagerState.PageCount = currentPage.TotalPages;
-        this.currentState.PagerState.PageNumber = currentPage.PageNumber;
-        this.currentState.PagerState.PageSize = currentPage.PageSize;
 #pragma warning restore CS8602
-
     }
 
-    private Tuple<string, string> SetSort(string sortParameter)
+    /// <summary>
+    /// <list type="number">
+    ///     <item>sortDefinionOriginal is null or empty - no sort</item>
+    ///     <item>sortDefinionOriginal starts with "n" - no sort</item>
+    ///     <item>sortDefinionOriginal starts with "a" - sort ascending; name of sorting field starts from SortName[2]</item>
+    ///     <item>sortDefinionOriginal starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
+    /// </list>
+    /// </summary>
+    private Tuple<string?, string> SetSort(string? sortParameter, bool setNextState)
     {
         string sortDirection;
-        switch (sortParameter.Substring(0, 1))
+        if (String.IsNullOrEmpty(sortParameter))
         {
-            case "n":
-                sortDirection = "a";
-                break;
-            case "a":
-                sortDirection = "d";
-                break;
-            default:
-                sortDirection = "n";
-                break;
+            return new Tuple<string?, string>(null, "");
+        }
+
+        if (setNextState)
+        {
+            switch (sortParameter.Substring(0, 1))
+            {
+                case "n":
+                    sortDirection = "a";
+                    break;
+                case "a":
+                    sortDirection = "d";
+                    break;
+                default:
+                    sortDirection = "n";
+                    break;
+            }
+        }
+        else
+        {
+            sortDirection = sortParameter.Substring(0, 1);
         }
         string sortName = sortParameter.Substring(2);
-        return new Tuple<string, string>(sortDirection, sortName);
+        return new Tuple<string?, string>(sortDirection, sortName);
     }
 
-    private void ModifyPagerState()
+    private IEnumerable<Customer>? SortThePage(Tuple<string?, string> sortDefinition, IQueryable<Customer>? tmp)
     {
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+        if (String.IsNullOrEmpty(sortDefinition.Item1) || tmp == null)
         {
-            this.PageNumber = Convert.ToInt32(_initialCount);
+            return tmp;
         }
-        pageNumber = this.PageNumber ?? 1;
-        if (this.PageSize.HasValue)
-        {
-            pageSize = this.PageSize.Value;  // The user changed size of the page 
-        }
+        Debug.Assert(sortDefinition.Item1 != null && (sortDefinition.Item1 == "a" || sortDefinition.Item1 == "d"));
 
-        // Debug.Assert(this.currentState != null && this.currentState.PagerState == null);
+        // a --> ascending, d --> descending
+#pragma warning disable CS8600
+        PropertyInfo propInfo = typeof(Customer).GetProperty(sortDefinition.Item2, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+#pragma warning restore CS8600
+        if (propInfo == null)
+        {
+            return tmp.AsEnumerable();    // Invalid name of the field: no sorting
+        }
+        else
+        {
+            IEnumerable<Customer> tmpList = tmp.AsEnumerable();
+            return sortDefinition.Item1.StartsWith("a")
+                        ? tmpList.OrderBy(e => propInfo.GetValue(e))
+                        : tmpList.OrderByDescending(e => propInfo.GetValue(e));
+        }
     }
+
 }

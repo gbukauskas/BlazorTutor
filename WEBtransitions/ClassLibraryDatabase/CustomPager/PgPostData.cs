@@ -8,10 +8,26 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
 {
     public class PgPostData: ICloneable
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public string? Id { get; set; }
         public int MaxButtons { get; set; }
         public int PageCount { get; set; }
         public int PageNumber { get; set; }
+        public string PageNumberStr {
+            get
+            {
+                return this.PageNumber.ToString();
+            }
+            set
+            {
+                int tmpValue = 0;
+                this.PageNumber = string.IsNullOrEmpty(value) || !int.TryParse(value, out tmpValue)
+                    ? 1
+                    : tmpValue;
+            }
+        }
         public int PageSize { get; set; }
         public string? BaseUrl { get; set; }
 

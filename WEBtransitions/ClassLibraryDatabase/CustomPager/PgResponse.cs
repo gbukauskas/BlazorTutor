@@ -31,6 +31,6 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
         /// <summary>
         /// Content of the current page.
         /// </summary>
-        public IEnumerable<T>? Items { get; set; }
+        public required IEnumerable<T> Items { get; set; }
     }
 }

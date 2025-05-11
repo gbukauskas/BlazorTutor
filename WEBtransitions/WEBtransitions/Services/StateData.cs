@@ -7,31 +7,41 @@ namespace WEBtransitions.Services
 {
     public class StateData: IStateData
     {
+        private static readonly Lock _stateLock = new();
         private Dictionary<string, StateForComponent> States { get; set; } = new();
 
         public StateForComponent GetState(string index, int buttonCount = 10, int pageSize = 9)
         {
             StateForComponent rzlt;
-            if (this.States.ContainsKey(index))    // TryGetValue(index, out rzlt))
+            lock (_stateLock)
             {
-                rzlt = (StateForComponent)this.States[index].Clone();
-            }
-            else
-            {
-                rzlt = new StateForComponent(index, buttonCount, pageSize);
-                this.States[index] = (StateForComponent)rzlt.Clone();
+                if (this.States.ContainsKey(index))    // TryGetValue(index, out rzlt))
+                {
+                    rzlt = (StateForComponent)this.States[index].Clone();
+                }
+                else
+                {
+                    rzlt = new StateForComponent(index, buttonCount, pageSize);
+                    this.States[index] = rzlt;
+                }
             }
             return rzlt;
         }
 
-        public void SetPagerState(string index, PgPostData currentPagerState)
+        public void SetState(StateForComponent currentState)
         {
-            if (!States.ContainsKey(index))
+            Debug.Assert(currentState != null && !String.IsNullOrEmpty(currentState.ComponentName));
+            lock (_stateLock)
             {
-                var newState = new StateForComponent(index);
-                States.Add(index, newState);
+                if (this.States.ContainsKey(currentState.ComponentName))
+                {
+                    States[currentState.ComponentName] = (StateForComponent)currentState.Clone();
+                }
+                else
+                {
+                    States.Add(currentState.ComponentName, (StateForComponent)currentState.Clone());
+                }
             }
-            States[index].PagerState = currentPagerState;
         }
     }
 
