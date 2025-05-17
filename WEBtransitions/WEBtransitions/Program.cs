@@ -23,6 +23,8 @@ builder.Services.AddDbContext<NorthwindContext>(options =>
 // options.UseNpgsql(
 
 */
+
+
 builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 {
     options.UseSqlite(
@@ -33,7 +35,6 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 //    builder.Configuration.GetSection(nameof(AppSettings)));
 
 builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, EmployeeSvc>();
-//builder.Services.AddSingleton<CustomerSvc>();
 builder.Services.AddScoped<CustomerSvc>();
 builder.Services.AddSingleton<IStateData, StateData>();
 

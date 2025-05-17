@@ -7,13 +7,18 @@ namespace WEBtransitions.Services
 {
     public class StateData: IStateData
     {
-        private static readonly Lock _stateLock = new();
+        //        private static readonly Lock _stateLock = new();
+        private static ReaderWriterLock rwl = new ReaderWriterLock();
+        private static int timeOut = 10000;     // 10 seconds
+
         private Dictionary<string, StateForComponent> States { get; set; } = new();
 
         public StateForComponent GetState(string index, int buttonCount = 10, int pageSize = 9)
         {
             StateForComponent rzlt;
-            lock (_stateLock)
+
+            rwl.AcquireReaderLock(timeOut);
+            try 
             {
                 if (this.States.ContainsKey(index))    // TryGetValue(index, out rzlt))
                 {
@@ -25,13 +30,18 @@ namespace WEBtransitions.Services
                     this.States[index] = rzlt;
                 }
             }
+            finally
+            {
+                rwl.ReleaseReaderLock();
+            }
             return rzlt;
         }
 
         public void SetState(StateForComponent currentState)
         {
             Debug.Assert(currentState != null && !String.IsNullOrEmpty(currentState.ComponentName));
-            lock (_stateLock)
+            rwl.AcquireWriterLock(timeOut);
+            try
             {
                 if (this.States.ContainsKey(currentState.ComponentName))
                 {
@@ -42,6 +52,10 @@ namespace WEBtransitions.Services
                     States.Add(currentState.ComponentName, (StateForComponent)currentState.Clone());
                 }
             }
+            finally
+            {
+                rwl.ReleaseWriterLock();
+            }
         }
     }
 
@@ -50,15 +64,15 @@ namespace WEBtransitions.Services
         public string? ComponentName { get; set; }
         public string? SortState {  get; set; } = string.Empty;
         public PgPostData? PagerState { get; set; } = null;
-        public string? FilterState { get; set; } = string.Empty;
+        public Tuple<string, string>? FilterState { get; set; } = null;
 
 
         public StateForComponent(string componentName, int buttonCount = 10, int pageSize = 9) 
         {
             this.ComponentName = componentName;
             this.SortState = string.Empty;
-            this.PagerState = new PgPostData(componentName, buttonCount, 1, 1, pageSize, "Customers/page");
-
+            this.PagerState = new PgPostData(componentName, buttonCount, 1, 1, 1, pageSize, "Customers/page");
+            this.FilterState = null;
         }
 
         public object Clone()

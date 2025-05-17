@@ -25,22 +25,6 @@
             <span class="text-danger">@DecodeMsg(ErrorMessage)</span>
         }
     </form>
-
-    <script type="text/javascript">
-        function replaceAction(formName) {
-        var elements = document.querySelectorAll(`[name="${formName}"]`);
-        if (elements.length > 0) {
-        let element = elements[0]; // Access the first element with the given name
-
-        let inputField = element.querySelector("[name='current-page']");
-        let pageNumber = inputField ? inputField.value : 1;
-        let newAction = `/@Model!.BaseUrl/page/@Model!.PageSize/${pageNumber}`;
-
-        element.setAttribute('action', newAction);
-        element.submit();
-        }
-        }
-    </script>
 </div>
 
 @code {
@@ -110,6 +94,10 @@
         Model ??= new PgPostData("Customers");
         Model.Id = "PagerNavigate";             // Input form name
         Model.MaxButtons = this.MaxButtons;
+
+        int rowCount;
+        Model.RowCount = int.TryParse(this.TotalRecords, out rowCount) ? rowCount: 0;
+
         Model.PageCount = this.PageCount;
         Model.PageNumber = this.PageNumber;
         Model.PageSize = this.PageSize;

@@ -1,0 +1,26 @@
+div.filter[b-3a6u69bmzo] {
+    float: right;
+    right: 2em;
+    padding: 12px 4px 4px 4px;
+    border: 1px solid black;
+    border-radius: 8px;
+    position: relative;
+}
+.border-text[b-3a6u69bmzo] {
+    position: absolute;
+    top: -12px; /* Adjust to place text on the top border */
+    left: 50%;
+    transform: translateX(-50%);
+    background: white; /* Matches the background to "cut out" the border */
+    padding: 0 5px;
+    font-size: 14px;
+    color: #4CAF50;
+}
+label[b-3a6u69bmzo] {
+    display: inline-block;
+    width: 4em;
+}
+div.submit-button[b-3a6u69bmzo] {
+    margin-top: 4px;
+    border-radius: 4px;
+}

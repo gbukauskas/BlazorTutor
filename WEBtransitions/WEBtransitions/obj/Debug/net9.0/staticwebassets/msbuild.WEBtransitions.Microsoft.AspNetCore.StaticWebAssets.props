@@ -828,23 +828,23 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\bootstrap\dist\js\bootstrap.min.js.map'))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\WEBtransitions.f3zhqil3z9.bundle.scp.css'))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\WEBtransitions.vsz5177qaw.bundle.scp.css'))">
       <SourceType>Package</SourceType>
       <SourceId>WEBtransitions</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/WEBtransitions</BasePath>
-      <RelativePath>WEBtransitions.f3zhqil3z9.bundle.scp.css</RelativePath>
+      <RelativePath>WEBtransitions.vsz5177qaw.bundle.scp.css</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>Reference</AssetMode>
       <AssetRole>Primary</AssetRole>
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ProjectBundle</AssetTraitValue>
-      <Fingerprint>f3zhqil3z9</Fingerprint>
-      <Integrity>FUKb+hGJ0h7nl/iuAm09d3MKTX1OawDBhOp/SOXjJ00=</Integrity>
+      <Fingerprint>vsz5177qaw</Fingerprint>
+      <Integrity>ga6Ry+95bBa2NC6w1DgJ0L1Doe3uArzumdtoRVWjP7Y=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\WEBtransitions.f3zhqil3z9.bundle.scp.css'))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\WEBtransitions.vsz5177qaw.bundle.scp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

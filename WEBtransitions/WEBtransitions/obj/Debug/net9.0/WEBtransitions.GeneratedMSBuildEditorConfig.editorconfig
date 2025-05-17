@@ -60,6 +60,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/FilterControl.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xGaWx0ZXJDb250cm9sLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-3a6u69bmzo
+
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-ux8mjcf7zc

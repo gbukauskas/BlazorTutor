@@ -1,0 +1,80 @@
+﻿@using System.Reflection
+@using WEBtransitions.ClassLibraryDatabase.CustomFilter
+@typeparam T where T : class
+
+<div class="filter" name="custom-filter">
+    <span class="border-text">Filter</span>
+@*     <EditForm method="GET" action="/@BaseUrl/@Model!.TargetUrl/" Model="Model" FormName="CustomerFilter"> *@
+    <form method="GET" action="/@BaseUrl/filter/search/" @formname="CustomerFilter">
+        <AntiforgeryToken />
+        <div>
+            <label>Field:</label>
+            <InputSelect @bind-value="Model!.Name" name="field-name">
+                @foreach (FilterElement item in controlNames)
+                {
+                    <option value="@item.Name" selected="@(item.IsSelected)">@item.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <div>
+            <label>Value:</label>
+            <InputText id="title" @bind-Value="Model!.Value" name="search-value" />
+        </div>
+        <div class="submit-button">
+            <button class="btn btn-primary btn-sm" type="submit">Search</button>
+        </div>
+    </form>
+    @* </EditForm> *@
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private FilterElement? Model { get; set; } = new FilterElement();
+
+    [Parameter]
+    public required string BaseUrl { get; set; } = "";
+
+    [Parameter]
+    public string? FilterName { get; set; }
+
+    [Parameter]
+    public string? FilterValue { get; set; }
+
+    string className = typeof(T).Name;
+
+#pragma warning disable CS8618
+    private List<FilterElement> controlNames;
+#pragma warning restore CS8618
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        GetControlNames();
+    }
+
+    private void GetControlNames()
+    {
+        PropertyInfo[] myPropertyInfo = typeof(T).GetProperties();
+        controlNames = new List<FilterElement>();
+        for (int i = 0; i < myPropertyInfo.Length; i++)
+        {
+            var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
+            if (propertyAttributes.Length > 0)
+            {
+                var item = new FilterElement(myPropertyInfo[i].Name);
+                if (!String.IsNullOrEmpty(FilterName) && item.Name == FilterName)
+                {
+                    item.IsSelected = true;
+                    item.Value = FilterValue ?? "";
+                    Model = (FilterElement)item.Clone();
+                }
+                controlNames.Add(item);
+            }
+        }
+    }
+
+    // private void Submit()
+    // {
+    //     int i = 1;
+    // }
+}

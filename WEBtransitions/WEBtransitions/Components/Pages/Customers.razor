@@ -12,14 +12,17 @@
     <list type="bullet">
         <item>Sort definition when <code>action == 'sort'</<code></item>
         <item>Page size when <code>action == 'page'</<code> </item>
+        <item>Word search when <code>action == 'page'</<code> </item>
     </list>
 *@
 
 @using System.Globalization
 @using System.Reflection
 @using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Data.Sqlite
 @using Microsoft.EntityFrameworkCore
 @using System.Diagnostics
+@using System.Text
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
@@ -90,12 +93,15 @@ else
     <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() PageNumber=@currentPage.PageNumber
     PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage"/>
 
+    <FilterControl T="Customer" BaseUrl="Customers" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+
 }
 
 @code {
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country" };
     public List<string>? SortParameter;
+    private string? ConnectionString = null;
 
     /// <summary>
     /// Current page
@@ -130,7 +136,7 @@ else
     /// <summary>
     /// Sort definition
     /// </summary>
-    internal string? SortDefinition { get; set; } = null;   // ??
+    // internal string? SortDefinition { get; set; } = null;   // ??
 
     private int pageNumber;
     private int defaultPageSize;
@@ -141,6 +147,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         //        await Task.Delay(1000);  // Test for stream rendering
+        ConnectionString = Configuration.GetConnectionString("DefaultConnection");
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
@@ -177,29 +184,17 @@ else
         {
             if (Action == "sort")
             {
-                SortDefinition = Argument;  // ??
+                //                SortDefinition = Argument;  // ??
                 Tuple<string?, string> newSort = SetSort(Argument, true);
                 this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }
             else if (Action == "page")
             {
-                int pageSize;
-                if (int.TryParse(Argument, out pageSize))
-                {
-                    this.PageSize = pageSize;
-                }
-                var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-                if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
-                {
-                    this.PageNumber = Convert.ToInt32(_initialCount);
-                }
-                if (this.currentState.PagerState == null)
-                {
-                    this.currentState.PagerState = new PgPostData("PagerNavigate", this.buttonCount);
-                }
-                this.currentState.PagerState.PageNumber = this.PageNumber ?? 1;
-                this.currentState.PagerState.PageSize = this.PageSize ?? this.defaultPageSize;
-                this.currentState.PagerState.BaseUrl = "Customers/page";
+                PreparePaging();
+            }
+            else if (Action == "filter")
+            {
+                PrepareFiltering();
             }
         }
 
@@ -208,12 +203,135 @@ else
             this.Action = "page";
         }
 
-        await ProcessCurrentPage();
+        string query = PrepareSQL(this.currentState);   // Sort and Filtering are ready.
+#pragma warning disable CS8604
+
+        using (SqliteConnection conn = new SqliteConnection(ConnectionString))
+        {
+            conn.Open();
+            PreparePageValues(conn, query, this.currentState.PagerState);
+            ProcessCurrentPage();
+
+            using (SqliteCommand readCommand = new SqliteCommand(query, conn))
+            using (SqliteDataReader rdr = readCommand.ExecuteReader())
+            {
+                var allCustomers = Customer.LoadFromDB(rdr)
+                                    .Skip((this.currentState.PagerState.PageNumber - 1) * this.currentState.PagerState.PageSize)
+                                    .Take(this.currentState.PagerState.PageSize)
+                                    .ToArray();
+                currentPage = new PgResponse<Customer>()
+                {
+                    TotalRecords = this.currentState.PagerState.RowCount,
+                    TotalPages = this.currentState.PagerState.PageCount,
+                    PageSize = this.currentState.PagerState.PageSize,
+                    PageNumber = this.currentState.PagerState.PageNumber,
+                    Items = allCustomers
+                };
+            }
+            conn.Close();
+        }
+
+
+#pragma warning restore CS8604
+
+//        await ProcessCurrentPage();
         state.SetState(this.currentState);
     }
 
+    private void PreparePageValues(SqliteConnection conn, string query, PgPostData pagerData)
+    {
+        using (SqliteCommand command = new SqliteCommand(query.Replace("*", "COUNT(1)"), conn))
+        {
+            var rowCountObject = command.ExecuteScalar();
+            long rowCont = (long)(rowCountObject == null ? 0L : rowCountObject);
+            pagerData.RowCount = (int)rowCont;
+
+            int pgCount = pagerData.RowCount / pagerData.PageSize;
+            if (pagerData.RowCount % pagerData.PageSize > 0)
+            {
+                pgCount += 1;
+            }
+            pagerData.PageCount = pgCount;
+
+            if (pagerData.PageNumber * pagerData.PageSize >= rowCont)
+            {
+                pagerData.PageNumber = 1;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Builds SQL statement
+    /// </summary>
+    /// <param name="currentState">Current state</param>
+    /// <returns>SQL query without paging</returns>
+    private string PrepareSQL(StateForComponent currentState)
+    {
+        Debug.Assert(currentState != null);
+        StringBuilder bld = new StringBuilder("SELECT * FROM Customers ");
+        if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
+        {
+            bld.AppendLine($"WHERE {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
+        }
+        if (!String.IsNullOrEmpty(currentState.SortState) && !currentState.SortState.StartsWith("n"))
+        {
+            Tuple<string?, string> sortDefinition = SetSort(currentState.SortState, false);
+            string sortSuffic = sortDefinition.Item1 == "a" ? "ASC" : "DESC";
+            bld.AppendLine($"ORDER BY {sortDefinition.Item2} {sortSuffic} ");
+        }
+
+        return bld.ToString();
+    }
+
+    /// <summary>
+    /// Set values in the <code>this.currentState.FilterState</code>
+    /// </summary>
+    private void PrepareFiltering()
+    {
+        Debug.Assert(this.currentState != null);
+        string fieldName = string.Empty;
+        string searchValue = string.Empty;
+
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("field-name", out var _fieldName))
+        {
+            fieldName = Convert.ToString(_fieldName);
+        }
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("search-value", out var _searchValue))
+        {
+            searchValue = Convert.ToString(_searchValue);
+        }
+        this.currentState.FilterState = Tuple.Create(fieldName, searchValue);
+    }
+
+    /// <summary>
+    /// Set values in the <code>this.currentState.PagerState</code>
+    /// </summary>
+    private void PreparePaging()
+    {
+        Debug.Assert(this.currentState != null);
+        int pageSize;
+
+        if (int.TryParse(Argument, out pageSize))
+        {
+            this.PageSize = pageSize;
+        }
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+        {
+            this.PageNumber = Convert.ToInt32(_initialCount);
+        }
+        if (this.currentState.PagerState == null)
+        {
+            this.currentState.PagerState = new PgPostData("PagerNavigate", this.buttonCount);
+        }
+        this.currentState.PagerState.PageNumber = this.PageNumber ?? 1;
+        this.currentState.PagerState.PageSize = this.PageSize ?? this.defaultPageSize;
+        this.currentState.PagerState.BaseUrl = "Customers/page";
+    }
+
     // private async Task ProcessCurrentPage(string? sortDefitionOriginal = null)
-    private async Task ProcessCurrentPage()
+    private void ProcessCurrentPage()
     {
         Debug.Assert(this.currentState != null);
         Tuple<string?, string> sortDefinition = SetSort(this.currentState.SortState, false);
@@ -232,7 +350,7 @@ else
                 }
             }
         }
-
+/*
 #pragma warning disable CS8602
         if (!this.PageNumber.HasValue && this.currentState.PagerState != null)
         {
@@ -253,6 +371,7 @@ else
         }
         this.currentState.PagerState.PageCount = currentPage.TotalPages;
 #pragma warning restore CS8602
+*/
     }
 
     /// <summary>

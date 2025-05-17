@@ -13,6 +13,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
         /// </summary>
         public string? Id { get; set; }
         public int MaxButtons { get; set; }
+        public int RowCount { get; set; }
         public int PageCount { get; set; }
         public int PageNumber { get; set; }
         public string PageNumberStr {
@@ -31,10 +32,11 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
         public int PageSize { get; set; }
         public string? BaseUrl { get; set; }
 
-        public PgPostData(string? id, int maxButtons = 0, int pageCount = 0, int pageNumber = 0, int pageSize = 0, string? baseUrl = "")
+        public PgPostData(string? id, int maxButtons = 0, int rowCount = 0, int pageCount = 0, int pageNumber = 0, int pageSize = 0, string? baseUrl = "")
         {
             Id = id;
             MaxButtons = maxButtons;
+            RowCount = rowCount;
             PageCount = pageCount;
             PageNumber = pageNumber;
             PageSize = pageSize;
@@ -43,7 +45,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
 
         public object Clone()
         {
-            return new PgPostData(this.Id, this.MaxButtons, this.PageCount, this.PageNumber, this.PageSize, this.BaseUrl);
+            return new PgPostData(this.Id, this.MaxButtons, this.RowCount, this.PageCount, this.PageNumber, this.PageSize, this.BaseUrl);
         }
     }
 }
