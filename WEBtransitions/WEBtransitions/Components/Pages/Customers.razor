@@ -76,7 +76,7 @@ else
 
             @foreach (var cust in currentPage.Items)
             {
-                <tr>
+                <tr @key=cust.CustomerId>
                     <td>@cust.CompanyName</td>
                     <td>@cust.ContactName</td>
                     <td>@cust.ContactTitle</td>

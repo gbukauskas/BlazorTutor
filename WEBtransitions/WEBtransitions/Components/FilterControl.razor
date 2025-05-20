@@ -4,11 +4,12 @@
 
 <div class="filter" name="custom-filter">
     <span class="border-text">Filter</span>
-@*     <EditForm method="GET" action="/@BaseUrl/@Model!.TargetUrl/" Model="Model" FormName="CustomerFilter"> *@
     <form method="GET" action="/@BaseUrl/filter/search/" @formname="CustomerFilter">
         <AntiforgeryToken />
-        <div>
+        <div class=".item11">
             <label>Field:</label>
+        </div>
+        <div class="item12">
             <InputSelect @bind-value="Model!.Name" name="field-name">
                 @foreach (FilterElement item in controlNames)
                 {
@@ -16,15 +17,20 @@
                 }
             </InputSelect>
         </div>
-        <div>
+
+        <div class="item21">
             <label>Value:</label>
+        </div>
+        <div class="item22">
             <InputText id="title" @bind-Value="Model!.Value" name="search-value" />
         </div>
-        <div class="submit-button">
-            <button class="btn btn-primary btn-sm" type="submit">Search</button>
+
+        <div class="submit-button item13">
+            <button class="btn btn-sm" type="submit">
+                <img src="/Images/icons8-search-50.png" alt="Search" width="50" height="50" title="Apply filter" />
+            </button>
         </div>
     </form>
-    @* </EditForm> *@
 </div>
 
 @code {

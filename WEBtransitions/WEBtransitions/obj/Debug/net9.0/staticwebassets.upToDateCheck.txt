@@ -45,6 +45,8 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\c
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
 wwwroot\app.css
 wwwroot\favicon.png
+wwwroot\Images\icons8-search-50.png
+wwwroot\Images\Search.png
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap.min.css

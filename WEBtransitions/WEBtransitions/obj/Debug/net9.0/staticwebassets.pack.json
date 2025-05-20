@@ -2,7 +2,15 @@
   "Files": [
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css",
-      "PackagePath": "staticwebassets\\WEBtransitions.vsz5177qaw.bundle.scp.css"
+      "PackagePath": "staticwebassets\\WEBtransitions.mflgcq55l1.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Search.png",
+      "PackagePath": "staticwebassets\\Images\\Search.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\icons8-search-50.png",
+      "PackagePath": "staticwebassets\\Images\\icons8-search-50.png"
     },
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\app.css",
