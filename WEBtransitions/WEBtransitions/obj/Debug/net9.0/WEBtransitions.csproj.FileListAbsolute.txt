@@ -188,6 +188,7 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransiti
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.csproj.CoreCompileInputs.cache
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.MvcApplicationPartsAssemblyInfo.cache
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.sourcelink.json
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\CrudLinks\CrudLinksControl.razor.rz.scp.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\FilterControl.razor.rz.scp.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\Layout\MainLayout.razor.rz.scp.css
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
@@ -241,8 +242,8 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\bq1nvj01v5-h1s4sie4z3.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\jhfdvixxl4-63fj8s7r0e.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\j0ekhluxzc-0j3bgjxly4.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-mflgcq55l1.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-mflgcq55l1.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-wahbo581r9.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-wahbo581r9.gz
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.build.json
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.development.json
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\staticwebassets.build.endpoints.json

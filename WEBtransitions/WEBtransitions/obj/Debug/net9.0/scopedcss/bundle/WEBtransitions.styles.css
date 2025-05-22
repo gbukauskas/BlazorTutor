@@ -1,3 +1,16 @@
+/* _content/WEBtransitions/Components/CrudLinks/CrudLinksControl.razor.rz.scp.css */
+.control-collection[b-53a3wt0emq] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: flex-start;
+    gap: 10px;
+}
+
+.control-collection > a[b-53a3wt0emq] {
+    flex: none;
+}
 /* _content/WEBtransitions/Components/FilterControl.razor.rz.scp.css */
 div.filter[b-3a6u69bmzo] {
     float: right;

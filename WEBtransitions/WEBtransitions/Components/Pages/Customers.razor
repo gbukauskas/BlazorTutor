@@ -70,6 +70,7 @@ else
                 <th name="Country" data-sort="@SortParameter[7].Substring(0, 1)">
                     <a href="/Customers/sort/@SortParameter[7]">Country</a>
                 </th>
+                <th>Command</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +86,9 @@ else
                     <td>@cust.Region</td>
                     <td>@cust.PostalCode</td>
                     <td>@cust.Country</td>
+                    <td>
+                        <WEBtransitions.Components.CrudLinks.CrudLinksControl></WEBtransitions.Components.CrudLinks.CrudLinksControl>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -138,7 +142,7 @@ else
     /// </summary>
     // internal string? SortDefinition { get; set; } = null;   // ??
 
-    private int pageNumber;
+    //    private int pageNumber;
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
@@ -185,7 +189,7 @@ else
             if (Action == "sort")
             {
                 //                SortDefinition = Argument;  // ??
-                Tuple<string?, string> newSort = SetSort(Argument, true);
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
                 this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }
             else if (Action == "page")
@@ -202,85 +206,12 @@ else
         {
             this.Action = "page";
         }
+        ProcessCurrentPage();
 
-        string query = PrepareSQL(this.currentState);   // Sort and Filtering are ready.
-#pragma warning disable CS8604
+        Debug.Assert(!String.IsNullOrEmpty(this.ConnectionString));
+        currentPage = dbSVC.GetCurrentPage_ADO(this.currentState, this.ConnectionString);
 
-        using (SqliteConnection conn = new SqliteConnection(ConnectionString))
-        {
-            conn.Open();
-            PreparePageValues(conn, query, this.currentState.PagerState);
-            ProcessCurrentPage();
-
-            using (SqliteCommand readCommand = new SqliteCommand(query, conn))
-            using (SqliteDataReader rdr = readCommand.ExecuteReader())
-            {
-                var allCustomers = Customer.LoadFromDB(rdr)
-                                    .Skip((this.currentState.PagerState.PageNumber - 1) * this.currentState.PagerState.PageSize)
-                                    .Take(this.currentState.PagerState.PageSize)
-                                    .ToArray();
-                currentPage = new PgResponse<Customer>()
-                {
-                    TotalRecords = this.currentState.PagerState.RowCount,
-                    TotalPages = this.currentState.PagerState.PageCount,
-                    PageSize = this.currentState.PagerState.PageSize,
-                    PageNumber = this.currentState.PagerState.PageNumber,
-                    Items = allCustomers
-                };
-            }
-            conn.Close();
-        }
-
-
-#pragma warning restore CS8604
-
-//        await ProcessCurrentPage();
         state.SetState(this.currentState);
-    }
-
-    private void PreparePageValues(SqliteConnection conn, string query, PgPostData pagerData)
-    {
-        using (SqliteCommand command = new SqliteCommand(query.Replace("*", "COUNT(1)"), conn))
-        {
-            var rowCountObject = command.ExecuteScalar();
-            long rowCont = (long)(rowCountObject == null ? 0L : rowCountObject);
-            pagerData.RowCount = (int)rowCont;
-
-            int pgCount = pagerData.RowCount / pagerData.PageSize;
-            if (pagerData.RowCount % pagerData.PageSize > 0)
-            {
-                pgCount += 1;
-            }
-            pagerData.PageCount = pgCount;
-
-            if (pagerData.PageNumber * pagerData.PageSize >= rowCont)
-            {
-                pagerData.PageNumber = 1;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Builds SQL statement
-    /// </summary>
-    /// <param name="currentState">Current state</param>
-    /// <returns>SQL query without paging</returns>
-    private string PrepareSQL(StateForComponent currentState)
-    {
-        Debug.Assert(currentState != null);
-        StringBuilder bld = new StringBuilder("SELECT * FROM Customers ");
-        if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
-        {
-            bld.AppendLine($"WHERE {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
-        }
-        if (!String.IsNullOrEmpty(currentState.SortState) && !currentState.SortState.StartsWith("n"))
-        {
-            Tuple<string?, string> sortDefinition = SetSort(currentState.SortState, false);
-            string sortSuffic = sortDefinition.Item1 == "a" ? "ASC" : "DESC";
-            bld.AppendLine($"ORDER BY {sortDefinition.Item2} {sortSuffic} ");
-        }
-
-        return bld.ToString();
     }
 
     /// <summary>
@@ -330,11 +261,13 @@ else
         this.currentState.PagerState.BaseUrl = "Customers/page";
     }
 
-    // private async Task ProcessCurrentPage(string? sortDefitionOriginal = null)
+    /// <summary>
+    /// Fills list SortParameter with correct values for every field
+    /// </summary>
     private void ProcessCurrentPage()
     {
         Debug.Assert(this.currentState != null);
-        Tuple<string?, string> sortDefinition = SetSort(this.currentState.SortState, false);
+        Tuple<string?, string> sortDefinition = dbSVC.SetSort(this.currentState.SortState, false);
         if (!String.IsNullOrEmpty(sortDefinition.Item1))
         {
             SortParameter = new List<string>();
@@ -350,92 +283,5 @@ else
                 }
             }
         }
-/*
-#pragma warning disable CS8602
-        if (!this.PageNumber.HasValue && this.currentState.PagerState != null)
-        {
-            this.PageNumber = this.currentState.PagerState.PageNumber;
-        }
-        this.pageNumber = this.PageNumber ?? 1;
-
-        var tmp = dbSVC.GetAllEntities();
-        if (sortDefinition.Item1 != null && (sortDefinition.Item1 == "a" || sortDefinition.Item1 == "d"))
-        {
-            IEnumerable<Customer>? tmpList = SortThePage(sortDefinition, tmp);
-            this.currentState.SortState = $"{sortDefinition.Item1}_{sortDefinition.Item2}";
-            currentPage = await dbSVC.GetPageAsync(tmpList, this.currentState.PagerState.PageSize, this.currentState.PagerState.PageNumber);
-        }
-        else
-        {
-            currentPage = await dbSVC.GetPageAsync(tmp, this.currentState.PagerState.PageSize, this.currentState.PagerState.PageNumber);
-        }
-        this.currentState.PagerState.PageCount = currentPage.TotalPages;
-#pragma warning restore CS8602
-*/
     }
-
-    /// <summary>
-    /// <list type="number">
-    ///     <item>sortDefinionOriginal is null or empty - no sort</item>
-    ///     <item>sortDefinionOriginal starts with "n" - no sort</item>
-    ///     <item>sortDefinionOriginal starts with "a" - sort ascending; name of sorting field starts from SortName[2]</item>
-    ///     <item>sortDefinionOriginal starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
-    /// </list>
-    /// </summary>
-    private Tuple<string?, string> SetSort(string? sortParameter, bool setNextState)
-    {
-        string sortDirection;
-        if (String.IsNullOrEmpty(sortParameter))
-        {
-            return new Tuple<string?, string>(null, "");
-        }
-
-        if (setNextState)
-        {
-            switch (sortParameter.Substring(0, 1))
-            {
-                case "n":
-                    sortDirection = "a";
-                    break;
-                case "a":
-                    sortDirection = "d";
-                    break;
-                default:
-                    sortDirection = "n";
-                    break;
-            }
-        }
-        else
-        {
-            sortDirection = sortParameter.Substring(0, 1);
-        }
-        string sortName = sortParameter.Substring(2);
-        return new Tuple<string?, string>(sortDirection, sortName);
-    }
-
-    private IEnumerable<Customer>? SortThePage(Tuple<string?, string> sortDefinition, IQueryable<Customer>? tmp)
-    {
-        if (String.IsNullOrEmpty(sortDefinition.Item1) || tmp == null)
-        {
-            return tmp;
-        }
-        Debug.Assert(sortDefinition.Item1 != null && (sortDefinition.Item1 == "a" || sortDefinition.Item1 == "d"));
-
-        // a --> ascending, d --> descending
-#pragma warning disable CS8600
-        PropertyInfo propInfo = typeof(Customer).GetProperty(sortDefinition.Item2, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-#pragma warning restore CS8600
-        if (propInfo == null)
-        {
-            return tmp.AsEnumerable();    // Invalid name of the field: no sorting
-        }
-        else
-        {
-            IEnumerable<Customer> tmpList = tmp.AsEnumerable();
-            return sortDefinition.Item1.StartsWith("a")
-                        ? tmpList.OrderBy(e => propInfo.GetValue(e))
-                        : tmpList.OrderByDescending(e => propInfo.GetValue(e));
-        }
-    }
-
 }

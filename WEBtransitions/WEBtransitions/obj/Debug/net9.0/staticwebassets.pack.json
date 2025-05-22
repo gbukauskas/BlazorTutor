@@ -2,7 +2,31 @@
   "Files": [
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\WEBtransitions.bundle.scp.css",
-      "PackagePath": "staticwebassets\\WEBtransitions.mflgcq55l1.bundle.scp.css"
+      "PackagePath": "staticwebassets\\WEBtransitions.wahbo581r9.bundle.scp.css"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Delete.png",
+      "PackagePath": "staticwebassets\\Images\\Delete.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Delete_32.png",
+      "PackagePath": "staticwebassets\\Images\\Delete_32.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Edit.png",
+      "PackagePath": "staticwebassets\\Images\\Edit.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Edit_32.png",
+      "PackagePath": "staticwebassets\\Images\\Edit_32.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\FormView.png",
+      "PackagePath": "staticwebassets\\Images\\FormView.png"
+    },
+    {
+      "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\FormView_1.png",
+      "PackagePath": "staticwebassets\\Images\\FormView_1.png"
     },
     {
       "Id": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\wwwroot\\Images\\Search.png",

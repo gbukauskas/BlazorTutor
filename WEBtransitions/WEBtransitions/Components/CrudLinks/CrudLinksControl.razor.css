@@ -1,0 +1,12 @@
+﻿.control-collection {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: flex-start;
+    gap: 10px;
+}
+
+.control-collection > a {
+    flex: none;
+}
