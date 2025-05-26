@@ -48,7 +48,7 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Employee> GetEntityByIdAsync(NorthwindContext ctx, string id)
+        public Task<Employee?> GetEntityByIdAsync(string id, NorthwindContext? ctxNew = null)
         {
             throw new NotImplementedException();
         }

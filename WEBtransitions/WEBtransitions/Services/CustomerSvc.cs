@@ -243,9 +243,31 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Customer> GetEntityByIdAsync(NorthwindContext ctx, string id)
+        /// <summary>
+        /// Returns Customer entity.
+        /// </summary>
+        /// <param name="id">Customer ID</param>
+        /// <param name="ctxNew">Alternative DB context. It allows to call service from another context (Orders for example) </param>
+        /// <returns>Customer or null.</returns>
+        public async Task<Customer?> GetEntityByIdAsync(string id, NorthwindContext? ctxNew = null)
         {
-            throw new NotImplementedException();
+            Debug.Assert(factory != null);
+
+            Customer? rzlt = null;
+            NorthwindContext _localCtx ;
+            if (ctxNew != null)
+            {
+                _localCtx = ctxNew;
+            } 
+            else
+            {
+                if(this.ctx == null)
+                {
+                    this.ctx = factory.CreateDbContext();
+                }
+                _localCtx = this.ctx;
+            }
+            return await _localCtx.Customers.Where(x => x.CustomerId == id && x.IsDeleted == 0).FirstOrDefaultAsync();
         }
 
         public Task<Customer> UpdateEntity(NorthwindContext ctx, Customer entity)

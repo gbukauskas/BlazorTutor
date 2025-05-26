@@ -16,6 +16,10 @@ public partial class OrderDetail
 
     public double Discount { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual Order Order { get; set; } = null!;
 
     public virtual Product Product { get; set; } = null!;
@@ -32,6 +36,9 @@ public partial class OrderDetail
             entity.Property(e => e.UnitPrice).HasColumnType("NUMERIC");
             entity.Property(e => e.Quantity).HasDefaultValue(1).HasColumnType("INTEGER");
             entity.Property(e => e.Discount).HasColumnType("REAL");
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId).HasConstraintName("FK_Order_Details_Orders")

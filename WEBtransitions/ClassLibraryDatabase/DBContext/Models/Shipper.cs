@@ -12,6 +12,10 @@ public partial class Shipper
 
     public string? Phone { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     internal static void Configure(ModelBuilder modelBuilder)
@@ -25,6 +29,9 @@ public partial class Shipper
             entity.Property(e => e.ShipperId).HasColumnName("ShipperID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
             entity.Property(e => e.CompanyName).IsRequired().HasColumnType("TEXT").HasMaxLength(40);
             entity.Property(e => e.Phone).HasColumnType("TEXT").HasMaxLength(24);
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
         });
     }
 }

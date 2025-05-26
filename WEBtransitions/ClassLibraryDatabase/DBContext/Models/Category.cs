@@ -14,6 +14,10 @@ public partial class Category
 
     public byte[]? Picture { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     static internal void Configure(ModelBuilder modelBuilder)
     {
@@ -26,9 +30,11 @@ public partial class Category
 
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID").ValueGeneratedOnAdd();
             entity.Property(e => e.CategoryName).IsRequired().HasColumnType("TEXT").HasMaxLength(15);
-
             entity.Property(e => e.Description).HasColumnType("TEXT").HasColumnType("TEXT");
             entity.Property(e => e.Picture).HasColumnType("BLOB");
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
         });
     }
 }

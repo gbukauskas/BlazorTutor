@@ -24,6 +24,8 @@
 @using System.Diagnostics
 @using System.Text
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
+@using WEBtransitions.Components.CrudLinks
+
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
 
@@ -87,7 +89,7 @@ else
                     <td>@cust.PostalCode</td>
                     <td>@cust.Country</td>
                     <td>
-                        <WEBtransitions.Components.CrudLinks.CrudLinksControl></WEBtransitions.Components.CrudLinks.CrudLinksControl>
+                        <CrudLinksControl url="EditCustomer" id="@cust.CustomerId"></CrudLinksControl>
                     </td>
                 </tr>
             }
@@ -108,7 +110,7 @@ else
     private string? ConnectionString = null;
 
     /// <summary>
-    /// Current page
+    /// Action in the current page: read comments at beginnig of the file
     /// </summary>
     [Parameter]
     public string? Action { get; set; } = null;

@@ -1,15 +1,27 @@
 ﻿<div class="control-collection">
-    <a href="#">
+    <a href="@Url/view/@Id">
         <img src="Images/FormView.png" alt="Form view" width="16" height="16" title="View details"/>
     </a>
-    <a href="#">
+    <a href="@Url/edit/@Id">
         <img src="Images/Edit.png" alt="Form view" width="16" height="16" title="Edit"/>
     </a>
-    <a href="#">
+    <a href="@Url/delete/@Id">
         <img src="Images/Delete.png" alt="Form view" width="16" height="16" title="Delete"/>
     </a>
 </div>
 
 @code {
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public required string Url { get; set; }
+
+    /// <summary>
+    /// Customer ID
+    /// </summary>
+    [Parameter]
+    public required string Id { get; set; }
 
 }

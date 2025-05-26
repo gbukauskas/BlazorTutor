@@ -34,7 +34,9 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 //builder.Services.Configure<AppSettings>(
 //    builder.Configuration.GetSection(nameof(AppSettings)));
 
-builder.Services.AddSingleton<IDatabaseSvc<Employee, string>, EmployeeSvc>();
+builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
+//builder.Services.AddScoped<IDatabaseSvc<Customer, string>, CustomerSvc>();
+
 builder.Services.AddScoped<CustomerSvc>();
 builder.Services.AddSingleton<IStateData, StateData>();
 

@@ -12,6 +12,10 @@ public partial class Territory
 
     public int RegionId { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual Region Region { get; set; } = null!;
 
     /// <summary>
@@ -30,6 +34,9 @@ public partial class Territory
             entity.Property(e => e.TerritoryId).HasColumnName("TerritoryID").HasColumnType("TEXT").HasMaxLength(20);
             entity.Property(e => e.TerritoryDescription).HasColumnType("TEXT").HasMaxLength(50);
             entity.Property(e => e.RegionId).HasColumnName("RegionID").HasColumnType("INTEGER");
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             entity.HasOne(d => d.Region).WithMany(p => p.Territories)
                 .HasForeignKey(d => d.RegionId)

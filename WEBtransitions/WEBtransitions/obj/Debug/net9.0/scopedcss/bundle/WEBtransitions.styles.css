@@ -356,6 +356,30 @@ table > caption[b-cdadiud3w0] {
     font-weight: bold;
     text-align: center;
 }
+/* _content/WEBtransitions/Components/Pages/EditCustomer.razor.rz.scp.css */
+label.left-column[b-uy771iricy] {
+    width: 10em;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+.right-column[b-uy771iricy] {
+    width: 500px;
+}
+
+div.form-group[b-uy771iricy]
+{
+    margin-bottom: 5px;
+}
+
+h2[b-uy771iricy] {
+    display: block;
+    margin-left: 100px;
+}
+
+form[b-uy771iricy] {
+    margin-top: 2ex;
+}
 /* _content/WEBtransitions/Components/Pages/Employees.razor.rz.scp.css */
 
 table.reportTable > thead > tr[b-cl86h9i2cv] {

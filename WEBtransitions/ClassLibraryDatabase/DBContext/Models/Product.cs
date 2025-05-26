@@ -17,6 +17,10 @@ public partial class Product
     public short? ReorderLevel { get; set; }
     public required string Discontinued { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual Category? Category { get; set; }
     public virtual Supplier? Supplier { get; set; }
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
@@ -43,6 +47,9 @@ public partial class Product
             entity.Property(e => e.UnitsOnOrder).HasColumnType("INTEGER");
             entity.Property(e => e.ReorderLevel).HasColumnType("INTEGER");
             entity.Property(e => e.Discontinued).HasDefaultValue("0").HasColumnType("TEXT").HasMaxLength(1);
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products).HasForeignKey(d => d.CategoryId);
             entity.HasOne(d => d.Supplier).WithMany(p => p.Products).HasForeignKey(d => d.SupplierId);

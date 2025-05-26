@@ -34,6 +34,10 @@ public partial class Order
 
     public string? ShipCountry { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual Customer? Customer { get; set; }
     public virtual Employee? Employee { get; set; }
     public virtual Shipper? ShipViaNavigation { get; set; }
@@ -70,6 +74,9 @@ public partial class Order
             entity.Property(e => e.ShipRegion).HasColumnType("TEXT").HasMaxLength(15);
             entity.Property(e => e.ShipPostalCode).HasColumnType("TEXT").HasMaxLength(10);
             entity.Property(e => e.ShipCountry).HasColumnType("TEXT").HasMaxLength(15);
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders).HasForeignKey(d => d.CustomerId).HasConstraintName("FK_Orders_Customers");
             entity.HasOne(d => d.Employee).WithMany(p => p.Orders).HasForeignKey(d => d.EmployeeId).HasConstraintName("FK_Orders_Employees");

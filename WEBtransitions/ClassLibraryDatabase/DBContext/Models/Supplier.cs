@@ -30,6 +30,10 @@ public partial class Supplier
 
     public string? HomePage { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
     internal static void Configure(ModelBuilder modelBuilder)
@@ -54,6 +58,9 @@ public partial class Supplier
             entity.Property(e => e.Phone).HasColumnType("TEXT").HasMaxLength(24);
             entity.Property(e => e.Fax).HasColumnType("TEXT").HasMaxLength(24);
             entity.Property(e => e.HomePage).HasColumnType("TEXT");
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
         });
     }
 }

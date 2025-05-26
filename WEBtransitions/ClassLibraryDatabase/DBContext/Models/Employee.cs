@@ -42,6 +42,10 @@ public partial class Employee
 
     public string? PhotoPath { get; set; }
 
+    public byte IsDeleted { get; set; }
+
+    public int Version { get; set; }
+
     public virtual ICollection<Employee> InverseReportsToNavigation { get; set; } = new List<Employee>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
@@ -79,6 +83,9 @@ public partial class Employee
             entity.Property(e => e.Notes).HasColumnType("TEXT");
             entity.Property(e => e.ReportsTo).HasColumnType("INTEGER");
             entity.Property(e => e.PhotoPath).HasMaxLength(255).HasColumnType("TEXT");
+
+            entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             entity.HasOne(d => d.ReportsToNavigation).WithMany(p => p.InverseReportsToNavigation).HasForeignKey(d => d.ReportsTo);
 

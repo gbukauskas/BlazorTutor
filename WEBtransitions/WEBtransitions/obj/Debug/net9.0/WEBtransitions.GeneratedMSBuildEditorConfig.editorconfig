@@ -32,6 +32,10 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Component.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb21wb25lbnQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -83,6 +87,10 @@ build_metadata.AdditionalFiles.CssScope = b-zclfvl0kf0
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Customers.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDdXN0b21lcnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-cdadiud3w0
+
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/EditCustomer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFZGl0Q3VzdG9tZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-uy771iricy
 
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Employees.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFbXBsb3llZXMucmF6b3I=
