@@ -14,10 +14,10 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
 public partial class Customer
 {
-    public required string CustomerId { get; set; }
+    public string CustomerId { get; set; } = String.Empty;
 
     [AllowFiltering]
-    public required string CompanyName { get; set; }
+    public string CompanyName { get; set; } = String.Empty;
 
     [AllowFiltering]
     public string? ContactName { get; set; }

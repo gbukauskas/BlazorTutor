@@ -1,4 +1,5 @@
 ﻿@page "/Customers/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @*
   Parameter action defines type of parameters:
@@ -48,7 +49,7 @@ else
         <caption>Customers</caption>
         <thead>
             <tr>
-                <th name="CompanyName" data-sort="@SortParameter[0].Substring(0, 1)">
+                <th name="CompanyName" data-sort="@SortParameter![0].Substring(0, 1)">
                     <a href="/Customers/sort/@SortParameter[0]">Company name</a>
                 </th>
                 <th name="ContactName" data-sort="@SortParameter[1].Substring(0, 1)">
@@ -89,7 +90,12 @@ else
                     <td>@cust.PostalCode</td>
                     <td>@cust.Country</td>
                     <td>
-                        <CrudLinksControl url="EditCustomer" id="@cust.CustomerId"></CrudLinksControl>
+@* 
+                       <buton class="btn btn-primary btn-sm" @onclick="()=>EditCustomer(cust.CustomerId)">
+                            <img src="Images/Edit.png" alt="Form view" width="16" height="16" title="Edit" />
+                       </buton>
+ *@
+                        <CrudLinksControl Url="/EditCustomer" Id="@cust.CustomerId" />
                     </td>
                 </tr>
             }
@@ -286,4 +292,9 @@ else
             }
         }
     }
+
+    // private void EditCustomer(string id)
+    // {
+    //     NavManager.NavigateTo($"/EditCustomer/edit/{id}");
+    // }
 }

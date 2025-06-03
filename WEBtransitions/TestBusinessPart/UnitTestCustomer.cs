@@ -24,7 +24,7 @@ namespace TestBusinessPart
         public async Task Test1()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new CustomerSvc(null) { ctx = ctxTest };
+            var svc = new CustomerSvc(null) { Ctx = ctxTest };
             var allRecords = await svc.GetAllEntities().ToListAsync();
             Assert.Equal(93, allRecords.Count());
         }
@@ -36,7 +36,7 @@ namespace TestBusinessPart
         public async Task Test2()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new CustomerSvc(null) { ctx = ctxTest };
+            var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
             var page = await svc.GetPageAsync(tmp, 10, 2);
@@ -54,7 +54,7 @@ namespace TestBusinessPart
         public async Task Test3()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new CustomerSvc(null) { ctx = ctxTest };
+            var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
             var page = await svc.GetPageAsync(tmp, 0, -1);
@@ -70,7 +70,7 @@ namespace TestBusinessPart
         public async Task Test4()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new CustomerSvc(null) { ctx = ctxTest };
+            var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities().OrderByDescending(x => x.CustomerId);
             var page = await svc.GetPageAsync(tmp, 10, 110);

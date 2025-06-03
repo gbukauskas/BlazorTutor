@@ -1,0 +1,128 @@
+﻿@page "/EditCustomer/{action}/{argument?}"
+@namespace WEBtransitions
+@using System.Diagnostics
+@using Microsoft.EntityFrameworkCore
+@using WEBtransitions.Services
+@using WEBtransitions.Services.Interfaces
+
+@inject CustomerSvc dbSVCustomer
+@inject IDatabaseSvc<Region, string> dbSVRegion
+
+@*
+  Parameter <code>action</code> defines type of the screen:
+    <list type="bullet">
+        <item><code>edit</code> - Edit customer</item>
+        <item><code>view</code> - View details of the customer</item>
+        <item><code>new</code> - create new customer</item>
+        <item><code>delete<code> - confirm delete operation</item>
+    </list>
+  Parameter <code>argument</code> contains id of the customer. Parameter is optional for the <code>new</code> action.
+*@
+
+
+<h2>@Model.CustomerId - @Model.CompanyName </h2>
+
+<form method="post" @onsubmit="Submit" @formname="EditCustomer_2">
+    <AntiforgeryToken />
+
+    <div class="form-group">
+        <label class="left-column" for="company-name">Company name</label>
+        <InputText name="company-name" @bind-Value=Model.CompanyName style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="contact-name">Contact name</label>
+        <InputText name="contact-name" @bind-Value=Model.ContactName style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="contact-title">Contact title</label>
+        <InputText name="contact-title" @bind-Value=Model.ContactTitle style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="address">Address</label>
+        <InputText name="address" @bind-Value=Model.Address style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="city">City</label>
+        <InputText name="city" @bind-Value=Model.City style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="region">Region</label>
+        <Autocomplete name="region" @bind-value=Model.Region style="width: 500px; display: inline-block;">
+            @foreach (var item in allRegions)
+            {
+                <option value=@item />
+            }
+        </Autocomplete>
+
+@*            https://www.codeproject.com/Articles/5300708/Building-a-DataList-Control-in-Blazor
+            https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist
+*@
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="postal-code">Postal code</label>
+        <InputText name="postal-code" @bind-Value=Model.PostalCode style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="country">Country</label>
+        <InputText name="country" @bind-Value=Model.Country style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="phone">Phone number</label>
+        <InputText name="phone" @bind-Value=Model.Phone style="width: 500px;"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="fax">Fax number</label>
+        <InputText name="fax" @bind-Value=Model.Fax style="width: 500px;"></InputText>
+    </div>
+</form>
+
+@if (!String.IsNullOrEmpty(ErrorMessage))
+{
+    <h3>@ErrorMessage</h3>
+
+}
+
+@code {
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    ///Customer ID
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    public required Customer Model;
+
+    public string ErrorMessage = "";
+
+    public required string[] allRegions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        this.allRegions = await dbSVRegion.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Debug.Assert(!String.IsNullOrEmpty(Argument));
+        Customer? customer = await dbSVCustomer.GetEntityByIdAsync(Argument);
+        if (customer == null)
+        {
+            this.ErrorMessage = $"Customer {Argument} was not found.";
+            return;
+        }
+        this.Model = customer;
+    }
+
+    public void Submit()
+    {
+        int i = 0;
+    }
+
+    // https://blazor-university.com/forms/
+}

@@ -14,7 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Components\Pages\EditCustomer - Copy.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Components\CustomPager.razor~RF523887d4.TMP" />
+    <None Remove="Components\Pages\EditCustomer - Copy.razor.css" />
   </ItemGroup>
 
   <ItemGroup>

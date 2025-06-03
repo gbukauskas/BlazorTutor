@@ -1,0 +1,76 @@
+﻿@namespace WEBtransitions
+@inherits InputBase<string>
+
+
+@* <input type="text" name="@Name" class="@AllClasses" list="@UUID-datalistOptions" style="@Style"/> *@
+<input type="text" name="@Name" class="@AllClasses" list="@UUID-datalistOptions" style="@Style" @bind="BindingValue" />
+
+<datalist id="@UUID-datalistOptions">
+    @ChildContent
+</datalist>
+
+@code {
+    [Parameter]
+    public string? Style { get; set; }
+
+    [Parameter]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Classes for the input element. Separate elements with a space. Optional.  
+    /// </summary>
+    [Parameter]
+    public string? ClassInput { get; set; }
+
+    /// <summary>
+    /// Items for the datalist
+    /// </summary>
+    [Parameter]
+    public required RenderFragment ChildContent { get; set; }
+
+    public required string UUID;
+    public required string AllClasses;
+
+    private string _value = "";
+    public string? BindingValue {
+        get => _value; 
+        set
+        {
+            if (!String.IsNullOrEmpty(value) && _value != value )
+            {
+                ((Customer)EditContext.Model).Region =_value = value;
+            }
+        } 
+    }
+
+    protected override bool TryParseValueFromString(string? value,  out string result, out string validationErrorMessage)
+    {
+        result = value ?? "";
+        if (String.IsNullOrEmpty(value))
+        {
+            validationErrorMessage = $"Empty values are not allowed in the list of available selections.";
+            return false;
+        }
+        validationErrorMessage = String.Empty;
+        return true;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UUID = Guid.NewGuid().ToString();   // TODO: patikrinti, kaip dirba keli kontrolsai
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        AllClasses = $"@(ClassInput??String.Empty)";
+        _value = ((Customer)EditContext.Model).Region ?? "" ;
+    }
+
+    protected void RegionChanged()
+    {
+        var newValue = ((Customer)EditContext.Model).Region;
+        BindingValue = newValue;
+    }
+}

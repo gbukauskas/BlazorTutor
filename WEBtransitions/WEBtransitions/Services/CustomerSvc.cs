@@ -18,7 +18,24 @@ namespace WEBtransitions.Services
         /// </summary>
         public static readonly double DELTA = 0.000001;
 
-        public NorthwindContext? ctx = null;
+        private NorthwindContext? _ctx = null;
+        public NorthwindContext Ctx
+        {
+            get
+            {
+                Debug.Assert(this.factory != null);
+                if (_ctx == null)
+                {
+                    _ctx = factory.CreateDbContext();
+                }
+                return _ctx!;
+            }
+            set
+            {
+                Debug.Assert(value != null);
+                _ctx = value;
+            }
+        }
         private IDbContextFactory<NorthwindContext>? factory = null;
 
         public CustomerSvc(IDbContextFactory<NorthwindContext>? factory)
@@ -28,28 +45,16 @@ namespace WEBtransitions.Services
 
         ~CustomerSvc()
         {
-            if (ctx != null)
+            if (_ctx != null)
             {
-                ctx.Dispose();
-                ctx = null;
+                _ctx.Dispose();
+                _ctx = null;
             }
         }
 
-        public IQueryable<Customer> GetAllEntities(NorthwindContext? ctxNew = null)
+        public IQueryable<Customer> GetAllEntities()
         {
-            if (ctxNew != null)
-            {
-                return ctxNew.Customers;
-            }
-            else if (ctx != null)
-            {
-                return ctx.Customers;
-            }
-            else
-            {
-                this.ctx = factory!.CreateDbContext();
-                return this.ctx.Customers;
-            }
+            return this.Ctx.Customers;
         }
 
         public PgResponse<Customer> GetCurrentPage_ADO(StateForComponent currentState, string connString)
@@ -228,17 +233,17 @@ namespace WEBtransitions.Services
         }
 
 
-        public Task<IEnumerable<Customer>> CreateEntities(NorthwindContext ctx, IEnumerable<Customer> collection)
+        public Task<IEnumerable<Customer>> CreateEntities(IEnumerable<Customer> collection)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Customer> CreateEntity(NorthwindContext ctx, Customer newEntity)
+        public Task<Customer> CreateEntity( Customer newEntity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> DeleteEntityByIdAsync(NorthwindContext ctx, string id)
+        public Task<string> DeleteEntityByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
@@ -249,30 +254,39 @@ namespace WEBtransitions.Services
         /// <param name="id">Customer ID</param>
         /// <param name="ctxNew">Alternative DB context. It allows to call service from another context (Orders for example) </param>
         /// <returns>Customer or null.</returns>
-        public async Task<Customer?> GetEntityByIdAsync(string id, NorthwindContext? ctxNew = null)
+        public async Task<Customer?> GetEntityByIdAsync(string id)
         {
-            Debug.Assert(factory != null);
-
-            Customer? rzlt = null;
-            NorthwindContext _localCtx ;
-            if (ctxNew != null)
-            {
-                _localCtx = ctxNew;
-            } 
-            else
-            {
-                if(this.ctx == null)
-                {
-                    this.ctx = factory.CreateDbContext();
-                }
-                _localCtx = this.ctx;
-            }
-            return await _localCtx.Customers.Where(x => x.CustomerId == id && x.IsDeleted == 0).FirstOrDefaultAsync();
+            return await this.Ctx.Customers.Where(x => x.CustomerId == id && x.IsDeleted == 0).FirstOrDefaultAsync();
         }
 
-        public Task<Customer> UpdateEntity(NorthwindContext ctx, Customer entity)
+        public async Task<Customer> UpdateEntity(Customer entity, bool ignoreConcurrencyError = false)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.CustomerId));
+            Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId && x.IsDeleted == 0).FirstOrDefaultAsync();
+            if (dbCustomer == null)
+            {
+                throw new NotFoundException($"Customer ID={entity.CustomerId} was not found");
+            }
+            if (dbCustomer.Version != entity.Version && !ignoreConcurrencyError)
+            {
+                throw new DataBaseUpdateException("Another user modified the record.");
+            }
+
+            dbCustomer.CompanyName = entity.CompanyName;
+            dbCustomer.ContactName = entity.ContactName;
+            dbCustomer.ContactTitle = entity.ContactTitle;
+            dbCustomer.Address = entity.Address;
+            dbCustomer.City = entity.City;
+            dbCustomer.Region = entity.Region;
+            dbCustomer.PostalCode = entity.PostalCode;
+            dbCustomer.Country = entity.Country;
+            dbCustomer.Phone = entity.Phone;
+            dbCustomer.Fax = entity.Fax;
+            dbCustomer.IsDeleted = entity.IsDeleted;
+            dbCustomer.Version = Math.Max(entity.Version, dbCustomer.Version);
+
+            this.Ctx.SaveChanges();
+            return dbCustomer;
         }
 
     }

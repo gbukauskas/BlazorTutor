@@ -29,7 +29,7 @@ else
         <caption>Employees</caption>
         <thead>
             <tr>
-                <th name="LastName" data-sort="@SortParameter[0].Substring(0, 1)">
+                <th name="LastName" data-sort="@SortParameter![0].Substring(0, 1)">
                     <a href="/Employees/@SortParameter[0]">Last name</a>
                 </th>
                 <th name="FirstName" data-sort="@SortParameter[1].Substring(0, 1)">

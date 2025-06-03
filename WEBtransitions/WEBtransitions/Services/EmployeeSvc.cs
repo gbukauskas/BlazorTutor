@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Services.Interfaces;
 
@@ -6,7 +7,19 @@ namespace WEBtransitions.Services
 {
     public class EmployeeSvc: IDatabaseSvc<Employee, string>
     {
-        private NorthwindContext? ctx = null;
+        private NorthwindContext? _ctx = null;
+        internal NorthwindContext Ctx
+        {
+            get
+            {
+                Debug.Assert(this.factory != null);
+                if (_ctx == null)
+                {
+                    factory.CreateDbContext();
+                }
+                return _ctx!;
+            }
+        }
         private IDbContextFactory<NorthwindContext> factory;
 
         public EmployeeSvc(IDbContextFactory<NorthwindContext> factory)
@@ -16,44 +29,39 @@ namespace WEBtransitions.Services
 
         ~EmployeeSvc()
         {
-            if (ctx != null)
+            if (_ctx != null)
             {
-                ctx.Dispose();
-                ctx = null;
+                _ctx.Dispose();
+                _ctx = null;
             }
         }
 
-        public IQueryable<Employee> GetAllEntities(NorthwindContext? ctxNew = null)
+        public IQueryable<Employee> GetAllEntities()
         {
-            if (ctxNew != null)
-            {
-                return ctxNew.Employees;
-            }
-            this.ctx = factory.CreateDbContext();
-            return this.ctx.Employees;
+            return this.Ctx.Employees;
         }
 
-        public Task<IEnumerable<Employee>> CreateEntities(NorthwindContext ctx, IEnumerable<Employee> collection)
+        public Task<IEnumerable<Employee>> CreateEntities(IEnumerable<Employee> collection)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Employee> CreateEntity(NorthwindContext ctx, Employee newEntity)
+        public Task<Employee> CreateEntity(Employee newEntity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> DeleteEntityByIdAsync(NorthwindContext ctx, string id)
+        public Task<string> DeleteEntityByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Employee?> GetEntityByIdAsync(string id, NorthwindContext? ctxNew = null)
+        public Task<Employee?> GetEntityByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Employee> UpdateEntity(NorthwindContext ctx, Employee entity)
+        public Task<Employee> UpdateEntity(Employee entity, bool ignoreConcurrencyError=false)
         {
             throw new NotImplementedException();
         }

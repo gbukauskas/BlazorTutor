@@ -45,6 +45,9 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\c
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
 wwwroot\app.css
 wwwroot\favicon.png
+wwwroot\Images\check.png
+wwwroot\Images\close_1.png
+wwwroot\Images\close_2.png
 wwwroot\Images\Delete.png
 wwwroot\Images\Delete_32.png
 wwwroot\Images\Edit.png
@@ -52,6 +55,8 @@ wwwroot\Images\Edit_32.png
 wwwroot\Images\FormView.png
 wwwroot\Images\FormView_1.png
 wwwroot\Images\icons8-search-50.png
+wwwroot\Images\saveIcon.png
+wwwroot\Images\saveIcon_2.png
 wwwroot\Images\Search.png
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map

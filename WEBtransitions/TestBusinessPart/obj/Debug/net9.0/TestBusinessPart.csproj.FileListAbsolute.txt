@@ -69,7 +69,6 @@ D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\System.Id
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\System.Memory.Data.dll
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\System.Security.Cryptography.Pkcs.dll
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\System.Security.Cryptography.ProtectedData.dll
-D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\System.Text.Json.dll
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\xunit.abstractions.dll
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\xunit.assert.dll
 D:\darbas\BlazorTutor\WEBtransitions\TestBusinessPart\bin\Debug\net9.0\xunit.core.dll
