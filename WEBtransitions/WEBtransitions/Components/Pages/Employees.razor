@@ -83,7 +83,7 @@ else
     [Parameter]
     public string? SortName { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         //        ActiveCulture = new CultureInfo("lt-LT");   // Yne can set to any another value. You 
         //        string activeCultureStr = Configuration.ActiveCulture ?? "en-US";

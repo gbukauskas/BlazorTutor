@@ -54,7 +54,7 @@ namespace WEBtransitions.Services
 
         public IQueryable<Customer> GetAllEntities()
         {
-            return this.Ctx.Customers;
+            return this.Ctx.Customers.Where(cust => cust.IsDeleted == 0);
         }
 
         public PgResponse<Customer> GetCurrentPage_ADO(StateForComponent currentState, string connString)
@@ -126,10 +126,10 @@ namespace WEBtransitions.Services
         internal string PrepareSQL(StateForComponent currentState)
         {
             Debug.Assert(currentState != null);
-            StringBuilder bld = new StringBuilder("SELECT * FROM Customers ");
+            StringBuilder bld = new StringBuilder("SELECT * FROM Customers WHERE IsDeleted = 0 ");
             if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
             {
-                bld.AppendLine($"WHERE {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
+                bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
             }
             if (!String.IsNullOrEmpty(currentState.SortState) && !currentState.SortState.StartsWith("n"))
             {
@@ -180,7 +180,7 @@ namespace WEBtransitions.Services
             return new Tuple<string?, string>(sortDirection, sortName);
         }
 
-        public async Task<PgResponse<Customer>> GetPageAsync(IEnumerable<Customer>? collection, int pageSize, int pageNumber)
+        public PgResponse<Customer> GetPageAsync(IEnumerable<Customer>? collection, int pageSize, int pageNumber)
         {
             Func<int, int, int, IEnumerable<Customer>, PgResponse<Customer>> buildAnswer =
                 delegate (int recordCount, int pageNumber, int totalPages, IEnumerable<Customer> items)
@@ -243,10 +243,6 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<string> DeleteEntityByIdAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Returns Customer entity.
@@ -262,31 +258,60 @@ namespace WEBtransitions.Services
         public async Task<Customer> UpdateEntity(Customer entity, bool ignoreConcurrencyError = false)
         {
             Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.CustomerId));
-            Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId && x.IsDeleted == 0).FirstOrDefaultAsync();
-            if (dbCustomer == null)
+            try
             {
-                throw new NotFoundException($"Customer ID={entity.CustomerId} was not found");
+                Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (dbCustomer != null)
+                {
+                    dbCustomer.CompanyName = entity.CompanyName;
+                    dbCustomer.ContactName = entity.ContactName;
+                    dbCustomer.ContactTitle = entity.ContactTitle;
+                    dbCustomer.Address = entity.Address;
+                    dbCustomer.City = entity.City;
+                    dbCustomer.Region = entity.Region;
+                    dbCustomer.PostalCode = entity.PostalCode;
+                    dbCustomer.Country = entity.Country;
+                    dbCustomer.Phone = entity.Phone;
+                    dbCustomer.Fax = entity.Fax;
+                    dbCustomer.IsDeleted = entity.IsDeleted;
+                    dbCustomer.Version = Math.Max(entity.Version, dbCustomer.Version);
+
+                    this.Ctx.SaveChanges();
+                    return dbCustomer;
+                }
+                else
+                {
+                    return entity;
+                }
             }
-            if (dbCustomer.Version != entity.Version && !ignoreConcurrencyError)
+            catch (DbUpdateException /* ex */)
             {
-                throw new DataBaseUpdateException("Another user modified the record.");
+                throw;
             }
+        }
 
-            dbCustomer.CompanyName = entity.CompanyName;
-            dbCustomer.ContactName = entity.ContactName;
-            dbCustomer.ContactTitle = entity.ContactTitle;
-            dbCustomer.Address = entity.Address;
-            dbCustomer.City = entity.City;
-            dbCustomer.Region = entity.Region;
-            dbCustomer.PostalCode = entity.PostalCode;
-            dbCustomer.Country = entity.Country;
-            dbCustomer.Phone = entity.Phone;
-            dbCustomer.Fax = entity.Fax;
-            dbCustomer.IsDeleted = entity.IsDeleted;
-            dbCustomer.Version = Math.Max(entity.Version, dbCustomer.Version);
-
-            this.Ctx.SaveChanges();
-            return dbCustomer;
+        // https://www.sqlitetutorial.net/sqlite-trigger/
+        public async Task<bool> DeleteEntityByIdAsync(Customer entity, bool ignoreConcurrencyError = false)
+        {
+            Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.CustomerId));
+            try
+            {
+                Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (dbCustomer != null)
+                {
+                    dbCustomer.IsDeleted = 1;
+                    this.Ctx.SaveChanges();
+                    return true;
+                }
+                else
+                { 
+                    return false; 
+                }
+            }
+            catch (DbUpdateException /* ex */)
+            {
+                return false;
+            }
         }
 
     }

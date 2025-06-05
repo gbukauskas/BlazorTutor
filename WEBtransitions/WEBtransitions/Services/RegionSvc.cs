@@ -46,7 +46,7 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<string> DeleteEntityByIdAsync(string id)
+        public Task<bool> DeleteEntityByIdAsync(Region entity, bool ignoreConcurrencyError = false)
         {
             throw new NotImplementedException();
         }

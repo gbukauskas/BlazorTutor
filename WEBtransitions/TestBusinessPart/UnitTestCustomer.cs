@@ -33,13 +33,13 @@ namespace TestBusinessPart
         /// Returns second page
         /// </summary>
         [Fact]
-        public async Task Test2()
+        public void Test2()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
-            var page = await svc.GetPageAsync(tmp, 10, 2);
+            var page = svc.GetPageAsync(tmp, 10, 2);
 
             Assert.NotNull(page?.Items);
             var item = page.Items.First();
@@ -51,13 +51,13 @@ namespace TestBusinessPart
         /// Returns all records
         /// </summary>
         [Fact]
-        public async Task Test3()
+        public void Test3()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
-            var page = await svc.GetPageAsync(tmp, 0, -1);
+            var page = svc.GetPageAsync(tmp, 0, -1);
 
             Assert.NotNull(page?.Items);
             Assert.Equal(93, page.Items.Count());
@@ -67,13 +67,13 @@ namespace TestBusinessPart
         /// Returns first page (10 records). Collection is sorted by CustomerId descending.
         /// </summary>
         [Fact]
-        public async Task Test4()
+        public void Test4()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities().OrderByDescending(x => x.CustomerId);
-            var page = await svc.GetPageAsync(tmp, 10, 110);
+            var page = svc.GetPageAsync(tmp, 10, 110);
 
             Assert.NotNull(page?.Items);
             var item = page.Items.First();

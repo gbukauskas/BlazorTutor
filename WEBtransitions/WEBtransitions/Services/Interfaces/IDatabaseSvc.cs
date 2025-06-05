@@ -9,9 +9,9 @@ namespace WEBtransitions.Services.Interfaces
 
         Task<T> CreateEntity(T newEntity);
         Task<IEnumerable<T>> CreateEntities(IEnumerable<T> collection);
-        Task<T> UpdateEntity(T entity, bool ignoreConcurrencyError);
+        Task<T> UpdateEntity(T entity, bool ignoreConcurrencyError = false);
         Task<T?> GetEntityByIdAsync(K id);
-        Task<K> DeleteEntityByIdAsync(K id);
+        Task<bool> DeleteEntityByIdAsync(T entity, bool ignoreConcurrencyError = false);
 
     }
 }
