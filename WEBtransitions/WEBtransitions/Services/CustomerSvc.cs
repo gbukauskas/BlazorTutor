@@ -8,6 +8,7 @@ using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WEBtransitions.Services
 {
@@ -56,7 +57,7 @@ namespace WEBtransitions.Services
         {
             return this.Ctx.Customers.Where(cust => cust.IsDeleted == 0);
         }
-
+/*
         public PgResponse<Customer> GetCurrentPage_ADO(StateForComponent currentState, string connString)
         {
             Debug.Assert(currentState != null && currentState.PagerState != null);
@@ -88,35 +89,66 @@ namespace WEBtransitions.Services
             }
             return currentPage;
         }
-
-        /// <summary>
-        /// Count pages
-        /// </summary>
-        /// <param name="conn">Current connection</param>
-        /// <param name="query">SQL query</param>
-        /// <param name="pagerData"><see cref="currentState.PagerState"/></param>
-        private void PreparePageValues(SqliteConnection conn, string query, PgPostData pagerData)
+*/
+        public async Task<PgResponse<Customer>> GetCurrentPageAsync(StateForComponent currentState)
         {
-            using (SqliteCommand command = new SqliteCommand(query.Replace("*", "COUNT(1)"), conn))
-            {
-                var rowCountObject = command.ExecuteScalar();
-                long rowCont = (long)(rowCountObject == null ? 0L : rowCountObject);
-                pagerData.RowCount = (int)rowCont;
+            Debug.Assert(currentState != null && currentState.PagerState != null);
 
-                int pgCount = pagerData.RowCount / pagerData.PageSize;
-                if (pagerData.RowCount % pagerData.PageSize > 0)
+            PgResponse<Customer> currentPage;
+            string query = this.PrepareSQL(currentState);
+            int totalRecords = await CountRecordsAsync(query, currentState);
+            Customer[] allCustomers;
+
+            if (totalRecords > 0)
+            {
+                allCustomers = await this.Ctx.Customers.FromSqlRaw(query)
+                                        .Skip((currentState.PagerState.PageNumber - 1) * currentState.PagerState.PageSize)
+                                        .Take(currentState.PagerState.PageSize)
+                                        .ToArrayAsync();
+            }
+            else
+            {
+                allCustomers = [];
+            }
+
+            currentPage = new PgResponse<Customer>()
+            {
+                TotalRecords = currentState.PagerState.RowCount,
+                TotalPages = currentState.PagerState.PageCount,
+                PageSize = currentState.PagerState.PageSize,
+                PageNumber = currentState.PagerState.PageNumber,
+                Items = allCustomers
+            };
+            if (currentPage.PageNumber > currentPage.TotalPages)
+            {
+                currentPage.PageNumber = 1;
+            }
+
+            return currentPage;
+        }
+
+        private async Task<int> CountRecordsAsync(string query, StateForComponent currentState)
+        {
+            Debug.Assert(currentState != null && currentState.PagerState != null);
+            try
+            {
+                string countQuery = query.Replace("*", "COUNT(1) AS Value");
+                currentState.PagerState.RowCount = await this.Ctx.Database.SqlQueryRaw<int>(countQuery).FirstOrDefaultAsync();
+
+                int pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
+                if (currentState.PagerState.RowCount % currentState.PagerState.PageSize > 0)
                 {
                     pgCount += 1;
                 }
-                pagerData.PageCount = pgCount;
-
-                if (pagerData.PageNumber * pagerData.PageSize >= rowCont)
-                {
-                    pagerData.PageNumber = 1;
-                }
+                currentState.PagerState.PageCount = pgCount;
+                return currentState.PagerState.RowCount;
+            }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+                throw;
             }
         }
-
 
         /// <summary>
         /// Builds SQL statement
@@ -198,8 +230,7 @@ namespace WEBtransitions.Services
             Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
             try
             {
-                int recordsCount = collection.Count(); // Works in UnitTest1.cs
-                //int recordsCount = collection.Count();
+                int recordsCount = collection.Count();
 
                 if (recordsCount < 1)
                 {

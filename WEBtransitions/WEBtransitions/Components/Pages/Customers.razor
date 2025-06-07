@@ -113,7 +113,7 @@ else
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country" };
     public List<string>? SortParameter;
-    private string? ConnectionString = null;
+//    private string? ConnectionString = null;
 
     /// <summary>
     /// Action in the current page: read comments at beginnig of the file
@@ -159,7 +159,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         //        await Task.Delay(1000);  // Test for stream rendering
-        ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+//        ConnectionString = Configuration.GetConnectionString("DefaultConnection");
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
@@ -216,8 +216,9 @@ else
         }
         ProcessCurrentPage();
 
-        Debug.Assert(!String.IsNullOrEmpty(this.ConnectionString));
-        currentPage = dbSVC.GetCurrentPage_ADO(this.currentState, this.ConnectionString);
+//        Debug.Assert(!String.IsNullOrEmpty(this.ConnectionString));
+        // currentPage = dbSVC.GetCurrentPage_ADO(this.currentState, this.ConnectionString);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
 
         state.SetState(this.currentState);
     }
