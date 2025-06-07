@@ -129,3 +129,12 @@ BEGIN
     SET Version = Version + 1
     WHERE rowid = NEW.rowid; 
 END;
+
+CREATE TRIGGER IF NOT EXISTS TestVersionCustomers
+BEFORE UPDATE ON Customers
+BEGIN
+	SELECT
+	CASE
+		WHEN NEW.Version < OLD.Version THEN RAISE (ABORT, 'Concurrency error')
+	END;
+END;

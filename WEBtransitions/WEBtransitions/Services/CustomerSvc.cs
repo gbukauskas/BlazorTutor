@@ -274,9 +274,9 @@ namespace WEBtransitions.Services
                     dbCustomer.Phone = entity.Phone;
                     dbCustomer.Fax = entity.Fax;
                     dbCustomer.IsDeleted = entity.IsDeleted;
-                    dbCustomer.Version = Math.Max(entity.Version, dbCustomer.Version);
+                    dbCustomer.Version = entity.Version;
 
-                    this.Ctx.SaveChanges();
+                    int status = this.Ctx.SaveChanges();
                     return dbCustomer;
                 }
                 else
@@ -284,9 +284,9 @@ namespace WEBtransitions.Services
                     return entity;
                 }
             }
-            catch (DbUpdateException /* ex */)
+            catch (DbUpdateException ex)
             {
-                throw;
+                throw new DatabaseException("An error occurred while saving the entity changes.", ex);
             }
         }
 
@@ -308,9 +308,9 @@ namespace WEBtransitions.Services
                     return false; 
                 }
             }
-            catch (DbUpdateException /* ex */)
+            catch (DbUpdateException ex)
             {
-                return false;
+                throw new DatabaseException("An error occurred while removing the entity.", ex);
             }
         }
 

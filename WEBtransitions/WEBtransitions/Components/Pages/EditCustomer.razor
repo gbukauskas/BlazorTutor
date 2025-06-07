@@ -2,6 +2,7 @@
 @namespace WEBtransitions
 @using System.Diagnostics
 @using Microsoft.EntityFrameworkCore
+@using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
 
@@ -192,35 +193,36 @@
 
     public async Task HandleSubmit()
     {
-        Debug.Assert(Model != null);
-        await dbSVCustomer.UpdateEntity(Model, IgnoreConcurency);
-        MyNavigationManager.NavigateTo("/Customers");
+        try
+        {
+            Debug.Assert(Model != null);
+            await dbSVCustomer.UpdateEntity(Model);
+            MyNavigationManager.NavigateTo("/Customers");
+        }
+        catch (DatabaseException ex)
+        {
+            this.ErrorMessage = ex.Message;
+        }
     }
 
     private async Task DeleteCustomerAsync(Customer customer)
     {
-        Debug.Assert(Model != null);
-        Model.IsDeleted = 1;
-
-        bool isDeleted = await dbSVCustomer.DeleteEntityByIdAsync(customer);
-        if (isDeleted)
+        try
         {
-            MyNavigationManager.NavigateTo("/Customers");
+            Debug.Assert(Model != null);
+            Model.IsDeleted = 1;
+
+            bool isDeleted = await dbSVCustomer.DeleteEntityByIdAsync(customer);
+            if (isDeleted)
+            {
+                MyNavigationManager.NavigateTo("/Customers");
+            }
+        }
+        catch (DatabaseException ex)
+        {
+            this.ErrorMessage = ex.Message;
         }
     }
-
-/*
-    private void DeleteCustomer(Customer customer)
-    {
-        Debug.Assert(Model != null);
-        customer.Version = 1;
-
-        bool isDeleted = await dbSVCustomer.DeleteEntityByIdAsync(customer);
-        if (isDeleted)
-        {
-            MyNavigationManager.NavigateTo("/Customers");
-        }
-    }
-*/
-        // https://blazor-university.com/forms/
+    
+    // https://blazor-university.com/forms/
 }
