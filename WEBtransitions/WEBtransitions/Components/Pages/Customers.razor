@@ -90,11 +90,6 @@ else
                     <td>@cust.PostalCode</td>
                     <td>@cust.Country</td>
                     <td>
-@* 
-                       <buton class="btn btn-primary btn-sm" @onclick="()=>EditCustomer(cust.CustomerId)">
-                            <img src="Images/Edit.png" alt="Form view" width="16" height="16" title="Edit" />
-                       </buton>
- *@
                         <CrudLinksControl Url="/EditCustomer" Id="@cust.CustomerId" />
                     </td>
                 </tr>
@@ -102,8 +97,8 @@ else
         </tbody>
     </table>
 
-    <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() PageNumber=@currentPage.PageNumber
-    PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage"/>
+    <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() 
+                   PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage"/>
 
     <FilterControl T="Customer" BaseUrl="Customers" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
 

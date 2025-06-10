@@ -79,7 +79,6 @@ public partial class Customer
             entity.Property(e => e.Fax).HasColumnType("TEXT").HasMaxLength(24);
 
             entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
-//            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
             entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0);
 
             // M-M relation between Customer and CustomerDemographic
@@ -101,70 +100,6 @@ public partial class Customer
                     });
         });
     }
-
-    public static IEnumerable<Customer> LoadFromDB(SqliteDataReader rdr/*, PgPostData pagerData*/)
-    {
-        // Returns string? object
-        Func<SqliteDataReader, string, string?> safeConvertToString = (aRdr, x) =>
-        {
-            var value = aRdr[x];
-            return value == DBNull.Value ? null : value.ToString();
-        };
-        // returns total count of pages
-        //Func<SqliteConnection, SqliteDataReader, string, int> CountPages = (conn, aRdr, sql) =>
-        //{
-        //    using (SqliteCommand command = new SqliteCommand(sql.Replace("*", "COUNT(1)"), conn))
-        //    {
-        //        var rowCountObject = command.ExecuteScalar();
-        //        long rowCont = (long)(rowCountObject == null ? 0L : rowCountObject);
-        //        pagerData.RowCount = (int)rowCont;
-
-        //        int pgCount = pagerData.RowCount / pagerData.PageSize;
-        //        if (pagerData.RowCount % pagerData.PageSize > 0)
-        //        {
-        //            pgCount += 1;
-        //        }
-
-        //        if (pagerData.PageNumber * pagerData.PageSize >= rowCont)
-        //        {
-        //            pagerData.PageNumber = 1;
-        //        }
-        //        return pgCount;
-        //    }
-        //};
-
-        //using (SqliteConnection conn = new SqliteConnection(connStr))
-        //{
-        //    conn.Open();
-        //    using (SqliteCommand readCommand = new SqliteCommand(sqlStr, conn))
-        //    using (SqliteDataReader rdr = readCommand.ExecuteReader())
-        //    {
-        //        pagerData.PageCount = CountPages(conn, rdr, sqlStr);
-
-                while (rdr.Read())
-                {
-#pragma warning disable CS8601
-                    yield return new Customer()
-                    {
-                        CustomerId = rdr["CustomerID"].ToString(),
-                        CompanyName = rdr["CompanyName"].ToString(),
-                        ContactName = safeConvertToString(rdr, "ContactName"),
-                        ContactTitle = safeConvertToString(rdr, "ContactTitle"),
-                        Address = safeConvertToString(rdr, "Address"),
-                        City = safeConvertToString(rdr, "City"),
-                        Region = safeConvertToString(rdr, "Region"),
-                        PostalCode = safeConvertToString(rdr, "PostalCode"),
-                        Country = safeConvertToString(rdr, "Country"),
-                        Phone = safeConvertToString(rdr, "Phone"),
-                        Fax = safeConvertToString(rdr, "Fax")
-                    };
-#pragma warning restore CS8601
-                }
-        //    }
-        //    conn.Close();
-        //}
-    }
-
 
 }
 
