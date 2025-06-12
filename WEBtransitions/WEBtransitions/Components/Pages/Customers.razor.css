@@ -1,8 +1,11 @@
 ﻿table.reportTable > thead > tr {
     background-color: lightskyblue;
 }
+table.reportTable > tfoot > tr {
+    background-color: lightgray;
+}
 
-th {
+th, tfoot > tr > td {
     background-color: inherit;
 }
 

@@ -57,39 +57,7 @@ namespace WEBtransitions.Services
         {
             return this.Ctx.Customers.Where(cust => cust.IsDeleted == 0);
         }
-/*
-        public PgResponse<Customer> GetCurrentPage_ADO(StateForComponent currentState, string connString)
-        {
-            Debug.Assert(currentState != null && currentState.PagerState != null);
 
-            PgResponse<Customer> currentPage;
-            string query = this.PrepareSQL(currentState);
-            using (SqliteConnection conn = new SqliteConnection(connString))
-            {
-                conn.Open();
-                PreparePageValues(conn, query, currentState.PagerState);
-
-                using (SqliteCommand readCommand = new SqliteCommand(query, conn))
-                using (SqliteDataReader rdr = readCommand.ExecuteReader())
-                {
-                    var allCustomers = Customer.LoadFromDB(rdr)
-                                        .Skip((currentState.PagerState.PageNumber - 1) * currentState.PagerState.PageSize)
-                                        .Take(currentState.PagerState.PageSize)
-                                        .ToArray();
-                    currentPage = new PgResponse<Customer>()
-                    {
-                        TotalRecords = currentState.PagerState.RowCount,
-                        TotalPages = currentState.PagerState.PageCount,
-                        PageSize = currentState.PagerState.PageSize,
-                        PageNumber = currentState.PagerState.PageNumber,
-                        Items = allCustomers
-                    };
-                }
-                conn.Close();
-            }
-            return currentPage;
-        }
-*/
         public async Task<PgResponse<Customer>> GetCurrentPageAsync(StateForComponent currentState)
         {
             Debug.Assert(currentState != null && currentState.PagerState != null);
@@ -305,7 +273,10 @@ namespace WEBtransitions.Services
                     dbCustomer.Phone = entity.Phone;
                     dbCustomer.Fax = entity.Fax;
                     dbCustomer.IsDeleted = entity.IsDeleted;
-                    dbCustomer.Version = entity.Version;
+
+                    dbCustomer.Version = dbCustomer.IgnoreConcurency 
+                        ? -1    // Ignore concurrency error
+                        : entity.Version;
 
                     int status = this.Ctx.SaveChanges();
                     return dbCustomer;
@@ -331,6 +302,7 @@ namespace WEBtransitions.Services
                 if (dbCustomer != null)
                 {
                     dbCustomer.IsDeleted = 1;
+                    dbCustomer.Version = dbCustomer.IgnoreConcurency ? -1 : entity.Version;
                     this.Ctx.SaveChanges();
                     return true;
                 }

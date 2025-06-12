@@ -48,6 +48,9 @@ public partial class Customer
 
     public int Version { get; set; }
 
+    public bool IgnoreConcurency { get; set; } = false;
+
+
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();
 
 
@@ -65,6 +68,8 @@ public partial class Customer
             entity.HasIndex(e => e.CompanyName).IsUnique(false).HasDatabaseName("CompanyName");
             entity.HasIndex(e => e.PostalCode).IsUnique(false).HasDatabaseName("PostalCode");
             entity.HasIndex(e => e.Region).IsUnique(false).HasDatabaseName("Region");
+
+            entity.Ignore(t => t.IgnoreConcurency);
 
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID").IsRequired().HasColumnType("TEXT").HasMaxLength(5);
             entity.Property(e => e.CompanyName).IsRequired().HasColumnType("TEXT").HasMaxLength(40);

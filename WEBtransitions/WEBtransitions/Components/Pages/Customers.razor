@@ -1,5 +1,4 @@
 ﻿@page "/Customers/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
-@rendermode @(new InteractiveServerRenderMode(false))
 
 @*
   Parameter action defines type of parameters:
@@ -95,6 +94,16 @@ else
                 </tr>
             }
         </tbody>
+        @if (!String.IsNullOrEmpty(DBerrorMessage))
+        {
+            <tfoot>
+                <tr>
+                    <td colspan="10">
+                        <span class="text-danger">@DBerrorMessage</span>
+                    </td>
+                </tr>
+            </tfoot>
+        }
     </table>
 
     <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() 
@@ -108,7 +117,7 @@ else
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "CompanyName", "ContactName", "ContactTitle", "Address", "City", "Region", "PostalCode", "Country" };
     public List<string>? SortParameter;
-//    private string? ConnectionString = null;
+    //    private string? ConnectionString = null;
 
     /// <summary>
     /// Action in the current page: read comments at beginnig of the file
@@ -135,6 +144,9 @@ else
     [Parameter]
     public string ErrorMessage { get; set; } = "";
 
+    [SupplyParameterFromQuery(Name = "db_error")]
+    public string? DBerrorMessage { get; set; } = null;
+
     /// <summary>
     /// Number of rows in the page
     /// </summary>
@@ -153,8 +165,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        //        await Task.Delay(1000);  // Test for stream rendering
-//        ConnectionString = Configuration.GetConnectionString("DefaultConnection");
+        // await Task.Delay(1000);  // Test for stream rendering
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)

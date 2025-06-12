@@ -332,8 +332,11 @@ span.text-danger[b-zclfvl0kf0] {
 table.reportTable > thead > tr[b-cdadiud3w0] {
     background-color: lightskyblue;
 }
+table.reportTable > tfoot > tr[b-cdadiud3w0] {
+    background-color: lightgray;
+}
 
-th[b-cdadiud3w0] {
+th[b-cdadiud3w0], tfoot > tr > td[b-cdadiud3w0] {
     background-color: inherit;
 }
 

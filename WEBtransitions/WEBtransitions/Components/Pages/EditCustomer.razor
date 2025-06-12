@@ -2,6 +2,7 @@
 @namespace WEBtransitions
 @using System.Diagnostics
 @using Microsoft.EntityFrameworkCore
+@using System.Web
 @using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
@@ -9,8 +10,6 @@
 @inject CustomerSvc dbSVCustomer
 @inject IDatabaseSvc<Region, string> dbSVRegion
 @inject NavigationManager MyNavigationManager
-
-@rendermode InteractiveServer
 
 @*
   Parameter <code>action</code> defines type of the screen:
@@ -78,10 +77,13 @@
         <label class="left-column" for="fax">Fax number</label>
         <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;"></InputText>
     </div>
-    <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
-        <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
-        <InputCheckbox name="ignore-concurency" @bind-Value=IgnoreConcurency style="width: 15px;"></InputCheckbox>
-    </div>
+    @if (!(String.IsNullOrEmpty(Action) || Action == "view"))
+    {
+        <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+            <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+            <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+        </div>
+    }
 
     <div class="form-group">
         @if (String.IsNullOrEmpty(Action) || Action == "view")
@@ -92,9 +94,15 @@
         }
         else if (!String.IsNullOrEmpty(Action) && Action == "edit")
         {
-            <button class="btn btn-primary" type="submit">
-                <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
-            </button>
+            <div class="confirmation">
+                <button class="btn btn-primary" type="submit">
+                    <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+                </button>
+                <a href="/Customers" class="btn btn-secondary">
+                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
+                </a>
+            </div>
+
         }
         else if (!String.IsNullOrEmpty(Action) && Action == "delete")
         {
@@ -104,7 +112,7 @@
                     <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
                 </button>
                 <a href="/Customers" class="btn btn-secondary">
-                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
                 </a>
             </div>
         }
@@ -113,8 +121,7 @@
 
 @if (!String.IsNullOrEmpty(ErrorMessage))
 {
-    <h3>@ErrorMessage</h3>
-
+    <p class="@TitleClass text-danger">@ErrorMessage</p>
 }
 
 @code {
@@ -154,7 +161,7 @@
         }
     }
 
-    internal bool IgnoreConcurency { get; set; } = false;
+    //    internal bool IgnoreConcurency { get; set; } = false;
     internal string ConcurrencyOpt = "visible";
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
@@ -196,12 +203,14 @@
         try
         {
             Debug.Assert(Model != null);
+
             await dbSVCustomer.UpdateEntity(Model);
             MyNavigationManager.NavigateTo("/Customers");
         }
         catch (DatabaseException ex)
         {
-            this.ErrorMessage = ex.Message;
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} updating failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
         }
     }
 
@@ -212,15 +221,13 @@
             Debug.Assert(Model != null);
             Model.IsDeleted = 1;
 
-            bool isDeleted = await dbSVCustomer.DeleteEntityByIdAsync(customer);
-            if (isDeleted)
-            {
-                MyNavigationManager.NavigateTo("/Customers");
-            }
+            await dbSVCustomer.DeleteEntityByIdAsync(customer);
+            MyNavigationManager.NavigateTo("/Customers");
         }
         catch (DatabaseException ex)
         {
-            this.ErrorMessage = ex.Message;
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} deleting failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
         }
     }
     
