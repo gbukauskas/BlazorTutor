@@ -13,7 +13,6 @@
 }
 /* _content/WEBtransitions/Components/FilterControl.razor.rz.scp.css */
 div.filter[b-3a6u69bmzo] {
-    float: right;
     right: 2em;
     padding: 12px 4px 4px 4px;
     border: 1px solid black;
@@ -285,7 +284,6 @@ main[b-ux8mjcf7zc] {
 }
 /* _content/WEBtransitions/Components/PagerControl.razor.rz.scp.css */
 div.pager[b-zclfvl0kf0] {
-    float: left;
     margin-left: 2em;
     padding: 4px;
     border: 1px solid black;
@@ -359,6 +357,23 @@ table > caption[b-cdadiud3w0] {
     font-weight: bold;
     text-align: center;
 }
+
+div.component-footer[b-cdadiud3w0] {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1ex;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    align-content: flex-start;
+    gap: 2em;
+}
+
+
 /* _content/WEBtransitions/Components/Pages/EditCustomer.razor.rz.scp.css */
 label.left-column[b-uy771iricy] {
     width: 10em;

@@ -37,7 +37,10 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
 builder.Services.AddScoped<IDatabaseSvc<Region, string>, RegionSvc>();
 
-builder.Services.AddScoped<CustomerSvc>();
+builder.Services
+    .AddScoped<CustomerSvc>()
+    .AddScoped<IKeyGenerator, KeyGenerator>();
+
 builder.Services.AddSingleton<IStateData, StateData>();
 
 var app = builder.Build();

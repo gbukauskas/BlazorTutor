@@ -28,3 +28,20 @@ table > caption[b-cdadiud3w0] {
     font-weight: bold;
     text-align: center;
 }
+
+div.component-footer[b-cdadiud3w0] {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1ex;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    align-content: flex-start;
+    gap: 2em;
+}
+
+

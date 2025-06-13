@@ -10,6 +10,7 @@
 @inject CustomerSvc dbSVCustomer
 @inject IDatabaseSvc<Region, string> dbSVRegion
 @inject NavigationManager MyNavigationManager
+@inject IKeyGenerator keyGenerator;
 
 @*
   Parameter <code>action</code> defines type of the screen:
@@ -31,6 +32,13 @@
 }
 
 <EditForm EditContext="editContext" OnValidSubmit=@HandleSubmit FormName="EditCustomer">
+    @if (Action == "new")
+    {
+        <div class="form-group">
+            <label class="left-column" for="customer-id">Customer ID</label>
+            <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 200px;"></InputText>
+        </div>
+    }
     <div class="form-group">
         <label class="left-column" for="company-name">Company name</label>
         <InputText name="company-name" @bind-Value="Model!.CompanyName" style="width: 500px;"></InputText>
@@ -77,7 +85,7 @@
         <label class="left-column" for="fax">Fax number</label>
         <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;"></InputText>
     </div>
-    @if (!(String.IsNullOrEmpty(Action) || Action == "view"))
+    @if (!(String.IsNullOrEmpty(Action) || Action == "view" || Action == "new"))
     {
         <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
             <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
@@ -92,7 +100,7 @@
                 <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
             </a>
         }
-        else if (!String.IsNullOrEmpty(Action) && Action == "edit")
+        else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
         {
             <div class="confirmation">
                 <button class="btn btn-primary" type="submit">
@@ -102,7 +110,6 @@
                     <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
                 </a>
             </div>
-
         }
         else if (!String.IsNullOrEmpty(Action) && Action == "delete")
         {
@@ -178,11 +185,13 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        Debug.Assert(!String.IsNullOrEmpty(Argument));
+        Debug.Assert(Action == "new" || !String.IsNullOrEmpty(Argument));
         Customer? customer;
-        if (String.IsNullOrEmpty(Argument))
+        if (String.IsNullOrEmpty(Argument) || Action == "new")
         {
             customer = new();
+            customer.CompanyName = "New customer";
+            customer.CustomerId = keyGenerator.GenerateKey(5, 7);
         }
         else
         {
@@ -210,6 +219,11 @@
         catch (DatabaseException ex)
         {
             string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} updating failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} updating failed: {ex.Message}");
             MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
         }
     }

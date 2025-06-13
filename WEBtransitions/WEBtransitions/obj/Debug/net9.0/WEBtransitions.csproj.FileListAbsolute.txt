@@ -257,5 +257,5 @@ D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\refint\WEBt
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.pdb
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\WEBtransitions.genruntimeconfig.cache
 D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\ref\WEBtransitions.dll
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-7s6n1105ko.gz
-D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-7s6n1105ko.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\d7lw0opibz-pj5miv5yza.gz
+D:\darbas\BlazorTutor\WEBtransitions\WEBtransitions\obj\Debug\net9.0\compressed\whourv7wsk-pj5miv5yza.gz

@@ -15,9 +15,14 @@ namespace WEBtransitions.Services
                 Debug.Assert(this.factory != null);
                 if (_ctx == null)
                 {
-                    factory.CreateDbContext();
+                    _ctx = factory.CreateDbContext();
                 }
                 return _ctx!;
+            }
+            set
+            {
+                Debug.Assert(value != null);
+                _ctx = value;
             }
         }
         private IDbContextFactory<NorthwindContext> factory;

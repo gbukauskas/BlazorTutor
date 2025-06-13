@@ -106,10 +106,12 @@ else
         }
     </table>
 
-    <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString() 
-                   PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage"/>
-
-    <FilterControl T="Customer" BaseUrl="Customers" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+    <div class="component-footer">
+        <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                      PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage" />
+        <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
+        <FilterControl T="Customer" BaseUrl="Customers" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+    </div>
 
 }
 
