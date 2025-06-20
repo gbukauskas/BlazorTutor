@@ -1,3 +1,13 @@
+/* _content/WEBtransitions/Components/Autocomplete/Autocomplete.razor.rz.scp.css */
+/* https://www.w3schools.com/Css/tryit.asp?filename=trycss_form_icon */
+
+input[type=text][b-57ryy0a0io] {
+    background-color: white;
+    background-image: url('/Images/icons8-arrow-down-24.png');
+    background-position: 4px;
+    background-repeat: no-repeat;
+    padding-left: 2em;
+}
 /* _content/WEBtransitions/Components/CrudLinks/CrudLinksControl.razor.rz.scp.css */
 .control-collection[b-53a3wt0emq] {
     display: flex;
@@ -417,6 +427,7 @@ p.text-danger[b-uy771iricy] {
 }
 
 div.confirmation[b-uy771iricy] {
+    margin-top: 2ex;
     padding-left; 2em;
     display: flex;
     flex-direction: row;
@@ -428,6 +439,15 @@ div.confirmation[b-uy771iricy] {
 
 div.confirmation > button[b-uy771iricy] {
     flex: none;
+}
+
+span.error-message[b-uy771iricy] {
+    margin-left: 2em;
+}
+
+span[name="remember-region"][b-uy771iricy] {
+    display: inline-block;
+    margin-left: 1em;
 }
 /* _content/WEBtransitions/Components/Pages/Employees.razor.rz.scp.css */
 

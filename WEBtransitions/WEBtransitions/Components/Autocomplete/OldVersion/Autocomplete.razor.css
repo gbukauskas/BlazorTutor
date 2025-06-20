@@ -1,0 +1,10 @@
+﻿
+/* https://www.w3schools.com/Css/tryit.asp?filename=trycss_form_icon */
+
+input[type=text] {
+    background-color: white;
+    background-image: url('/Images/icons8-arrow-down-24.png');
+    background-position: 4px;
+    background-repeat: no-repeat;
+    padding-left: 2em;
+}

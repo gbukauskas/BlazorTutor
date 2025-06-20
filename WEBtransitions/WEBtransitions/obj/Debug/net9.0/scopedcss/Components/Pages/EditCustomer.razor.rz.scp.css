@@ -40,6 +40,7 @@ p.text-danger[b-uy771iricy] {
 }
 
 div.confirmation[b-uy771iricy] {
+    margin-top: 2ex;
     padding-left; 2em;
     display: flex;
     flex-direction: row;
@@ -51,4 +52,13 @@ div.confirmation[b-uy771iricy] {
 
 div.confirmation > button[b-uy771iricy] {
     flex: none;
+}
+
+span.error-message[b-uy771iricy] {
+    margin-left: 2em;
+}
+
+span[name="remember-region"][b-uy771iricy] {
+    display: inline-block;
+    margin-left: 1em;
 }

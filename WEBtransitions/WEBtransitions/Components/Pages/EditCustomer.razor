@@ -1,4 +1,5 @@
 ﻿@page "/EditCustomer/{action}/{argument?}"
+
 @namespace WEBtransitions
 @using System.Diagnostics
 @using Microsoft.EntityFrameworkCore
@@ -6,6 +7,9 @@
 @using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
+@using System.ComponentModel.DataAnnotations
+
+@implements IDisposable;
 
 @inject CustomerSvc dbSVCustomer
 @inject IDatabaseSvc<Region, string> dbSVRegion
@@ -32,11 +36,14 @@
 }
 
 <EditForm EditContext="editContext" OnValidSubmit=@HandleSubmit FormName="EditCustomer">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     @if (Action == "new")
     {
         <div class="form-group">
             <label class="left-column" for="customer-id">Customer ID</label>
-            <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 200px;"></InputText>
+            <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 7em;"></InputText>
         </div>
     }
     <div class="form-group">
@@ -61,13 +68,24 @@
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
-
-         <Autocomplete name="region" @bind-value=Model!.Region style="width: 500px; display: inline-block;">
+@*         <Autocomplete name="region" @bind-RegionName=Model!.Region style="width: 500px; display: inline-block;">
             @foreach (var item in allRegions)
             {
                 <option value=@item />
             }
-        </Autocomplete> 
+        </Autocomplete>
+ *@
+        <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 500px; display: inline-block;" RegionChanged="RegionChangedHanler">
+            @foreach (var item in allRegions)
+            {
+                <option value=@item />
+            }
+        </Autocomplete>
+
+        <span name="remember-region">
+            <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table"></InputCheckbox>
+            <label for="remember-region">Remember region</label>
+        </span>
     </div>
     <div class="form-group">
         <label class="left-column" for="postal-code">Postal code</label>
@@ -85,7 +103,7 @@
         <label class="left-column" for="fax">Fax number</label>
         <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;"></InputText>
     </div>
-    @if (!(String.IsNullOrEmpty(Action) || Action == "view" || Action == "new"))
+    @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
     {
         <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
             <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
@@ -147,6 +165,8 @@
     [SupplyParameterFromForm(FormName = "EditCustomer")]
     private Customer? Model { get; set; }
 
+    private ValidationMessageStore? messageStore;
+
     public string ErrorMessage = "";
 
     public required string[] allRegions;
@@ -180,6 +200,12 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        Model ??= new();
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
         this.allRegions = await dbSVRegion.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
     }
 
@@ -203,10 +229,12 @@
             return;
         }
         this.Model = customer;
-        editContext = new(this.Model);
+        //        editContext = new(this.Model);
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 
+
+    // https://www.telerik.com/blogs/blazor-basics-advanced-blazor-form-validation
     public async Task HandleSubmit()
     {
         try
@@ -244,6 +272,34 @@
             MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
         }
     }
-    
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+
+        if (Action == "new" && !String.IsNullOrEmpty(Model?.CustomerId))
+        {
+            var task = Task.Run(async () => await dbSVCustomer.IsDublicateKey(Model.CustomerId));
+            if (task.Result)
+            {
+                messageStore?.Add(() => Model.CustomerId, $"Key {Model.CustomerId} is already written.");
+                editContext?.NotifyValidationStateChanged();
+            }
+        }
+    }
+
+    internal void RegionChangedHanler(string newRegion)
+    {
+        this.Model!.Region = newRegion;
+    }
+
+    public void Dispose()
+    {
+        if (editContext != null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+
     // https://blazor-university.com/forms/
 }

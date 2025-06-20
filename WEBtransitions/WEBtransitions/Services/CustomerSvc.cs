@@ -53,6 +53,12 @@ namespace WEBtransitions.Services
             }
         }
 
+        public async Task<bool> IsDublicateKey(string key)
+        {
+            Customer? oldCustomer = await this.Ctx.Customers.FindAsync(key);
+            return oldCustomer != null && oldCustomer.IsDeleted == 0;
+        }
+
         public IQueryable<Customer> GetAllEntities()
         {
             return this.Ctx.Customers.Where(cust => cust.IsDeleted == 0);

@@ -32,10 +32,6 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Autocomplete/Autocomplete.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBdXRvY29tcGxldGVcQXV0b2NvbXBsZXRlLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Pages/Component.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb21wb25lbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -67,6 +63,10 @@ build_metadata.AdditionalFiles.CssScope =
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
+
+[D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/Autocomplete/Autocomplete.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBdXRvY29tcGxldGVcQXV0b2NvbXBsZXRlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-57ryy0a0io
 
 [D:/darbas/BlazorTutor/WEBtransitions/WEBtransitions/Components/CrudLinks/CrudLinksControl.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xDcnVkTGlua3NcQ3J1ZExpbmtzQ29udHJvbC5yYXpvcg==

@@ -54,6 +54,8 @@ wwwroot\Images\Edit.png
 wwwroot\Images\Edit_32.png
 wwwroot\Images\FormView.png
 wwwroot\Images\FormView_1.png
+wwwroot\Images\icons8-arrow-down-24.png
+wwwroot\Images\icons8-search-25.png
 wwwroot\Images\icons8-search-50.png
 wwwroot\Images\saveIcon.png
 wwwroot\Images\saveIcon_2.png

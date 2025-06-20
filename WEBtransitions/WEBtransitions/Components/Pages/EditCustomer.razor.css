@@ -40,6 +40,7 @@ p.text-danger {
 }
 
 div.confirmation {
+    margin-top: 2ex;
     padding-left; 2em;
     display: flex;
     flex-direction: row;
@@ -51,4 +52,13 @@ div.confirmation {
 
 div.confirmation > button {
     flex: none;
+}
+
+span.error-message {
+    margin-left: 2em;
+}
+
+span[name="remember-region"] {
+    display: inline-block;
+    margin-left: 1em;
 }

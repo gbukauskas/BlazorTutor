@@ -2,21 +2,24 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Data.SqlClient;
 using System.Runtime.Intrinsics.Arm;
 using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
 public partial class Customer
 {
+    [StringLength(6)]
     public string CustomerId { get; set; } = String.Empty;
 
     [AllowFiltering]
+    [StringLength(40)]
     public string CompanyName { get; set; } = String.Empty;
 
     [AllowFiltering]
@@ -49,6 +52,7 @@ public partial class Customer
     public int Version { get; set; }
 
     public bool IgnoreConcurency { get; set; } = false;
+    public bool RememberRegion { get; set; } = false;
 
 
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();
@@ -70,6 +74,7 @@ public partial class Customer
             entity.HasIndex(e => e.Region).IsUnique(false).HasDatabaseName("Region");
 
             entity.Ignore(t => t.IgnoreConcurency);
+            entity.Ignore(t => t.RememberRegion);
 
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID").IsRequired().HasColumnType("TEXT").HasMaxLength(5);
             entity.Property(e => e.CompanyName).IsRequired().HasColumnType("TEXT").HasMaxLength(40);

@@ -1,12 +1,20 @@
 ﻿@page "/EditCustomer/{action}/{argument?}"
+
 @namespace WEBtransitions
 @using System.Diagnostics
 @using Microsoft.EntityFrameworkCore
+@using System.Web
+@using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
+@using System.ComponentModel.DataAnnotations
+
+@implements IDisposable;
 
 @inject CustomerSvc dbSVCustomer
 @inject IDatabaseSvc<Region, string> dbSVRegion
+@inject NavigationManager MyNavigationManager
+@inject IKeyGenerator keyGenerator;
 
 @*
   Parameter <code>action</code> defines type of the screen:
@@ -17,69 +25,117 @@
         <item><code>delete<code> - confirm delete operation</item>
     </list>
   Parameter <code>argument</code> contains id of the customer. Parameter is optional for the <code>new</code> action.
+
+            https://www.codeproject.com/Articles/5300708/Building-a-DataList-Control-in-Blazor
+            https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist
 *@
 
+@if (Model != null)
+{
+    <h2>@Model.CustomerId - @Model.CompanyName </h2>
+}
 
-<h2>@Model.CustomerId - @Model.CompanyName </h2>
+<EditForm EditContext="editContext" OnValidSubmit=@HandleSubmit FormName="EditCustomer">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-<form method="post" @onsubmit="Submit" @formname="EditCustomer_2">
-    <AntiforgeryToken />
-
+    @if (Action == "new")
+    {
+        <div class="form-group">
+            <label class="left-column" for="customer-id">Customer ID</label>
+            <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 7em;"></InputText>
+        </div>
+    }
     <div class="form-group">
         <label class="left-column" for="company-name">Company name</label>
-        <InputText name="company-name" @bind-Value=Model.CompanyName style="width: 500px;"></InputText>
+        <InputText name="company-name" @bind-Value="Model!.CompanyName" style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-name">Contact name</label>
-        <InputText name="contact-name" @bind-Value=Model.ContactName style="width: 500px;"></InputText>
+        <InputText name="contact-name" @bind-Value=Model!.ContactName style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-title">Contact title</label>
-        <InputText name="contact-title" @bind-Value=Model.ContactTitle style="width: 500px;"></InputText>
+        <InputText name="contact-title" @bind-Value=Model!.ContactTitle style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="address">Address</label>
-        <InputText name="address" @bind-Value=Model.Address style="width: 500px;"></InputText>
+        <InputText name="address" @bind-Value=Model!.Address style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="city">City</label>
-        <InputText name="city" @bind-Value=Model.City style="width: 500px;"></InputText>
+        <InputText name="city" @bind-Value=Model!.City style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
-        <Autocomplete name="region" @bind-value=Model.Region style="width: 500px; display: inline-block;">
+
+         <Autocomplete name="region" @bind-value=Model!.Region style="width: 500px; display: inline-block;">
             @foreach (var item in allRegions)
             {
                 <option value=@item />
             }
-        </Autocomplete>
-
-@*            https://www.codeproject.com/Articles/5300708/Building-a-DataList-Control-in-Blazor
-            https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist
-*@
+        </Autocomplete> 
     </div>
     <div class="form-group">
         <label class="left-column" for="postal-code">Postal code</label>
-        <InputText name="postal-code" @bind-Value=Model.PostalCode style="width: 500px;"></InputText>
+        <InputText name="postal-code" @bind-Value=Model!.PostalCode style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="country">Country</label>
-        <InputText name="country" @bind-Value=Model.Country style="width: 500px;"></InputText>
+        <InputText name="country" @bind-Value=Model!.Country style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="phone">Phone number</label>
-        <InputText name="phone" @bind-Value=Model.Phone style="width: 500px;"></InputText>
+        <InputText name="phone" @bind-Value=Model!.Phone style="width: 500px;"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="fax">Fax number</label>
-        <InputText name="fax" @bind-Value=Model.Fax style="width: 500px;"></InputText>
+        <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;"></InputText>
     </div>
-</form>
+    @if (!(String.IsNullOrEmpty(Action) || Action == "view" || Action == "new"))
+    {
+        <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+            <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+            <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+        </div>
+    }
+
+    <div class="form-group">
+        @if (String.IsNullOrEmpty(Action) || Action == "view")
+        {
+            <a href="/Customers" class="btn btn-primary">
+                <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
+            </a>
+        }
+        else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+        {
+            <div class="confirmation">
+                <button class="btn btn-primary" type="submit">
+                    <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+                </button>
+                <a href="/Customers" class="btn btn-secondary">
+                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
+                </a>
+            </div>
+        }
+        else if (!String.IsNullOrEmpty(Action) && Action == "delete")
+        {
+            <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
+            <div class="confirmation">
+                <button class="btn btn-danger" @onclick="async () => await DeleteCustomerAsync(Model)">
+                    <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
+                </button>
+                <a href="/Customers" class="btn btn-secondary">
+                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
+                </a>
+            </div>
+        }
+    </div>
+</EditForm>
 
 @if (!String.IsNullOrEmpty(ErrorMessage))
 {
-    <h3>@ErrorMessage</h3>
-
+    <p class="@TitleClass text-danger">@ErrorMessage</p>
 }
 
 @code {
@@ -95,33 +151,138 @@
     [Parameter]
     public string? Argument { get; set; } = null;
 
-    public required Customer Model;
+    [SupplyParameterFromForm(FormName = "EditCustomer")]
+    private Customer? Model { get; set; }
+
+    private ValidationMessageStore? messageStore;
 
     public string ErrorMessage = "";
 
     public required string[] allRegions;
 
+    private EditContext? editContext;
+    private string TitleClass = "d-none";
+
+
+    private string _oldValue = "";
+    private string newRegion
+    {
+        get => _oldValue;
+        set
+        {
+            if (value != _oldValue)
+            {
+                _oldValue = value;
+            }
+        }
+    }
+
+    //    internal bool IgnoreConcurency { get; set; } = false;
+    internal string ConcurrencyOpt = "visible";
+
+    void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        string navigationMethod = e.IsNavigationIntercepted ? "HTML" : "code";
+        System.Diagnostics.Debug.WriteLine($"Notified of navigation via {navigationMethod} to {e.Location}");
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        Model ??= new();
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
         this.allRegions = await dbSVRegion.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        Debug.Assert(!String.IsNullOrEmpty(Argument));
-        Customer? customer = await dbSVCustomer.GetEntityByIdAsync(Argument);
+        Debug.Assert(Action == "new" || !String.IsNullOrEmpty(Argument));
+        Customer? customer;
+        if (String.IsNullOrEmpty(Argument) || Action == "new")
+        {
+            customer = new();
+            customer.CompanyName = "New customer";
+            customer.CustomerId = keyGenerator.GenerateKey(5, 7);
+        }
+        else
+        {
+            customer = await dbSVCustomer.GetEntityByIdAsync(Argument);
+        }
         if (customer == null)
         {
             this.ErrorMessage = $"Customer {Argument} was not found.";
             return;
         }
         this.Model = customer;
+//        editContext = new(this.Model);
+        TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 
-    public void Submit()
+
+    // https://www.telerik.com/blogs/blazor-basics-advanced-blazor-form-validation
+    public async Task HandleSubmit()
     {
-        int i = 0;
+        try
+        {
+            Debug.Assert(Model != null);
+
+            await dbSVCustomer.UpdateEntity(Model);
+            MyNavigationManager.NavigateTo("/Customers");
+        }
+        catch (DatabaseException ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} updating failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} updating failed: {ex.Message}");
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
+        }
+    }
+
+    private async Task DeleteCustomerAsync(Customer customer)
+    {
+        try
+        {
+            Debug.Assert(Model != null);
+            Model.IsDeleted = 1;
+
+            await dbSVCustomer.DeleteEntityByIdAsync(customer);
+            MyNavigationManager.NavigateTo("/Customers");
+        }
+        catch (DatabaseException ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.CustomerId} deleting failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Customers?db_error={errorMessage}");
+        }
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+
+        if (Action == "new" && !String.IsNullOrEmpty(Model?.CustomerId))
+        {
+            var task = Task.Run(async () => await dbSVCustomer.IsDublicateKey(Model.CustomerId));
+            if (task.Result)
+            {
+                messageStore?.Add(() => Model.CustomerId, $"Key {Model.CustomerId} is already written.");
+                editContext?.NotifyValidationStateChanged();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (editContext != null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
     }
 
     // https://blazor-university.com/forms/

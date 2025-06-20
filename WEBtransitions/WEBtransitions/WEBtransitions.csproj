@@ -15,10 +15,12 @@
 
   <ItemGroup>
     <Content Remove="Components\App - Copy.razor" />
+    <Content Remove="Components\Autocomplete\OldVersion\Autocomplete.razor" />
     <Content Remove="Components\Pages\EditCustomer - Copy.razor" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Components\Autocomplete\OldVersion\Autocomplete.razor.css" />
     <None Remove="Components\CustomPager.razor~RF523887d4.TMP" />
     <None Remove="Components\Pages\EditCustomer - Copy.razor.css" />
   </ItemGroup>
@@ -39,6 +41,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ClassLibraryDatabase\ClassLibraryDatabase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Autocomplete\OldVersion\" />
   </ItemGroup>
 
 </Project>

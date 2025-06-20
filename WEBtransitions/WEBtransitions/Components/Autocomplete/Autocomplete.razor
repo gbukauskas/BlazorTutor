@@ -1,23 +1,27 @@
 ﻿@namespace WEBtransitions
 @inherits InputBase<string>
 
-
-@* <input type="text" name="@Name" class="@AllClasses" list="@UUID-datalistOptions" style="@Style"/> *@
-<input type="text" name="@Name" class="@AllClasses" list="@UUID-datalistOptions" style="@Style" @bind="BindingValue" />
-
+<input type="text" name="@Name" value=@Value class="@AllClasses" style="@Style" autocomplete="off" list="@UUID-datalistOptions"
+       placeholder="Type a name or select it from the drop-down" @onchange="UpdateSelection"/>
 <datalist id="@UUID-datalistOptions">
     @ChildContent
 </datalist>
 
 @code {
-    [Parameter]
-    public string? Style { get; set; }
-
+    /// <summary>
+    /// Name of the HTML input element
+    /// </summary>
     [Parameter]
     public string? Name { get; set; }
 
     /// <summary>
-    /// Classes for the input element. Separate elements with a space. Optional.  
+    /// String with style for the input element
+    /// </summary>
+    [Parameter]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Classes for the input element. Separate elements with a space. Optional.
     /// </summary>
     [Parameter]
     public string? ClassInput { get; set; }
@@ -28,22 +32,15 @@
     [Parameter]
     public required RenderFragment ChildContent { get; set; }
 
+    [Parameter]
+    public EventCallback<string> RegionChanged { get; set; }
+
     public required string UUID;
     public required string AllClasses;
+    private string? InitialValue;
 
-    private string _value = "";
-    public string? BindingValue {
-        get => _value; 
-        set
-        {
-            if (!String.IsNullOrEmpty(value) && _value != value )
-            {
-                ((Customer)EditContext.Model).Region =_value = value;
-            }
-        } 
-    }
 
-    protected override bool TryParseValueFromString(string? value,  out string result, out string validationErrorMessage)
+    protected override bool TryParseValueFromString(string? value, out string result, out string validationErrorMessage)
     {
         result = value ?? "";
         if (String.IsNullOrEmpty(value))
@@ -55,22 +52,31 @@
         return true;
     }
 
+    protected override string FormatValueAsString(string? value)
+    {
+        return value ??= "";
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         UUID = Guid.NewGuid().ToString();   // TODO: patikrinti, kaip dirba keli kontrolsai
+        AllClasses = $"@(ClassInput??String.Empty)";
+    }
+
+    private async Task UpdateSelection(ChangeEventArgs e)
+    {
+        string newValue = (string)(e.Value ??= "");
+        if (this.InitialValue != newValue)
+        {
+            await RegionChanged.InvokeAsync(newValue);
+        }
     }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        AllClasses = $"@(ClassInput??String.Empty)";
-        _value = ((Customer)EditContext.Model).Region ?? "" ;
+        this.InitialValue = Value;
     }
 
-    protected void RegionChanged()
-    {
-        var newValue = ((Customer)EditContext.Model).Region;
-        BindingValue = newValue;
-    }
 }
