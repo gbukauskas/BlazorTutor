@@ -68,12 +68,21 @@
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
+@* This variant works: application binds property "Value" which is definedd in the base class
         <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 500px; display: inline-block;" RegionChanged="RegionChangedHanler">
             @foreach (var item in allRegions)
             {
                 <option value=@item />
             }
         </Autocomplete>
+ *@
+        <Autocomplete name="region" style="width: 500px; display: inline-block;" RegionChanged="RegionChangedHanler">
+            @foreach (var item in allRegions)
+            {
+                <option value=@item />
+            }
+        </Autocomplete>
+
         <span name="remember-region">
             <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table"></InputCheckbox>
             <label for="remember-region">Remember region</label>

@@ -76,7 +76,9 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        this.InitialValue = Value;
+        // this.InitialValue = Value;       // It works if "Value" was binded to Customer.Region in owner class (EditCustomer.razor)
+        Customer value = (Customer)(this.EditContext.Model);
+        this.InitialValue = value.Region;
     }
 
 }
