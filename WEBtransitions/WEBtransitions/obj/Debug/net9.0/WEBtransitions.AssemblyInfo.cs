@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WEBtransitions")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e33735474ff05d4ad3068b6618d167d5a75a2e82")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+faf719cb21f451e3da681359b8b47aa64f7af874")]
 [assembly: System.Reflection.AssemblyProductAttribute("WEBtransitions")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WEBtransitions")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

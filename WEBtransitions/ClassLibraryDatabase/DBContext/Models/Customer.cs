@@ -10,6 +10,7 @@ using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
@@ -53,7 +54,6 @@ public partial class Customer
 
     public bool IgnoreConcurency { get; set; } = false;
     public bool RememberRegion { get; set; } = false;
-
 
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();
 
