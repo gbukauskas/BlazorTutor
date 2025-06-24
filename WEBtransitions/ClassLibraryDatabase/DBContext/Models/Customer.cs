@@ -54,6 +54,10 @@ public partial class Customer
     public bool IgnoreConcurency { get; set; } = false;
     public bool RememberRegion { get; set; } = false;
 
+    public Customer ShallowCopy()
+    {
+        return (Customer)MemberwiseClone();
+    }
 
     public virtual ICollection<CustomerDemographic> CustomerTypes { get; set; } = new List<CustomerDemographic>();
 
@@ -111,6 +115,24 @@ public partial class Customer
         });
     }
 
+    public void AssignProperties(Customer src)
+    {
+        this.CompanyName = src.CompanyName;
+        this.ContactName = src.ContactName;
+        this.ContactTitle = src.ContactTitle;
+        this.Address = src.Address;
+        this.City = src.City;
+        this.Region = src.Region;
+        this.PostalCode = src.PostalCode;
+        this.Country = src.Country;
+        this.Phone = src.Phone;
+        this.Fax = src.Fax;
+        this.IsDeleted = src.IsDeleted;
+
+        this.Version = src.IgnoreConcurency
+            ? -1    // Ignore concurrency error
+            : src.Version;
+    }
 }
 
 // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/many-to-many

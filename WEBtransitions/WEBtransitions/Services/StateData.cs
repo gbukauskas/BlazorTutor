@@ -65,6 +65,7 @@ namespace WEBtransitions.Services
         public string? SortState {  get; set; } = string.Empty;
         public PgPostData? PagerState { get; set; } = null;
         public Tuple<string, string>? FilterState { get; set; } = null;
+        public string? LastInsertedId { get; set; } = null;
 
 
         public StateForComponent(string componentName, int buttonCount = 10, int pageSize = 9) 
@@ -73,6 +74,7 @@ namespace WEBtransitions.Services
             this.SortState = string.Empty;
             this.PagerState = new PgPostData(componentName, buttonCount, 1, 1, 1, pageSize, "Customers/page");
             this.FilterState = null;
+            this.LastInsertedId = null;
         }
 
         public object Clone()
@@ -81,12 +83,14 @@ namespace WEBtransitions.Services
             var rzlt = new StateForComponent(this.ComponentName)
             {
                 SortState = this.SortState,
-                FilterState = this.FilterState
+                FilterState = this.FilterState,
+                LastInsertedId = this.LastInsertedId
             };
             if (this.PagerState != null)
             {
                 rzlt.PagerState = (PgPostData)this.PagerState.Clone();
             }
+
             return rzlt;
         }
     }

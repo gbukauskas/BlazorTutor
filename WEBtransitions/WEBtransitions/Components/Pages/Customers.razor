@@ -79,7 +79,7 @@ else
 
             @foreach (var cust in currentPage.Items)
             {
-                <tr @key=cust.CustomerId>
+                <tr @key=cust.CustomerId class="@GetBoldClass(cust.CustomerId)" >
                     <td>@cust.CompanyName</td>
                     <td>@cust.ContactName</td>
                     <td>@cust.ContactTitle</td>
@@ -149,6 +149,9 @@ else
     [SupplyParameterFromQuery(Name = "db_error")]
     public string? DBerrorMessage { get; set; } = null;
 
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string? LastInsertedId { get; set; } = null;
+
     /// <summary>
     /// Number of rows in the page
     /// </summary>
@@ -217,18 +220,22 @@ else
                 PrepareFiltering();
             }
         }
+        this.currentState.LastInsertedId = this.LastInsertedId;
 
         if (String.IsNullOrEmpty(Action))
         {
             this.Action = "page";
         }
         ProcessCurrentPage();
-
-//        Debug.Assert(!String.IsNullOrEmpty(this.ConnectionString));
-        // currentPage = dbSVC.GetCurrentPage_ADO(this.currentState, this.ConnectionString);
         currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
 
         state.SetState(this.currentState);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        this.LastInsertedId = null;
     }
 
     /// <summary>
@@ -302,8 +309,15 @@ else
         }
     }
 
-    // private void EditCustomer(string id)
-    // {
-    //     NavManager.NavigateTo($"/EditCustomer/edit/{id}");
-    // }
+    private string GetBoldClass(string customerId)
+    {
+        if (String.IsNullOrEmpty(this.LastInsertedId) || this.LastInsertedId != customerId)
+        {
+            return "fw-normal";
+        }
+        else
+        {
+            return "fw-bold";
+        }
+    }
 }

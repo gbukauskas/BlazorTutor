@@ -84,6 +84,14 @@ namespace WEBtransitions.Services
             {
                 allCustomers = [];
             }
+            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Customer>(allCustomers, x => x.CustomerId == currentState.LastInsertedId))
+            {
+                var newCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (newCustomer != null)
+                {
+                    allCustomers = allCustomers.Append(newCustomer).ToArray();
+                }
+            }
 
             currentPage = new PgResponse<Customer>()
             {
@@ -243,11 +251,38 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Customer> CreateEntity( Customer newEntity)
+        public async Task<Customer> CreateEntity(Customer entity)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.CustomerId));
+            try
+            {
+                Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId).FirstOrDefaultAsync();
+                
+                if (dbCustomer == null)
+                {
+                    Ctx.Add(entity);
+                    await Ctx.SaveChangesAsync();
+                    return entity;
+                }
+                else if (dbCustomer.IsDeleted == 1)
+                {
+                    entity.IgnoreConcurency = true;
+                    entity.IsDeleted = 0;
+                    dbCustomer!.AssignProperties(entity);
+                    Ctx.Entry(dbCustomer).State = EntityState.Modified;
+                    await Ctx.SaveChangesAsync();
+                    return dbCustomer;
+                } 
+                else
+                {
+                    throw new DbUpdateException($"Key {entity.CustomerId} is already used");
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("An error occurred while saving the entity changes.", ex);
+            }
         }
-
 
         /// <summary>
         /// Returns Customer entity.
