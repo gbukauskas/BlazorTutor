@@ -3,7 +3,7 @@
 @inherits InputBase<string>
 
 <input type="text" name="@Name" value=@Value class="@AllClasses" style="@Style" autocomplete="off" list="@UUID-datalistOptions"
-       placeholder="Type a name or select it from the drop-down" @onchange="UpdateSelection"/>
+       placeholder="Type a name or select it from the drop-down" @onchange="UpdateSelection" />
 <datalist id="@UUID-datalistOptions">
     @ChildContent
 </datalist>
