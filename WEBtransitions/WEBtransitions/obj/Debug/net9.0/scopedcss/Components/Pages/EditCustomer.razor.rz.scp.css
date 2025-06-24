@@ -1,0 +1,64 @@
+label.left-column[b-uy771iricy] {
+    width: 10em;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+.right-column[b-uy771iricy] {
+    width: 500px;
+}
+
+div.form-group[b-uy771iricy]
+{
+    margin-bottom: 5px;
+}
+
+h2[b-uy771iricy] {
+    display: block;
+    margin-left: 100px;
+}
+
+form[b-uy771iricy] {
+    margin-top: 2ex;
+}
+
+a > img[b-uy771iricy] {
+    display: inline-block;
+    margin-top: -2px;
+    margin-right: 0.5em;
+}
+
+button > img[b-uy771iricy] {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+p.text-danger[b-uy771iricy] {
+    font-size: larger;
+    font-weight: bolder;
+    margin-top: 2ex;
+}
+
+div.confirmation[b-uy771iricy] {
+    margin-top: 2ex;
+    padding-left; 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2em;
+}
+
+div.confirmation > button[b-uy771iricy] {
+    flex: none;
+}
+
+span.error-message[b-uy771iricy] {
+    margin-left: 2em;
+}
+
+span[name="remember-region"][b-uy771iricy] {
+    display: inline-block;
+    margin-left: 1em;
+}

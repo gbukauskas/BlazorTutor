@@ -1,0 +1,30 @@
+
+table.reportTable > thead > tr[b-cl86h9i2cv] {
+    background-color: lightskyblue;
+}
+table.reportTable > thead > tr a[b-cl86h9i2cv] {
+    text-decoration: none;
+    color: black;
+}
+table.reportTable > thead > tr > th[b-cl86h9i2cv] {
+    background-color: inherit;
+}
+
+table.reportTable > thead > tr > th[data-sort="a"] > a[b-cl86h9i2cv]::before {
+    content: "\21E7\00a0";
+}
+table.reportTable > thead > tr > th[data-sort="d"] > a[b-cl86h9i2cv]::before {
+    content: "\21E9\00a0";
+}
+
+table > caption[b-cl86h9i2cv] {
+    caption-side: top;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+}
+
+/*
+    https://www.youtube.com/watch?v=7fd00baexBQ
+    https://github.com/MackinnonBuck/blazor-page-script
+*/

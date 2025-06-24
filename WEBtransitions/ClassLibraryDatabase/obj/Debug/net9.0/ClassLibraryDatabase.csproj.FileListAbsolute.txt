@@ -1,0 +1,15 @@
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\bin\Debug\net9.0\ClassLibraryDatabase.deps.json
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\bin\Debug\net9.0\ClassLibraryDatabase.runtimeconfig.json
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\bin\Debug\net9.0\ClassLibraryDatabase.dll
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\bin\Debug\net9.0\ClassLibraryDatabase.pdb
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.csproj.AssemblyReference.cache
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.GeneratedMSBuildEditorConfig.editorconfig
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.AssemblyInfoInputs.cache
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.AssemblyInfo.cs
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.csproj.CoreCompileInputs.cache
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.sourcelink.json
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.dll
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\refint\ClassLibraryDatabase.dll
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.pdb
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ClassLibraryDatabase.genruntimeconfig.cache
+D:\darbas\BlazorTutor\WEBtransitions\ClassLibraryDatabase\obj\Debug\net9.0\ref\ClassLibraryDatabase.dll

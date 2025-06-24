@@ -1,0 +1,12 @@
+.control-collection[b-53a3wt0emq] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: flex-start;
+    gap: 10px;
+}
+
+.control-collection > a[b-53a3wt0emq] {
+    flex: none;
+}
