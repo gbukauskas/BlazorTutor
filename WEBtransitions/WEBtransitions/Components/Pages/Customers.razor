@@ -207,7 +207,6 @@ else
         {
             if (Action == "sort")
             {
-                //                SortDefinition = Argument;  // ??
                 Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
                 this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }

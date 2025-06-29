@@ -35,10 +35,10 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 //    builder.Configuration.GetSection(nameof(AppSettings)));
 
 builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
-builder.Services.AddScoped<IDatabaseSvc<Region, string>, RegionSvc>();
 
 builder.Services
     .AddScoped<CustomerSvc>()
+    .AddScoped<RegionSvc>()
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
 builder.Services.AddSingleton<IStateData, StateData>();

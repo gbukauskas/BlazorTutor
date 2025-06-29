@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.Services
@@ -41,9 +42,45 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Region> CreateEntity(Region newEntity)
+        public async Task<Region> CreateEntity(Region entity)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.RegionDescription));
+            try
+            {
+                Region? dbRegion = await this.Ctx.Regions.Where(x => x.RegionDescription == entity.RegionDescription).FirstOrDefaultAsync();
+                if (dbRegion == null)
+                {
+                    Ctx.Add(entity);
+                    await Ctx.SaveChangesAsync();
+                    return entity;
+                }
+                else if (dbRegion.IsDeleted == 1)
+                {
+                    entity.IgnoreConcurency = true;
+                    entity.IsDeleted = 0;
+                    dbRegion!.AssignProperties(entity);
+                    Ctx.Entry(dbRegion).State = EntityState.Modified;
+                    await Ctx.SaveChangesAsync();
+                    return dbRegion;
+                }
+                else
+                {
+                    throw new DbUpdateException($"Key {entity.RegionDescription} is already used");
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("An error occurred while saving the entity changes.", ex);
+            }
+        }
+        public async Task<Region> CreateEntity(string name)
+        {
+            var region = new Region() 
+            { 
+                RegionDescription = name
+            };
+            var rzlt = await CreateEntity(region);
+            return rzlt;
         }
 
         public Task<bool> DeleteEntityByIdAsync(Region entity, bool ignoreConcurrencyError = false)

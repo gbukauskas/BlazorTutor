@@ -20,6 +20,7 @@ namespace WEBtransitions.Services
         public static readonly double DELTA = 0.000001;
 
         private NorthwindContext? _ctx = null;
+
         public NorthwindContext Ctx
         {
             get
@@ -318,6 +319,7 @@ namespace WEBtransitions.Services
                     dbCustomer.Version = dbCustomer.IgnoreConcurency 
                         ? -1    // Ignore concurrency error
                         : entity.Version;
+                    dbCustomer.RememberRegion = entity.RememberRegion;
 
                     int status = this.Ctx.SaveChanges();
                     return dbCustomer;

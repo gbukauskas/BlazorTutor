@@ -12,7 +12,9 @@
 @implements IDisposable;
 
 @inject CustomerSvc dbSVCustomer
-@inject IDatabaseSvc<Region, string> dbSVRegion
+
+@inject RegionSvc _regionSvc
+
 @inject NavigationManager MyNavigationManager
 @inject IKeyGenerator keyGenerator;
 
@@ -48,52 +50,52 @@
     }
     <div class="form-group">
         <label class="left-column" for="company-name">Company name</label>
-        <InputText name="company-name" @bind-Value="Model!.CompanyName" style="width: 500px;"></InputText>
+        <InputText name="company-name" @bind-Value="Model!.CompanyName" style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-name">Contact name</label>
-        <InputText name="contact-name" @bind-Value=Model!.ContactName style="width: 500px;"></InputText>
+        <InputText name="contact-name" @bind-Value=Model!.ContactName style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-title">Contact title</label>
-        <InputText name="contact-title" @bind-Value=Model!.ContactTitle style="width: 500px;"></InputText>
+        <InputText name="contact-title" @bind-Value=Model!.ContactTitle style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="address">Address</label>
-        <InputText name="address" @bind-Value=Model!.Address style="width: 500px;"></InputText>
+        <InputText name="address" @bind-Value=Model!.Address style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="city">City</label>
-        <InputText name="city" @bind-Value=Model!.City style="width: 500px;"></InputText>
+        <InputText name="city" @bind-Value=Model!.City style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
-        <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 500px; display: inline-block;" RegionChanged="RegionChangedHanler">
+        <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 500px; display: inline-block;" action="@Action" RegionChanged="RegionChangedHanler">
             @foreach (var item in allRegions)
             {
                 <option value=@item />
             }
         </Autocomplete>
         <span name="remember-region">
-            <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table"></InputCheckbox>
+            <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table" Disabled="@IsReadOnly"></InputCheckbox>
             <label for="remember-region">Remember region</label>
         </span>
     </div>
     <div class="form-group">
         <label class="left-column" for="postal-code">Postal code</label>
-        <InputText name="postal-code" @bind-Value=Model!.PostalCode style="width: 500px;"></InputText>
+        <InputText name="postal-code" @bind-Value=Model!.PostalCode style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="country">Country</label>
-        <InputText name="country" @bind-Value=Model!.Country style="width: 500px;"></InputText>
+        <InputText name="country" @bind-Value=Model!.Country style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="phone">Phone number</label>
-        <InputText name="phone" @bind-Value=Model!.Phone style="width: 500px;"></InputText>
+        <InputText name="phone" @bind-Value=Model!.Phone style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="fax">Fax number</label>
-        <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;"></InputText>
+        <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;" Disabled="@IsReadOnly"></InputText>
     </div>
     @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
     {
@@ -180,6 +182,11 @@
         }
     }
 
+    /// <summary>
+    /// "readonly" for the <code>view</code> operation. Empty string for the all other cases.
+    /// </summary>
+    internal bool IsReadOnly = false;
+
     //    internal bool IgnoreConcurency { get; set; } = false;
     internal string ConcurrencyOpt = "visible";
 
@@ -198,7 +205,7 @@
         editContext.OnValidationRequested += HandleValidationRequested;
         messageStore = new(editContext);
 
-        this.allRegions = await dbSVRegion.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
+        this.allRegions = await _regionSvc.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -220,8 +227,9 @@
             this.ErrorMessage = $"Customer {Argument} was not found.";
             return;
         }
+        IsReadOnly = (Action == "view" || Action == "delete");
+
         this.Model = customer;
-        //        editContext = new(this.Model);
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 
@@ -229,19 +237,26 @@
     // https://www.telerik.com/blogs/blazor-basics-advanced-blazor-form-validation
     public async Task HandleSubmit()
     {
+        Customer? aCustomer = null;
+        string? backUrl = null;
         try
         {
             Debug.Assert(Model != null);
             if (this.Action == "new")
             {
-                Customer newCustomer = await dbSVCustomer.CreateEntity(Model);
-                MyNavigationManager.NavigateTo($"/Customers?new_id={newCustomer.CustomerId}");
+                aCustomer = await dbSVCustomer.CreateEntity(Model);
+                backUrl = $"/Customers?new_id={aCustomer.CustomerId}";
             }
             else
             {
-                await dbSVCustomer.UpdateEntity(Model);
-                MyNavigationManager.NavigateTo("/Customers");
+                aCustomer = await dbSVCustomer.UpdateEntity(Model);
+                backUrl = "/Customers";
             }
+            if (aCustomer.RememberRegion && aCustomer.IsDeleted == 0 && !String.IsNullOrEmpty(aCustomer.Region))
+            {
+                await _regionSvc.CreateEntity(aCustomer.Region);
+            }
+            MyNavigationManager.NavigateTo(backUrl!);
         }
         catch (DatabaseException ex)
         {
