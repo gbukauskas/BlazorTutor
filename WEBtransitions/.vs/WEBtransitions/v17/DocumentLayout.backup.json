@@ -56,7 +56,7 @@
               "RelativeDocumentMoniker": "ClassLibraryDatabase\\DBContext\\Models\\Customer.cs",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\ClassLibraryDatabase\\DBContext\\Models\\Customer.cs",
               "RelativeToolTip": "ClassLibraryDatabase\\DBContext\\Models\\Customer.cs",
-              "ViewState": "AgIAADYAAAAAAAAAAAAewDkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAIA0wGgAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-24T19:03:35.048Z",
               "EditorCaption": ""
@@ -155,8 +155,7 @@
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Customers.razor",
               "ViewState": "AgIAALoAAAAAAAAAAAAiwOUAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-05-29T18:25:03.254Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-29T18:25:03.254Z"
             }
           ]
         }
