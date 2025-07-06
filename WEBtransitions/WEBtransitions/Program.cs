@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using WEBtransitions.Components;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Components;
 using WEBtransitions.Services;
 using WEBtransitions.Services.Interfaces;
 
@@ -30,9 +30,6 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
     options.UseSqlite(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-//builder.Services.Configure<AppSettings>(
-//    builder.Configuration.GetSection(nameof(AppSettings)));
 
 builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
 

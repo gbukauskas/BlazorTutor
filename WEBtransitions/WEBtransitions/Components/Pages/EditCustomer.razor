@@ -37,8 +37,8 @@
     <h2>@Model.CustomerId - @Model.CompanyName </h2>
 }
 
-<EditForm EditContext="editContext" OnSubmit=@HandleSubmit  FormName="EditCustomer">
-    <DataAnnotationsValidator />
+<EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditCustomer">
+    <DataAnnotationsValidator />  
     <ValidationSummary />
 
     @if (Action == "new")
@@ -230,6 +230,7 @@
         IsReadOnly = (Action == "view" || Action == "delete");
 
         this.Model = customer;
+
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 
@@ -239,9 +240,18 @@
     {
         Customer? aCustomer = null;
         string? backUrl = null;
+
+        messageStore?.Clear();
+        bool valid = this.editContext!.Validate();
+        if (!valid)
+        {
+            return;    
+        }
+
         try
         {
             Debug.Assert(Model != null);
+
             if (this.Action == "new")
             {
                 aCustomer = await dbSVCustomer.CreateEntity(Model);
