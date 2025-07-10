@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,13 +13,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WEBtransitions.Services
 {
-    public class CustomerSvc : IDatabaseSvc<Customer, string>, IPagedCollection<Customer>
+    public class CustomerSvc : CommonSvc, IDatabaseSvc<Customer, string>, IPagedCollection<Customer>
     {
-        /// <summary>
-        /// Precision for comparision of double constatns
-        /// </summary>
-        public static readonly double DELTA = 0.000001;
-
         private NorthwindContext? _ctx = null;
 
         public NorthwindContext Ctx
@@ -71,7 +67,7 @@ namespace WEBtransitions.Services
 
             PgResponse<Customer> currentPage;
             string query = this.PrepareSQL(currentState);
-            int totalRecords = await CountRecordsAsync(query, currentState);
+            int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
             Customer[] allCustomers;
 
             if (totalRecords > 0)
@@ -109,7 +105,7 @@ namespace WEBtransitions.Services
 
             return currentPage;
         }
-
+/*
         private async Task<int> CountRecordsAsync(string query, StateForComponent currentState)
         {
             Debug.Assert(currentState != null && currentState.PagerState != null);
@@ -132,7 +128,7 @@ namespace WEBtransitions.Services
                 throw;
             }
         }
-
+*/
         /// <summary>
         /// Builds SQL statement
         /// </summary>
@@ -155,7 +151,7 @@ namespace WEBtransitions.Services
 
             return bld.ToString();
         }
-
+/*
         /// <summary>
         /// <list type="number">
         ///     <item>sortDefinionOriginal is null or empty - no sort</item>
@@ -194,21 +190,21 @@ namespace WEBtransitions.Services
             string sortName = sortParameter.Substring(2);
             return new Tuple<string?, string>(sortDirection, sortName);
         }
-
-        public PgResponse<Customer> GetPageAsync(IEnumerable<Customer>? collection, int pageSize, int pageNumber)
+*/
+        public PgResponse<Customer> GetPage(IEnumerable<Customer>? collection, int pageSize, int pageNumber)    // ??
         {
-            Func<int, int, int, IEnumerable<Customer>, PgResponse<Customer>> buildAnswer =
-                delegate (int recordCount, int pageNumber, int totalPages, IEnumerable<Customer> items)
-                {
-                    return new PgResponse<Customer>()
-                    {
-                        TotalRecords = recordCount,
-                        TotalPages = totalPages,
-                        PageSize = pageSize,
-                        PageNumber = pageNumber,
-                        Items = items
-                    };
-                };
+            //Func<int, int, int, IEnumerable<Customer>, PgResponse<Customer>> buildAnswer =
+            //    delegate (int recordCount, int pageNumber, int totalPages, IEnumerable<Customer> items)
+            //    {
+            //        return new PgResponse<Customer>()
+            //        {
+            //            TotalRecords = recordCount,
+            //            TotalPages = totalPages,
+            //            PageSize = pageSize,
+            //            PageNumber = pageNumber,
+            //            Items = items
+            //        };
+            //    };
 
             Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
             try
@@ -217,11 +213,12 @@ namespace WEBtransitions.Services
 
                 if (recordsCount < 1)
                 {
-                    return buildAnswer(recordsCount, 0, 0, []);
+                    var emptyList = new List<Customer>().ToArray();
+                    return new PgResponse<Customer>(recordsCount, pageSize, pageNumber, 0, emptyList);
                 }
                 else if (pageNumber == -1)
                 {
-                    return buildAnswer(recordsCount, 1, 1, collection.ToArray());   // return all records
+                    return new PgResponse<Customer>(recordsCount, pageSize, 1, 1, collection.ToArray());
                 }
                 else
                 {
@@ -237,7 +234,7 @@ namespace WEBtransitions.Services
                                         .Take<Customer>(pageSize)
                                         .ToArray();
 
-                    return buildAnswer(recordsCount, currentPage, totalPages, pageContent);
+                    return new PgResponse<Customer>(recordsCount, pageSize, pageNumber, totalPages, pageContent);
                 }
             }
             catch (Exception ex)

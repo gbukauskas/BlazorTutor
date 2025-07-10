@@ -13,5 +13,7 @@ namespace WEBtransitions.Services.Interfaces
         Task<T?> GetEntityByIdAsync(K id);
         Task<bool> DeleteEntityByIdAsync(T entity, bool ignoreConcurrencyError = false);
 
+        Tuple<string?, string> SetSort(string? sortParameter, bool setNextState);
+
     }
 }

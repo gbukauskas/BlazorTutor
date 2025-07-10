@@ -103,7 +103,7 @@
         Model.PageSize = this.PageSize;
         Model.BaseUrl = this.BaseUrl;
 
-        PrepareButtonList();
+        PrintableButtons = PrepareButtonList();
         InsertPrevButtons();
         AppendTrailButtons();
     }
@@ -207,29 +207,29 @@
     /// The collection must be no longer than the value stated in the parameter <code>MaxButtons</code>.
     /// The function shifts to left <code>PrintableButtons</code> if current page (item with <code>PageNumber</code>) is not visible.
     /// </summary>
-    private void PrepareButtonList()
+    private List<PgData> PrepareButtonList()
     {
         bool currentPageIsVisible = false;
+        var newPrintableButtons = new List<PgData>();
         for (int i = 1; i <= PageCount; i++)
         {
-            if (PrintableButtons.Count >= MaxButtons)
+            if (newPrintableButtons.Count >= MaxButtons)    // Shift to left
             {
-                if (currentPageIsVisible)
-                {
-                    break;
-                }
-                PrintableButtons = PrintableButtons.Skip(1).Take(PrintableButtons.Count - 1).ToList();
+                newPrintableButtons = newPrintableButtons.Skip(1).Take(PrintableButtons.Count - 1).ToList();
             }
-
-            var item = new PgData(i, i == PageNumber, i == PageNumber);
+            var item = new PgData(i, i == PageNumber, i == PageNumber); // Append next button
+            newPrintableButtons.Add(item);
             if (item.IsSelected)
             {
                 currentPageIsVisible = true;
                 Model!.PageNumber = PageNumber;
             }
-            PrintableButtons.Add(item);
-
+            if (currentPageIsVisible && newPrintableButtons.Count() >= MaxButtons)
+            {
+                break;
+            }
         }
+        return newPrintableButtons;
     }
 
     /// <summary>

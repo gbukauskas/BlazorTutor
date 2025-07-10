@@ -1,4 +1,21 @@
-﻿@page "/Employees/{sortname?}"
+﻿@* @page "/Employees/{sortname?}" *@
+@page "/Employees/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>filter</code> - filtering</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</<code></item>
+        <item>Page size when <code>action == 'page'</<code> </item>
+        <item>Word search when <code>action == 'page'</<code> </item>
+    </list>
+*@
 
 @using System.Globalization
 @using System.Linq.Expressions
@@ -6,20 +23,22 @@
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.Extensions.Configuration;
 @using Microsoft.Extensions.Options
+@using System.Diagnostics
+@using WEBtransitions.ClassLibraryDatabase.CustomPager
+@using WEBtransitions.Components.CrudLinks
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
 
 @attribute [StreamRendering(true)]
 
-@inject IDatabaseSvc<Employee, string> dbSVC
+@inject EmployeeSvc dbSVC
 @inject IConfiguration Configuration
-@rendermode InteractiveServer
-
-@* @inject IOptions<AppSettings> AppConfiguration *@
+@inject NavigationManager NavManager
+@inject IStateData state
 
 <PageTitle>Employees</PageTitle>
 
-@if (CurrentPage == null)
+@if (currentPage == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -29,46 +48,71 @@ else
         <caption>Employees</caption>
         <thead>
             <tr>
+                <th>&nbsp;</th>
                 <th name="LastName" data-sort="@SortParameter![0].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[0]">Last name</a>
+                    <a href="/Employees/sort/@SortParameter[0]">Last name</a>
                 </th>
                 <th name="FirstName" data-sort="@SortParameter[1].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[1]">First name</a>
+                    <a href="/Employees/sort/@SortParameter[1]">First name</a>
                 </th>
                 <th name="Title" data-sort="@SortParameter[2].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[2]">Title</a>
+                    <a href="/Employees/sort/@SortParameter[2]">Title</a>
                 </th>
                 <th name="TitleOfCourtesy" data-sort="@SortParameter[3].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[3]">Title of Courtesy</a>
+                    <a href="/Employees/sort/@SortParameter[3]">Title of Courtesy</a>
                 </th>
                 <th name="BirthDate" data-sort="@SortParameter[4].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[4]">Birth date</a>
+                    <a href="/Employees/sort/@SortParameter[4]">Birth date</a>
                 </th>
                 <th name="HireDate" data-sort="@SortParameter[5].Substring(0, 1)">
-                    <a href="/Employees/@SortParameter[5]">Hire date</a>
+                    <a href="/Employees/sort/@SortParameter[5]">Hire date</a>
                 </th>
+                <th>Command</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var emp in CurrentPage)
+            @foreach (var emp in currentPage.Items)
             {
                 <tr>
+                    <td>
+                        <img src="@emp.PhotoUrl" />
+                    </td>
                     <td>@emp.LastName</td>
                     <td>@emp.FirstName</td>
                     <td>@emp.Title</td>
                     <td>@emp.TitleOfCourtesy</td>
                     <td>@emp.BirthDate?.ToString(ActiveCulture)</td>
                     <td>@emp.HireDate?.ToString(ActiveCulture)</td>
+                    <td>
+                        <CrudLinksControl Url="/EditEmployee" Id="@emp.EmployeeIdStr" />
+                    </td>
                 </tr>
             }
         </tbody>
+        @if (!String.IsNullOrEmpty(DBerrorMessage))
+        {
+            <tfoot>
+                <tr>
+                    <td colspan="10">
+                        <span class="text-danger">@DBerrorMessage</span>
+                    </td>
+                </tr>
+            </tfoot>
+        }
     </table>
+
+    <div class="component-footer">
+        <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                      PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
+        <a href="/EditEmployee/new" class="new-item-link" title="Insert new employee">New Employee</a>
+        <FilterControl T="Employee" BaseUrl="Employees" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+    </div>
+
 }
 
 @code {
-    private Employee[]? CurrentPage;
+    // private Employee[]? CurrentPage;
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
-
     private static readonly string[] FieldNames = { "LastName", "FirstName", "Title", "TitleOfCourtesy", "BirthDate", "HireDate" };
     public List<string>? SortParameter; 
 
@@ -80,84 +124,108 @@ else
     ///     <item>SortName starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
     /// </list>
     /// </summary>
+    // [Parameter]
+    // public string? SortName { get; set; }
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
     [Parameter]
-    public string? SortName { get; set; }
+    public string? Action { get; set; } = null;
 
-    protected override void OnInitialized()
+    /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name = "db_error")]
+    public string? DBerrorMessage { get; set; } = null;
+
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string? LastInsertedId { get; set; } = null;
+
+    /// <summary>
+    /// Number of rows in the page
+    /// </summary>
+    internal int? PageSize { get; set; } = null;
+
+    private int defaultPageSize;
+    private int buttonCount;
+    private PgResponse<Employee>? currentPage = null;
+    private StateForComponent? currentState = null;
+
+
+    protected override async Task OnInitializedAsync()
     {
-        //        ActiveCulture = new CultureInfo("lt-LT");   // Yne can set to any another value. You 
-        //        string activeCultureStr = Configuration.ActiveCulture ?? "en-US";
-        //        ActiveCulture = new CultureInfo(activeCultureStr);
-        // string activeCultureStr = AppConfiguration?.Value?.ActiveCulture ?? "en-US";
+        // await Task.Delay(1000);  // For debugging (stream rendering mode)
 
-        // await Task.Delay(1000);  // Test for stream rendering
-
-        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
-        ActiveCulture = new CultureInfo(activeCultureStr);
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        SortParameter = new List<string>();
-        var page = dbSVC.GetAllEntities();
-
-        if (String.IsNullOrEmpty(SortName))
-        {
-            ResetSort();
-            CurrentPage = await page.ToArrayAsync();
-        } 
-        else
-        {
-            Tuple<string, string> sortDefinition = SetSort(SortName);
-            for (int i = 0; i < FieldNames.Length; i++)
-            {
-                if (FieldNames[i] != sortDefinition.Item2)
-                {
-                    SortParameter.Add($"n_{FieldNames[i]}");
-                }
-                else
-                {
-                    SortParameter.Add($"{sortDefinition.Item1}_{FieldNames[i]}");
-                }
-            }
-            if (sortDefinition.Item1.StartsWith("n"))
-            {
-                CurrentPage = await page.ToArrayAsync();    // no sort
-            }
-            else
-            {
-                // a --> ascending, d --> descending
-#pragma warning disable CS8600
-                PropertyInfo propInfo = typeof(Employee).GetProperty(sortDefinition.Item2, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-#pragma warning restore CS8600
-                if (propInfo == null)
-                {
-                    CurrentPage = await page.ToArrayAsync();    // Invalid name of the field: no sorting
-                }
-                else
-                {
-                    var x = await page.ToListAsync();
-                    if (sortDefinition.Item1.StartsWith("a"))
-                    {
-                        CurrentPage = x.OrderBy(e => propInfo.GetValue(e)).ToArray();
-                    }
-                    else
-                    {
-                        CurrentPage = x.OrderByDescending(e => propInfo.GetValue(e)).ToArray();
-                    }
-                }
-            }
-        }
-
-    }
-
-    private void ResetSort()
-    {
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
         {
             SortParameter.Add($"n_{FieldNames[i]}");
         }
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Employees");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Employees");
+
+        ActiveCulture = new CultureInfo(activeCultureStr);
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        this.currentState = state.GetState("Employees", buttonCount, this.defaultPageSize);
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
+                this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                this.currentState.PreparePaging(this.Argument, NavManager, "Employees/page", PageNumber ?? 1);
+            }
+            else if (Action == "filter")
+            {
+                this.currentState.PrepareFiltering(NavManager);
+            }
+        }
+        this.currentState.LastInsertedId = this.LastInsertedId;
+
+        if (String.IsNullOrEmpty(Action))
+        {
+            this.Action = "page";
+        }
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
+
+        // currentPage.Items.First().Photo = null; // For Debugging
+
+        state.SetState(this.currentState);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        this.LastInsertedId = null;
     }
 
     private Tuple<string, string> SetSort(string sortParameter)

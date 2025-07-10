@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Collections.Generic;
 using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.Services.Interfaces;
@@ -93,5 +95,51 @@ namespace WEBtransitions.Services
 
             return rzlt;
         }
+
+        /// <summary>
+        /// Set values in the <code>this.currentState.PagerState</code>
+        /// </summary>
+        /// <param name="argument">Page size or Sort definition</param>
+        /// <param name="navManager"><see cref="NavigationManager"/></param>
+        /// <param name="baseUrl">Base URL</param>
+        public void PreparePaging(string argument, NavigationManager navManager, string baseUrl, int pageNumber)
+        {
+            Debug.Assert(this.PagerState != null);
+            int pageSize;
+
+            if (int.TryParse(argument, out pageSize)) // this.PagerState.PageSize has default value if parsing fails.
+            {
+                this.PagerState.PageSize = pageSize;
+            }
+            this.PagerState.PageNumber = pageNumber;
+
+            var uri = navManager.ToAbsoluteUri(navManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
+            {
+                this.PagerState.PageNumber = Convert.ToInt32(_initialCount);
+            }
+            this.PagerState.BaseUrl = baseUrl;  //"Customers/page", "Employees/page";
+        }
+
+        /// <summary>
+        /// Set values in the <code>this.currentState.FilterState</code>
+        /// </summary>
+        public void PrepareFiltering(NavigationManager navManager)
+        {
+            string fieldName = string.Empty;
+            string searchValue = string.Empty;
+
+            var uri = navManager.ToAbsoluteUri(navManager.Uri);
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("field-name", out var _fieldName))
+            {
+                fieldName = Convert.ToString(_fieldName);
+            }
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("search-value", out var _searchValue))
+            {
+                searchValue = Convert.ToString(_searchValue);
+            }
+            this.FilterState = Tuple.Create(fieldName, searchValue);
+        }
+
     }
 }

@@ -102,5 +102,10 @@ namespace WEBtransitions.Services
         {
             throw new NotImplementedException();
         }
+
+        public Tuple<string?, string> SetSort(string? sortParameter, bool setNextState)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

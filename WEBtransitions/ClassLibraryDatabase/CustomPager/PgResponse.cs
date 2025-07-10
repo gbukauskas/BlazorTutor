@@ -31,6 +31,33 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
         /// <summary>
         /// Content of the current page.
         /// </summary>
-        public required IEnumerable<T> Items { get; set; }
+        public IEnumerable<T> Items { get; set; }
+
+        public PgResponse() 
+        {
+            TotalRecords = 0;
+            TotalPages = 0; 
+            PageSize = 0;
+            PageNumber = 0;
+            Items = Enumerable.Empty<T>();
+        }
+
+        /// <summary>
+        /// The function constucts object PgResponse
+        /// </summary>
+        /// <param name="recordCount">Total count of records</param>
+        /// <param name="pageSize">Size of the page</param>
+        /// <param name="pageNumber">Page number; numbering starts from 1</param>
+        /// <param name="totalPages">Total pages</param>
+        /// <param name="items">Items in the current page</param>
+        /// <returns></returns>
+        public PgResponse(int recordCount, int pageSize, int pageNumber, int totalPages, IEnumerable<T> items)
+        {
+            this.TotalRecords = recordCount;
+            this.TotalPages = totalPages;
+            this.PageSize = pageSize;
+            this.PageNumber = pageNumber;
+            this.Items = items;
+        }
     }
 }

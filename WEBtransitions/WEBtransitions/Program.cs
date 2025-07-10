@@ -31,10 +31,9 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
-
 builder.Services
     .AddScoped<CustomerSvc>()
+    .AddScoped<EmployeeSvc>()
     .AddScoped<RegionSvc>()
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
@@ -60,3 +59,4 @@ app.Run();
 // Change SQL drive:
 // https://www.bing.com/videos/riverview/relatedvideo?q=sql+move+database+to+another+drive&mid=358CF6A17A7AA5E9760F358CF6A17A7AA5E9760F&FORM=VIRE
 // https://www.learnblazor.com/layouts
+// Free hosting https://www.monsterasp.net/#plans

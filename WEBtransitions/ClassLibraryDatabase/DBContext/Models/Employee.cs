@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
@@ -8,16 +9,31 @@ public partial class Employee
 {
     public int EmployeeId { get; set; }
 
+    public string EmployeeIdStr 
+    {
+
+        get
+        {
+            return $"{EmployeeId:D6}";
+        } 
+    }
+
+    [AllowFiltering]
     public required string LastName { get; set; }
 
+    [AllowFiltering]
     public required string FirstName { get; set; }
 
+    [AllowFiltering]
     public string? Title { get; set; }
 
+    [AllowFiltering]
     public string? TitleOfCourtesy { get; set; }
 
+    [AllowFiltering]
     public DateOnly? BirthDate { get; set; }
 
+    [AllowFiltering]
     public DateOnly? HireDate { get; set; }
 
     public string? Address { get; set; }
@@ -35,6 +51,21 @@ public partial class Employee
     public string? Extension { get; set; }
 
     public byte[]? Photo { get; set; }
+    public string PhotoUrl
+    {
+        get
+        {
+            if (Photo != null)
+            {
+                var b64String = Convert.ToBase64String(this.Photo);
+                return $"data:image/jpg;base64,{b64String}";
+            }
+            else
+            {
+                return "/Images/anonymous.png";
+            }
+        }
+    }
 
     public string? Notes { get; set; }
 
@@ -64,6 +95,8 @@ public partial class Employee
             entity
                 .ToTable("Employees")
                 .HasKey(e => e.EmployeeId).HasName("PK_Employees");
+            entity.Ignore(e => e.EmployeeIdStr);
+            entity.Ignore(e => e.PhotoUrl);
 
             entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
             entity.Property(e => e.LastName).IsRequired().HasMaxLength(20).HasColumnType("TEXT");
