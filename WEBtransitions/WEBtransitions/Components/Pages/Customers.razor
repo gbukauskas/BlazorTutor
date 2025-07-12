@@ -5,7 +5,6 @@
     <list type="bullet">
         <item><code>sort</code> - sort parameters</item>
         <item><code>page</code> - parameters for pager</item>
-        <item><code>filter</code> - filtering</item>
         <item><code>none<code> - start page, no parameters</item>
     </list>
   Parameter argument contains:
@@ -18,11 +17,11 @@
 
 @using System.Globalization
 @using System.Reflection
-@using Microsoft.AspNetCore.WebUtilities
-@using Microsoft.Data.Sqlite
-@using Microsoft.EntityFrameworkCore
+@* @using Microsoft.AspNetCore.WebUtilities *@
+@* @using Microsoft.Data.Sqlite *@
+@* @using Microsoft.EntityFrameworkCore *@
 @using System.Diagnostics
-@using System.Text
+@* @using System.Text *@
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
 
@@ -107,10 +106,14 @@ else
     </table>
 
     <div class="component-footer">
-        <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
-                      PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage" />
-        <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
-        <FilterControl T="Customer" BaseUrl="Customers" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+        <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
+        <CascadingValue Name="PageState" Value="@currentState">
+            <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                          PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage" />
+            <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
+                <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
+        </CascadingValue>
+        </CascadingValue>
     </div>
 
 }
@@ -205,9 +208,9 @@ else
             {
                 this.currentState.PreparePaging(this.Argument, NavManager, "Customers/page", PageNumber ?? 1);
             }
-            else if (Action == "filter")
+            else 
             {
-                this.currentState.PrepareFiltering(NavManager);
+                throw new Exception($"Action '{Action}' is invalid.");
             }
         }
         this.currentState.LastInsertedId = this.LastInsertedId;
@@ -217,7 +220,6 @@ else
             this.Action = "page";
         }
         SortParameter = dbSVC.ProcessCurrentPage(this.currentState, FieldNames);
-//        ProcessCurrentPage();
         currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
 
         state.SetState(this.currentState);
@@ -228,78 +230,7 @@ else
         base.OnAfterRender(firstRender);
         this.LastInsertedId = null;
     }
-/*
-    /// <summary>
-    /// Set values in the <code>this.currentState.FilterState</code>
-    /// </summary>
-    private void PrepareFiltering()
-    {
-        Debug.Assert(this.currentState != null);
-        string fieldName = string.Empty;
-        string searchValue = string.Empty;
 
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("field-name", out var _fieldName))
-        {
-            fieldName = Convert.ToString(_fieldName);
-        }
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("search-value", out var _searchValue))
-        {
-            searchValue = Convert.ToString(_searchValue);
-        }
-        this.currentState.FilterState = Tuple.Create(fieldName, searchValue);
-    }
-
-    /// <summary>
-    /// Set values in the <code>this.currentState.PagerState</code>
-    /// </summary>
-    private void PreparePaging()
-    {
-        Debug.Assert(this.currentState != null);
-        int pageSize;
-
-        if (int.TryParse(Argument, out pageSize))
-        {
-            this.PageSize = pageSize;
-        }
-        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("current-page", out var _initialCount))
-        {
-            this.PageNumber = Convert.ToInt32(_initialCount);
-        }
-        if (this.currentState.PagerState == null)
-        {
-            this.currentState.PagerState = new PgPostData("PagerNavigate", this.buttonCount);
-        }
-        this.currentState.PagerState.PageNumber = this.PageNumber ?? 1;
-        this.currentState.PagerState.PageSize = this.PageSize ?? this.defaultPageSize;
-        this.currentState.PagerState.BaseUrl = "Customers/page";
-    }
-
-    /// <summary>
-    /// Fills list SortParameter with correct values for every field
-    /// </summary>
-    private void ProcessCurrentPage()
-    {
-        Debug.Assert(this.currentState != null);
-        Tuple<string?, string> sortDefinition = dbSVC.SetSort(this.currentState.SortState, false);
-        if (!String.IsNullOrEmpty(sortDefinition.Item1))
-        {
-            SortParameter = new List<string>();
-            for (int i = 0; i < FieldNames.Length; i++)
-            {
-                if (FieldNames[i] == sortDefinition.Item2)
-                {
-                    SortParameter.Add($"{sortDefinition.Item1}_{sortDefinition.Item2}");
-                }
-                else
-                {
-                    SortParameter.Add($"n_{FieldNames[i]}");
-                }
-            }
-        }
-    }
-*/
     private string GetBoldClass(string customerId)
     {
         if (String.IsNullOrEmpty(this.LastInsertedId) || this.LastInsertedId != customerId)
@@ -311,4 +242,13 @@ else
             return "fw-bold";
         }
     }
+
+    void FilterChangedHandler(Tuple<string, string, bool> message)
+    {
+        Debug.Assert(this.currentState != null);
+        this.currentState.FilterState = message;
+        state.SetState(this.currentState);
+        NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
+    }
+
 }

@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
-using WEBtransitions.Components.Pages;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
 
@@ -123,6 +121,11 @@ namespace WEBtransitions.Services
             PgResponse<Employee> currentPage;
             string query = this.PrepareSQL(currentState);
             int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
+            if (totalRecords < currentState.PagerState.PageSize * (currentState.PagerState.PageNumber - 1))
+            {
+                currentState.PagerState.PageNumber = 1;
+            }
+
             Employee[] allCustomers;
 
             if (totalRecords > 0)
@@ -172,7 +175,16 @@ namespace WEBtransitions.Services
             StringBuilder bld = new StringBuilder("SELECT * FROM Employees WHERE IsDeleted = 0 ");
             if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
             {
-                bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
+                if (currentState.FilterState.Item3)    // Date value
+                {
+                    string argument = String.Format("AND {0} >= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item2);
+                    bld.AppendLine(argument);
+//                    bld.AppendLine($"AND {currentState.FilterState.Item1} >= 'currentState.FilterState.Item2' ");
+                }
+                else                                   // Text
+                {
+                    bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
+                }
             }
             if (!String.IsNullOrEmpty(currentState.SortState) && !currentState.SortState.StartsWith("n"))
             {

@@ -9,7 +9,6 @@ namespace WEBtransitions.Services
 {
     public class StateData: IStateData
     {
-        //        private static readonly Lock _stateLock = new();
         private static ReaderWriterLock rwl = new ReaderWriterLock();
         private static int timeOut = 10000;     // 10 seconds
 
@@ -66,7 +65,7 @@ namespace WEBtransitions.Services
         public string? ComponentName { get; set; }
         public string? SortState {  get; set; } = string.Empty;
         public PgPostData? PagerState { get; set; } = null;
-        public Tuple<string, string>? FilterState { get; set; } = null;
+        public Tuple<string, string, bool>? FilterState { get; set; } = null;
         public string? LastInsertedId { get; set; } = null;
 
 
@@ -121,6 +120,7 @@ namespace WEBtransitions.Services
             this.PagerState.BaseUrl = baseUrl;  //"Customers/page", "Employees/page";
         }
 
+// Remove reference from customers
         /// <summary>
         /// Set values in the <code>this.currentState.FilterState</code>
         /// </summary>
@@ -138,7 +138,7 @@ namespace WEBtransitions.Services
             {
                 searchValue = Convert.ToString(_searchValue);
             }
-            this.FilterState = Tuple.Create(fieldName, searchValue);
+            this.FilterState = Tuple.Create(fieldName, searchValue, false);
         }
 
     }

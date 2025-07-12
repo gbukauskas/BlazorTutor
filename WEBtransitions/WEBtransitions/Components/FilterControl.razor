@@ -1,86 +1,162 @@
 ﻿@using System.Reflection
+@using System.Diagnostics
+@using System.Web
+@using System.Globalization
 @using WEBtransitions.ClassLibraryDatabase.CustomFilter
+@using WEBtransitions.CustomErrors
+@using WEBtransitions.Services
+@using WEBtransitions.Services.Interfaces
 @typeparam T where T : class
+
+@implements IDisposable
 
 <div class="filter" name="custom-filter">
     <span class="border-text">Filter</span>
-    <form method="GET" action="/@BaseUrl/filter/search/" @formname="CustomerFilter">
-        <AntiforgeryToken />
-        <div class="item11">
-            <label>Field:</label>
-        </div>
-        <div class="item12">
-            <InputSelect @bind-value="Model!.Name" name="field-name">
-                @foreach (FilterElement item in controlNames)
-                {
-                    <option value="@item.Name" selected="@(item.IsSelected)">@item.Name</option>
-                }
-            </InputSelect>
+    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit" Enhance>
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-controls">
+            <label class="item11">Field:</label>
+            <div class="item12">
+                <InputSelect @bind-value="Model!.Name" name="field-name">
+                    @foreach (FilterElement item in ControlNames)
+                    {
+                        <option value="@item.Name" selected="@(item.IsSelected)">@item.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <label class="item21">Value:</label>
+            <div class="item22">
+                <InputText id="title" @bind-Value="Model!.Value" name="search-value" />
+            </div>
+            <div class="item13">
+                <button class="btn btn-sm" type="submit" style="float: right;">
+                    <img src="/Images/icons8-search-50.png" alt="Search" width="50" height="50" title="Apply filter" />
+                </button>
+            </div>
         </div>
 
-        <div class="item21">
-            <label>Value:</label>
-        </div>
-        <div class="item22">
-            <InputText id="title" @bind-Value="Model!.Value" name="search-value" />
-        </div>
-
-        <div class="submit-button item13">
-            <button class="btn btn-sm" type="submit">
-                <img src="/Images/icons8-search-50.png" alt="Search" width="50" height="50" title="Apply filter" />
-            </button>
-        </div>
-    </form>
+    </EditForm>
 </div>
 
 @code {
     [SupplyParameterFromForm]
-    private FilterElement? Model { get; set; } = new FilterElement();
+    private FilterModel? Model { get; set; }
+
+    [CascadingParameter(Name = "ActiveCulture")]
+    private CultureInfo? activeCulture { get; set; }
+    [CascadingParameter(Name = "PageState")]
+    private StateForComponent? currentState { get; set; }
 
     [Parameter]
-    public required string BaseUrl { get; set; } = "";
+    public EventCallback<Tuple<string, string, bool>> OnFilterChanged { get; set; }
 
-    [Parameter]
-    public string? FilterName { get; set; }
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
 
-    [Parameter]
-    public string? FilterValue { get; set; }
+    private string className = typeof(T).Name;
+    private string filterName = String.Empty;   // currentState!.FilterState!.Item1;
+    private string filterValue = String.Empty;  // currentState.FilterState!.Item2;
 
-    string className = typeof(T).Name;
 
 #pragma warning disable CS8618
-    private List<FilterElement> controlNames;
+    private List<FilterElement> ControlNames;
 #pragma warning restore CS8618
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        base.OnParametersSet();
-        GetControlNames();
+        base.OnInitialized();
+
+        ControlNames = GetControlNames();
+        if (ControlNames.Count < 1)
+        {
+            throw new DatabaseException($"Class {className} has no AllowFilteringAttribute");
+        }
+        if (Model == null)
+        {
+            Model = new FilterModel(ControlNames[0]);   // No element is selected
+        }
+        editContext = new(Model);
+
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
     }
 
-    private void GetControlNames()
+    private List<FilterElement> GetControlNames()
     {
         PropertyInfo[] myPropertyInfo = typeof(T).GetProperties();
-        controlNames = new List<FilterElement>();
+        var controlNames = new List<FilterElement>();
+        if (currentState != null && currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item1))
+        {
+            filterName = currentState.FilterState.Item1;
+            filterValue = currentState.FilterState.Item2;
+        }
+
         for (int i = 0; i < myPropertyInfo.Length; i++)
         {
             var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
             if (propertyAttributes.Length > 0)
             {
-                var item = new FilterElement(myPropertyInfo[i].Name);
-                if (!String.IsNullOrEmpty(FilterName) && item.Name == FilterName)
+                var item = new FilterElement(myPropertyInfo[i]);
+
+                if (!String.IsNullOrEmpty(filterName) && item.Name == filterName)
                 {
                     item.IsSelected = true;
-                    item.Value = FilterValue ?? "";
-                    Model = (FilterElement)item.Clone();
+                    item.Value = filterValue;
+                    Model = new FilterModel(item);
                 }
                 controlNames.Add(item);
             }
         }
+        return controlNames;
     }
 
-    // private void Submit()
-    // {
-    //     int i = 1;
-    // }
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        Debug.Assert(this.Model != null && !String.IsNullOrEmpty(this.Model.Name) && this.messageStore != null);
+        Debug.Assert(this.ControlNames != null && this.ControlNames.Count > 0);
+
+        messageStore.Clear();
+        FilterElement? currentElement = ControlNames.Find(x => x.Name == this.Model.Name);
+        if (currentElement == null)
+        {
+            throw new Exception($"Name {this.Model.Name} is invalid.");
+        }
+        Model.IsDateValue = currentElement.IsDateValue;
+        if (currentElement.IsDateValue)
+        {
+            DateTime filterdate;
+            if (!DateTime.TryParse(this.Model.Value, activeCulture, out filterdate))
+            {
+                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (editContext != null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+
+    private void Submit()
+    {
+        Debug.Assert(Model != null);
+        Debug.Assert(this.currentState != null);
+
+        string searchValue = String.IsNullOrEmpty(Model.Value) ? "" : Model.Value;
+        var filterState = Tuple.Create(Model.Name ?? "", searchValue, Model.IsDateValue);
+/*
+        int i = Math.Max(ControlNames.FindIndex(0, (x) => x.Name == filterState.Item1), 0);     // Clear Error messages
+        Model = new FilterModel(ControlNames[i]);
+*/
+        if (filterState.Item1 != filterName || filterState.Item2 != filterValue)
+        {
+            OnFilterChanged.InvokeAsync(filterState);
+        }
+    }
 }

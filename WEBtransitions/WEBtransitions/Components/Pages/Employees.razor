@@ -6,23 +6,21 @@
     <list type="bullet">
         <item><code>sort</code> - sort parameters</item>
         <item><code>page</code> - parameters for pager</item>
-        <item><code>filter</code> - filtering</item>
         <item><code>none<code> - start page, no parameters</item>
     </list>
   Parameter argument contains:
     <list type="bullet">
-        <item>Sort definition when <code>action == 'sort'</<code></item>
-        <item>Page size when <code>action == 'page'</<code> </item>
-        <item>Word search when <code>action == 'page'</<code> </item>
+        <item>Sort definition when <code>action == 'sort'</code></item>
+        <item>Page size when <code>action == 'page'</code> </item>
     </list>
 *@
 
 @using System.Globalization
-@using System.Linq.Expressions
-@using System.Reflection
-@using Microsoft.EntityFrameworkCore
-@using Microsoft.Extensions.Configuration;
-@using Microsoft.Extensions.Options
+@* @using System.Linq.Expressions *@
+@* @using System.Reflection *@
+@* @using Microsoft.EntityFrameworkCore *@
+@* @using Microsoft.Extensions.Configuration; *@
+@* @using Microsoft.Extensions.Options *@
 @using System.Diagnostics
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
@@ -102,10 +100,14 @@ else
     </table>
 
     <div class="component-footer">
-        <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
-                      PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
-        <a href="/EditEmployee/new" class="new-item-link" title="Insert new employee">New Employee</a>
-        <FilterControl T="Employee" BaseUrl="Employees" FilterName="@currentState?.FilterState?.Item1" FilterValue="@currentState?.FilterState?.Item2"></FilterControl>
+        <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
+        <CascadingValue Name="PageState" Value="@currentState">
+            <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                          PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
+            <a href="/EditEmployee/new" class="new-item-link" title="Insert new employee">New Employee</a>
+            <FilterControl T="Employee" OnFilterChanged="FilterChangedHandler"></FilterControl>
+        </CascadingValue>
+        </CascadingValue>
     </div>
 
 }
@@ -115,17 +117,6 @@ else
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "LastName", "FirstName", "Title", "TitleOfCourtesy", "BirthDate", "HireDate" };
     public List<string>? SortParameter; 
-
-    /// <summary>
-    /// <list type="number">
-    ///     <item>SortName is null or empty - no sort</item>
-    ///     <item>SortName starts with "n" - no sort</item>
-    ///     <item>SortName starts with "a" - sort ascending; name of sorting field starts from SortName[2]</item>
-    ///     <item>SortName starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
-    /// </list>
-    /// </summary>
-    // [Parameter]
-    // public string? SortName { get; set; }
 
     /// <summary>
     /// Action in the current page: read comments at beginnig of the file
@@ -203,9 +194,9 @@ else
             {
                 this.currentState.PreparePaging(this.Argument, NavManager, "Employees/page", PageNumber ?? 1);
             }
-            else if (Action == "filter")
+            else
             {
-                this.currentState.PrepareFiltering(NavManager);
+                throw new Exception($"Action '{Action}' is invalid.");
             }
         }
         this.currentState.LastInsertedId = this.LastInsertedId;
@@ -228,22 +219,12 @@ else
         this.LastInsertedId = null;
     }
 
-    private Tuple<string, string> SetSort(string sortParameter)
+    void FilterChangedHandler(Tuple<string, string, bool> message)
     {
-        string sortDirection;
-        switch (sortParameter.Substring(0, 1))
-        {
-            case "n": sortDirection = "a";
-                break;
-            case "a": sortDirection = "d";
-                break;
-            default:
-                sortDirection = "n";
-                break;
-        }
-        string sortName = sortParameter.Substring(2);
-        return new Tuple<string, string>(sortDirection, sortName);
+        Debug.Assert(this.currentState != null);
+        this.currentState.FilterState = message;
+        state.SetState(this.currentState);
+        NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
     }
-
     // https://learn.microsoft.com/en-us/aspnet/core/blazor/blazor-ef-core?view=aspnetcore-5.0#new-dbcontext-instances-5x
 }

@@ -1,15 +1,10 @@
-﻿using Azure;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WEBtransitions.Services
 {
@@ -68,6 +63,11 @@ namespace WEBtransitions.Services
             PgResponse<Customer> currentPage;
             string query = this.PrepareSQL(currentState);
             int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
+            if (totalRecords < currentState.PagerState.PageSize * (currentState.PagerState.PageNumber - 1))
+            {
+                currentState.PagerState.PageNumber = 1;
+            }
+
             Customer[] allCustomers;
 
             if (totalRecords > 0)
