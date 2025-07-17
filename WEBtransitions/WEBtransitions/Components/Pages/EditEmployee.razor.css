@@ -1,0 +1,38 @@
+﻿
+div.page-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-content: flex-start;
+    gap: 10px;
+}
+
+div.img-content {
+    flex: none;
+    flex-basis: 160px;
+    /*width: 160px;*/
+}
+
+div.form-content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 512px;
+}
+
+div.form-content > h2 {
+    text-align: left;
+    padding-left: 7em;
+}
+
+label.left-column {
+    width: 10em;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+div.form-group {
+    margin-bottom: 5px;
+}
+
+

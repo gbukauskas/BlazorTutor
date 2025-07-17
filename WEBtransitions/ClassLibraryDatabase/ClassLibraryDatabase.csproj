@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <None Remove="CustomFilter\FilterModel.cs~RFf344e2d.TMP" />
+    <None Remove="DBContext\Interfaces\ISelectableItem.cs~RF15737d4.TMP" />
   </ItemGroup>
 
   <ItemGroup>

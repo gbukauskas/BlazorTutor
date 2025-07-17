@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Components.Pages;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
 

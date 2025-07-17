@@ -1,5 +1,4 @@
-﻿@* @page "/Employees/{sortname?}" *@
-@page "/Employees/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+﻿@page "/Employees/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
 
 @*
   Parameter action defines type of parameters:
@@ -16,11 +15,6 @@
 *@
 
 @using System.Globalization
-@* @using System.Linq.Expressions *@
-@* @using System.Reflection *@
-@* @using Microsoft.EntityFrameworkCore *@
-@* @using Microsoft.Extensions.Configuration; *@
-@* @using Microsoft.Extensions.Options *@
 @using System.Diagnostics
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
@@ -82,7 +76,7 @@ else
                     <td>@emp.BirthDate?.ToString(ActiveCulture)</td>
                     <td>@emp.HireDate?.ToString(ActiveCulture)</td>
                     <td>
-                        <CrudLinksControl Url="/EditEmployee" Id="@emp.EmployeeIdStr" />
+                        <CrudLinksControl Url="/EditEmployee" Id="@emp.ItemKey" />
                     </td>
                 </tr>
             }

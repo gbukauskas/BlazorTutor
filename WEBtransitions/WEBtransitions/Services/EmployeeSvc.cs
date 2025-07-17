@@ -48,6 +48,14 @@ namespace WEBtransitions.Services
         {
             return this.Ctx.Employees;
         }
+        public IEnumerable<SelectableItem> GetSelectableItems(int excludeIds, int? reportsToId)
+        {
+            var allItems = this.Ctx.Employees.Where(x => x.IsDeleted == 0 && x.EmployeeId != excludeIds);
+            foreach (var item in allItems)
+            { 
+                yield return new SelectableItem(item.ItemKey, item.ItemValue, reportsToId.HasValue && reportsToId == item.EmployeeId); 
+            }
+        }
 
         public Task<IEnumerable<Employee>> CreateEntities(IEnumerable<Employee> collection)
         {
@@ -64,9 +72,15 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Employee?> GetEntityByIdAsync(string id)
+        public async Task<Employee?> GetEntityByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            int employeeId;
+            if (!int.TryParse(id, out employeeId))
+            {
+                throw new InvalidRequestException($"{id} is not integer.");
+            }
+
+            return await this.Ctx.Employees.Where(x => x.EmployeeId == employeeId && x.IsDeleted == 0).FirstOrDefaultAsync();
         }
 
         public Task<Employee> UpdateEntity(Employee entity, bool ignoreConcurrencyError=false)
@@ -139,9 +153,9 @@ namespace WEBtransitions.Services
             {
                 allCustomers = [];
             }
-            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Employee>(allCustomers, x => x.EmployeeIdStr == currentState.LastInsertedId))
+            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Employee>(allCustomers, x => x.ItemKey == currentState.LastInsertedId))
             {
-                var newCustomer = await this.Ctx.Employees.Where(x => x.EmployeeIdStr == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                var newCustomer = await this.Ctx.Employees.Where(x => x.ItemKey == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
                 if (newCustomer != null)
                 {
                     allCustomers = allCustomers.Append(newCustomer).ToArray();

@@ -41,7 +41,7 @@ p.text-danger {
 
 div.confirmation {
     margin-top: 2ex;
-    padding-left; 2em;
+    padding-left: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;

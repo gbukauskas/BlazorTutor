@@ -1,0 +1,188 @@
+﻿@page "/EditEmployee/{action}/{argument?}"
+@using System.Diagnostics
+@using System.Globalization
+@using WEBtransitions.ClassLibraryDatabase.DBContext
+@using Microsoft.EntityFrameworkCore
+@using WEBtransitions.Services
+
+@inject EmployeeSvc dbsvc
+@inject RegionSvc _regionSvc
+
+@*
+  Parameter <code>action</code> defines type of the screen:
+    <list type="bullet">
+        <item><code>edit</code> - Edit employee</item>
+        <item><code>view</code> - View details of the employee</item>
+        <item><code>new</code> - create new employee</item>
+        <item><code>delete<code> - confirm delete operation</item>
+    </list>
+  Parameter <code>argument</code> contains id of the employee. Parameter is optional for the <code>new</code> action.
+*@
+
+<div class="page-content">
+    <div class="img-content">
+        <img src="@Model!.PhotoUrl" />
+    </div>
+    <div class="form-content">
+        <h2>@Model.ItemValue</h2>
+        <EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditEmployee">
+            <DataAnnotationsValidator />  
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label class="left-column" for="first-name">First name</label>
+                <InputText name="first-name" @bind-Value="Model!.FirstName" style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="last-name">Last name</label>
+                <InputText name="last-name" @bind-Value="Model!.LastName" style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="title">Title</label>
+                <InputText name="title" @bind-Value="Model!.Title" style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="title-Of-courtesy">Title of courtesy</label>
+                <InputText name="title-Of-courtesy" @bind-Value="Model!.TitleOfCourtesy" style="width: 200px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="birth-date">Birth date</label>
+                @* <InputDate name="birth-date" @bind-Value="Model!.BirthDate" @bind:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly"></InputDate> *@
+                <input name="birth-date" @bind-value=Model!.BirthDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly" />
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="hire-date">Hire date</label>
+                @* <InputDate name="hire-date" @bind-value=Model!.HireDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly"></InputDate> *@
+                <input name="hire-date" @bind-value=Model!.HireDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly" />
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="address">Address</label>
+                <InputText name="address" @bind-Value="Model!.Address" style="width: notes;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="city">City</label>
+                <InputText name="city" @bind-Value="Model!.City" style="width: 200px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="region">Region</label>
+                <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 200px; display: inline-block;" action="@Action" RegionChanged="RegionChangedHanler">
+                    @foreach (var item in allRegions)
+                    {
+                        <option value=@item />
+                    }
+                </Autocomplete>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="postal-code">Postal code</label>
+                <InputText name="postal-code" @bind-Value="Model!.PostalCode" style="width: 200px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="country">Country</label>
+                <InputText name="country" @bind-Value="Model!.Country" style="width: 200px;" Disabled="@IsReadOnly"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="home-phone">Home phone</label>
+                <InputText name="home-phone" @bind-Value="Model!.HomePhone" style="width: 200px;" Disabled="@IsReadOnly"></InputText>
+                <InputText name="extension" @bind-Value="Model!.Extension" style="width: 100px; margin-left: 1em;" Disabled="@IsReadOnly" title="Extension"></InputText>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="reports-to">Reports to</label>
+                <InputSelect name="reports-to" @bind-Value="Model!.ReportsToStr" style="width: 500px; padding: 5px 0px;">
+                    @foreach (var item in allEmployees)
+                    {
+                        <option value="@item.ItemKey">@item.ItemValue</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label class="left-column" for="notes" style="vertical-align: top;">Notes</label>
+                <InputTextArea name="notes" @bind-Value="Model!.Notes" style="width: 500px; overflow-y: auto;" Disabled="@IsReadOnly" Rows="5"></InputTextArea>
+            </div>
+
+            <!-- https://docs.blazorbootstrap.com/components/dropdown -->
+
+            <button class="btn btn-primary" type="submit">
+                <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+            </button>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    ///employee ID
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    [SupplyParameterFromForm(FormName = "Editemployee")]
+    private Employee? Model { get; set; }
+
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+    public string ErrorMessage = "";
+    public required string[] allRegions;
+    public required SelectableItem[] allEmployees;
+
+    /// <summary>
+    /// "readonly" for the <code>view</code> operation. Empty string for the all other cases.
+    /// </summary>
+    internal bool IsReadOnly = false;
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        Model ??= new();
+        editContext = new(Model);
+        messageStore = new(editContext);
+        this.allRegions = await _regionSvc.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Debug.Assert(Action == "new" || !String.IsNullOrEmpty(Argument));
+        Employee? employee;
+
+        if (String.IsNullOrEmpty(Argument) || Action == "new")
+        {
+            employee = new()
+            {
+                EmployeeId = 0,
+                LastName = "employee",
+                FirstName = "New"
+            };
+
+        }
+        else
+        {
+            employee = await dbsvc.GetEntityByIdAsync(Argument);
+        }
+        if (employee == null)
+        {
+            this.ErrorMessage = $"employee {Argument} was not found.";
+            return;
+        }
+        IsReadOnly = (Action == "view" || Action == "delete");
+
+        this.Model = employee;
+        this.allEmployees = dbsvc.GetSelectableItems(employee.EmployeeId ?? 0, employee.ReportsTo).ToArray();
+    }
+
+    internal void RegionChangedHanler(string newRegion)
+    {
+        this.Model!.Region = newRegion;
+    }
+
+    public void HandleSubmit()
+    {
+        int i = 1;
+    }
+}
