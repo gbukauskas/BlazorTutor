@@ -8,7 +8,7 @@ using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.Services
 {
-    public class EmployeeSvc: CommonSvc, IDatabaseSvc<Employee, string>, IPagedCollection<Employee>
+    public class EmployeeSvc: CommonSvc, IDatabaseSvc<Employee, string>, IPagedCollection<Employee>, IDisposable
     {
         private NorthwindContext? _ctx = null;
         internal NorthwindContext Ctx
@@ -35,7 +35,7 @@ namespace WEBtransitions.Services
             this.factory = factory;
         }
 
-        ~EmployeeSvc()
+        public void Dispose()
         {
             if (_ctx != null)
             {

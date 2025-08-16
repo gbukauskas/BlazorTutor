@@ -25,7 +25,7 @@
     </div>
     <div class="form-content">
         <h2>@Model.ItemValue</h2>
-        <EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditEmployee">
+        <EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditEmployee" method="POST" enctype="multipart/form-data" Enhance>
             <DataAnnotationsValidator />  
             <ValidationSummary />
 
@@ -47,12 +47,10 @@
             </div>
             <div class="form-group">
                 <label class="left-column" for="birth-date">Birth date</label>
-                @* <InputDate name="birth-date" @bind-Value="Model!.BirthDate" @bind:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly"></InputDate> *@
                 <input name="birth-date" @bind-value=Model!.BirthDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly" />
             </div>
             <div class="form-group">
                 <label class="left-column" for="hire-date">Hire date</label>
-                @* <InputDate name="hire-date" @bind-value=Model!.HireDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly"></InputDate> *@
                 <input name="hire-date" @bind-value=Model!.HireDate @bind-value:format="yyyy-MM-dd" style="width: 200px;" Disabled="@IsReadOnly" />
             </div>
             <div class="form-group">
@@ -98,8 +96,13 @@
                 <label class="left-column" for="notes" style="vertical-align: top;">Notes</label>
                 <InputTextArea name="notes" @bind-Value="Model!.Notes" style="width: 500px; overflow-y: auto;" Disabled="@IsReadOnly" Rows="5"></InputTextArea>
             </div>
+            <div class="form-group">
+                <label class="left-column" for="photo-file" style="vertical-align: top;">Photo</label>
+                <InputFile id="photo-file" name="Model.PhotoFile" class="form-control" placeholder style="width: 500px; display: inline-block;" Disabled="@IsReadOnly"></InputFile>
+            </div>
 
             <!-- https://docs.blazorbootstrap.com/components/dropdown -->
+            <!-- https://stackoverflow.com/questions/77801550/how-to-upload-a-file-in-blazor-ssr-net-8 ?? -->
 
             <button class="btn btn-primary" type="submit">
                 <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
@@ -181,7 +184,7 @@
         this.Model!.Region = newRegion;
     }
 
-    public void HandleSubmit()
+    public async Task HandleSubmit(EditContext editContext_1)
     {
         int i = 1;
     }

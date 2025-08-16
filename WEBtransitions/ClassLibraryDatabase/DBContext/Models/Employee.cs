@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 
@@ -72,6 +73,8 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? Extension { get; set; }
 
         public byte[]? Photo { get; set; }
+        public IFormFile? PhotoFile { get; set; }
+
         public string PhotoUrl
         {
             get
@@ -139,6 +142,7 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                 entity.Ignore(e => e.ItemKey);
                 entity.Ignore(e => e.PhotoUrl);
                 entity.Ignore(e => e.ReportsToStr);
+                entity.Ignore(e => e.PhotoFile);
 
                 entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(20).HasColumnType("TEXT");
