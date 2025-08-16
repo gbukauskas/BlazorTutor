@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
@@ -29,6 +27,7 @@ public partial class NorthwindContext : DbContext
         return new NorthwindContext(optionsBuilder.Options);
     }
 
+    // Tables and views
     public virtual DbSet<AlphabeticalListOfProduct> AlphabeticalListOfProducts { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }

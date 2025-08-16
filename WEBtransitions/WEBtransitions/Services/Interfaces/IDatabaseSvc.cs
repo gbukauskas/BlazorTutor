@@ -1,6 +1,4 @@
-﻿using WEBtransitions.ClassLibraryDatabase.DBContext;
-
-namespace WEBtransitions.Services.Interfaces
+﻿namespace WEBtransitions.Services.Interfaces
 {
     public interface IDatabaseSvc<T, K> where T : class 
                                         where K : IComparable
@@ -12,6 +10,8 @@ namespace WEBtransitions.Services.Interfaces
         Task<T> UpdateEntity(T entity, bool ignoreConcurrencyError = false);
         Task<T?> GetEntityByIdAsync(K id);
         Task<bool> DeleteEntityByIdAsync(T entity, bool ignoreConcurrencyError = false);
+
+        Tuple<string?, string> SetSort(string? sortParameter, bool setNextState);
 
     }
 }

@@ -26,6 +26,16 @@
     }
 
     [Serializable]
+    public class InvalidRequestException : Exception
+    {
+        public InvalidRequestException()
+        { }
+
+        public InvalidRequestException(string message) : base(message)
+        { }
+    }
+
+    [Serializable]
     public class DataBaseUpdateException : Exception
     {
         public DataBaseUpdateException()

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using WEBtransitions.Components;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Components;
 using WEBtransitions.Services;
 using WEBtransitions.Services.Interfaces;
 
@@ -31,14 +31,10 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-//builder.Services.Configure<AppSettings>(
-//    builder.Configuration.GetSection(nameof(AppSettings)));
-
-builder.Services.AddScoped<IDatabaseSvc<Employee, string>, EmployeeSvc>();
-builder.Services.AddScoped<IDatabaseSvc<Region, string>, RegionSvc>();
-
 builder.Services
     .AddScoped<CustomerSvc>()
+    .AddScoped<EmployeeSvc>()
+    .AddScoped<RegionSvc>()
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
 builder.Services.AddSingleton<IStateData, StateData>();
@@ -63,3 +59,4 @@ app.Run();
 // Change SQL drive:
 // https://www.bing.com/videos/riverview/relatedvideo?q=sql+move+database+to+another+drive&mid=358CF6A17A7AA5E9760F358CF6A17A7AA5E9760F&FORM=VIRE
 // https://www.learnblazor.com/layouts
+// Free hosting https://www.monsterasp.net/#plans

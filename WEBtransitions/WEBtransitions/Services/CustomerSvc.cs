@@ -1,25 +1,18 @@
-﻿using Azure;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Components.Pages;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WEBtransitions.Services
 {
-    public class CustomerSvc : IDatabaseSvc<Customer, string>, IPagedCollection<Customer>
+    public class CustomerSvc : CommonSvc, IDatabaseSvc<Customer, string>, IPagedCollection<Customer>, IDisposable
     {
-        /// <summary>
-        /// Precision for comparision of double constatns
-        /// </summary>
-        public static readonly double DELTA = 0.000001;
-
         private NorthwindContext? _ctx = null;
+
         public NorthwindContext Ctx
         {
             get
@@ -44,7 +37,7 @@ namespace WEBtransitions.Services
             this.factory = factory;
         }
 
-        ~CustomerSvc()
+        public void Dispose()
         {
             if (_ctx != null)
             {
@@ -70,7 +63,12 @@ namespace WEBtransitions.Services
 
             PgResponse<Customer> currentPage;
             string query = this.PrepareSQL(currentState);
-            int totalRecords = await CountRecordsAsync(query, currentState);
+            int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
+            if (totalRecords < currentState.PagerState.PageSize * (currentState.PagerState.PageNumber - 1))
+            {
+                currentState.PagerState.PageNumber = 1;
+            }
+
             Customer[] allCustomers;
 
             if (totalRecords > 0)
@@ -108,30 +106,30 @@ namespace WEBtransitions.Services
 
             return currentPage;
         }
-
-        private async Task<int> CountRecordsAsync(string query, StateForComponent currentState)
-        {
-            Debug.Assert(currentState != null && currentState.PagerState != null);
-            try
-            {
-                string countQuery = query.Replace("*", "COUNT(1) AS Value");
-                currentState.PagerState.RowCount = await this.Ctx.Database.SqlQueryRaw<int>(countQuery).FirstOrDefaultAsync();
-
-                int pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
-                if (currentState.PagerState.RowCount % currentState.PagerState.PageSize > 0)
+        /*
+                private async Task<int> CountRecordsAsync(string query, StateForComponent currentState)
                 {
-                    pgCount += 1;
-                }
-                currentState.PagerState.PageCount = pgCount;
-                return currentState.PagerState.RowCount;
-            }
-            catch (Exception ex)
-            {
-                string s = ex.Message;
-                throw;
-            }
-        }
+                    Debug.Assert(currentState != null && currentState.PagerState != null);
+                    try
+                    {
+                        string countQuery = query.Replace("*", "COUNT(1) AS Value");
+                        currentState.PagerState.RowCount = await this.Ctx.Database.SqlQueryRaw<int>(countQuery).FirstOrDefaultAsync();
 
+                        int pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
+                        if (currentState.PagerState.RowCount % currentState.PagerState.PageSize > 0)
+                        {
+                            pgCount += 1;
+                        }
+                        currentState.PagerState.PageCount = pgCount;
+                        return currentState.PagerState.RowCount;
+                    }
+                    catch (Exception ex)
+                    {
+                        string s = ex.Message;
+                        throw;
+                    }
+                }
+        */
         /// <summary>
         /// Builds SQL statement
         /// </summary>
@@ -154,60 +152,60 @@ namespace WEBtransitions.Services
 
             return bld.ToString();
         }
-
-        /// <summary>
-        /// <list type="number">
-        ///     <item>sortDefinionOriginal is null or empty - no sort</item>
-        ///     <item>sortDefinionOriginal starts with "n" - no sort</item>
-        ///     <item>sortDefinionOriginal starts with "a" - sort ascending; name of sorting field starts from SortName[2]</item>
-        ///     <item>sortDefinionOriginal starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
-        /// </list>
-        /// </summary>
-        public Tuple<string?, string> SetSort(string? sortParameter, bool setNextState)
-        {
-            string sortDirection;
-            if (String.IsNullOrEmpty(sortParameter))
-            {
-                return new Tuple<string?, string>(null, "");
-            }
-
-            if (setNextState)
-            {
-                switch (sortParameter.Substring(0, 1))
+        /*
+                /// <summary>
+                /// <list type="number">
+                ///     <item>sortDefinionOriginal is null or empty - no sort</item>
+                ///     <item>sortDefinionOriginal starts with "n" - no sort</item>
+                ///     <item>sortDefinionOriginal starts with "a" - sort ascending; name of sorting field starts from SortName[2]</item>
+                ///     <item>sortDefinionOriginal starts with "d" - sort descending; name of sorting field starts from SortName[2]</item>
+                /// </list>
+                /// </summary>
+                public Tuple<string?, string> SetSort(string? sortParameter, bool setNextState)
                 {
-                    case "n":
-                        sortDirection = "a";
-                        break;
-                    case "a":
-                        sortDirection = "d";
-                        break;
-                    default:
-                        sortDirection = "n";
-                        break;
-                }
-            }
-            else
-            {
-                sortDirection = sortParameter.Substring(0, 1);
-            }
-            string sortName = sortParameter.Substring(2);
-            return new Tuple<string?, string>(sortDirection, sortName);
-        }
-
-        public PgResponse<Customer> GetPageAsync(IEnumerable<Customer>? collection, int pageSize, int pageNumber)
-        {
-            Func<int, int, int, IEnumerable<Customer>, PgResponse<Customer>> buildAnswer =
-                delegate (int recordCount, int pageNumber, int totalPages, IEnumerable<Customer> items)
-                {
-                    return new PgResponse<Customer>()
+                    string sortDirection;
+                    if (String.IsNullOrEmpty(sortParameter))
                     {
-                        TotalRecords = recordCount,
-                        TotalPages = totalPages,
-                        PageSize = pageSize,
-                        PageNumber = pageNumber,
-                        Items = items
-                    };
-                };
+                        return new Tuple<string?, string>(null, "");
+                    }
+
+                    if (setNextState)
+                    {
+                        switch (sortParameter.Substring(0, 1))
+                        {
+                            case "n":
+                                sortDirection = "a";
+                                break;
+                            case "a":
+                                sortDirection = "d";
+                                break;
+                            default:
+                                sortDirection = "n";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        sortDirection = sortParameter.Substring(0, 1);
+                    }
+                    string sortName = sortParameter.Substring(2);
+                    return new Tuple<string?, string>(sortDirection, sortName);
+                }
+        */
+        public PgResponse<Customer> GetPage(IEnumerable<Customer>? collection, int pageSize, int pageNumber)    // ??
+        {
+            //Func<int, int, int, IEnumerable<Customer>, PgResponse<Customer>> buildAnswer =
+            //    delegate (int recordCount, int pageNumber, int totalPages, IEnumerable<Customer> items)
+            //    {
+            //        return new PgResponse<Customer>()
+            //        {
+            //            TotalRecords = recordCount,
+            //            TotalPages = totalPages,
+            //            PageSize = pageSize,
+            //            PageNumber = pageNumber,
+            //            Items = items
+            //        };
+            //    };
 
             Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
             try
@@ -216,11 +214,12 @@ namespace WEBtransitions.Services
 
                 if (recordsCount < 1)
                 {
-                    return buildAnswer(recordsCount, 0, 0, []);
+                    var emptyList = new List<Customer>().ToArray();
+                    return new PgResponse<Customer>(recordsCount, pageSize, pageNumber, 0, emptyList);
                 }
                 else if (pageNumber == -1)
                 {
-                    return buildAnswer(recordsCount, 1, 1, collection.ToArray());   // return all records
+                    return new PgResponse<Customer>(recordsCount, pageSize, 1, 1, collection.ToArray());
                 }
                 else
                 {
@@ -236,7 +235,7 @@ namespace WEBtransitions.Services
                                         .Take<Customer>(pageSize)
                                         .ToArray();
 
-                    return buildAnswer(recordsCount, currentPage, totalPages, pageContent);
+                    return new PgResponse<Customer>(recordsCount, pageSize, pageNumber, totalPages, pageContent);
                 }
             }
             catch (Exception ex)
@@ -257,7 +256,7 @@ namespace WEBtransitions.Services
             try
             {
                 Customer? dbCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == entity.CustomerId).FirstOrDefaultAsync();
-                
+
                 if (dbCustomer == null)
                 {
                     Ctx.Add(entity);
@@ -272,7 +271,7 @@ namespace WEBtransitions.Services
                     Ctx.Entry(dbCustomer).State = EntityState.Modified;
                     await Ctx.SaveChangesAsync();
                     return dbCustomer;
-                } 
+                }
                 else
                 {
                     throw new DbUpdateException($"Key {entity.CustomerId} is already used");
@@ -315,9 +314,10 @@ namespace WEBtransitions.Services
                     dbCustomer.Fax = entity.Fax;
                     dbCustomer.IsDeleted = entity.IsDeleted;
 
-                    dbCustomer.Version = dbCustomer.IgnoreConcurency 
+                    dbCustomer.Version = dbCustomer.IgnoreConcurency
                         ? -1    // Ignore concurrency error
                         : entity.Version;
+                    dbCustomer.RememberRegion = entity.RememberRegion;
 
                     int status = this.Ctx.SaveChanges();
                     return dbCustomer;
@@ -348,8 +348,8 @@ namespace WEBtransitions.Services
                     return true;
                 }
                 else
-                { 
-                    return false; 
+                {
+                    return false;
                 }
             }
             catch (DbUpdateException ex)
@@ -357,6 +357,5 @@ namespace WEBtransitions.Services
                 throw new DatabaseException("An error occurred while removing the entity.", ex);
             }
         }
-
     }
 }

@@ -39,7 +39,7 @@ namespace TestBusinessPart
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
-            var page = svc.GetPageAsync(tmp, 10, 2);
+            var page = svc.GetPage(tmp, 10, 2);
 
             Assert.NotNull(page?.Items);
             var item = page.Items.First();
@@ -57,7 +57,7 @@ namespace TestBusinessPart
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities();
-            var page = svc.GetPageAsync(tmp, 0, -1);
+            var page = svc.GetPage(tmp, 0, -1);
 
             Assert.NotNull(page?.Items);
             Assert.Equal(93, page.Items.Count());
@@ -73,7 +73,7 @@ namespace TestBusinessPart
             var svc = new CustomerSvc(null) { Ctx = ctxTest };
 
             var tmp = svc.GetAllEntities().OrderByDescending(x => x.CustomerId);
-            var page = svc.GetPageAsync(tmp, 10, 110);
+            var page = svc.GetPage(tmp, 10, 110);
 
             Assert.NotNull(page?.Items);
             var item = page.Items.First();

@@ -6,7 +6,8 @@
     position: relative;
     width: 22em;
 }
-div.filter > form {
+
+div.form-controls {
     display: grid;
     grid-template-columns: 2fr 4fr 1fr;
     grid-template-rows: 1fr 1fr;

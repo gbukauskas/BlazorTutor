@@ -14,7 +14,13 @@ namespace WEBtransitions.Services
         {
             Characters = GenerateTemplate(flags);
             var builder = new StringBuilder();
-            Random rand = new Random((new DateTime()).Millisecond);
+
+            DateTime currentDate = DateTime.Now;
+            DateTime centuryBegin = new DateTime(2001, 1, 1);
+            long elapsedTicks = currentDate.Ticks - centuryBegin.Ticks;
+            int seed = elapsedTicks.GetHashCode();
+
+            Random rand = new Random(seed);
             while (builder.Length < keyLength)
             {
                 int i = rand.Next(1, Characters.Length) - 1;
