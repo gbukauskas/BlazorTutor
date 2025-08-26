@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Components;
 using WEBtransitions.Services;
 using WEBtransitions.Services.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +40,7 @@ builder.Services
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
 builder.Services.AddSingleton<IStateData, StateData>();
+//builder.Services.AddScoped<IStateData, StateData>();
 
 var app = builder.Build();
 
@@ -60,3 +63,4 @@ app.Run();
 // https://www.bing.com/videos/riverview/relatedvideo?q=sql+move+database+to+another+drive&mid=358CF6A17A7AA5E9760F358CF6A17A7AA5E9760F&FORM=VIRE
 // https://www.learnblazor.com/layouts
 // Free hosting https://www.monsterasp.net/#plans
+// https://learn.microsoft.com/en-us/aspnet/core/blazor/state-management/protected-browser-storage?view=aspnetcore-9.0

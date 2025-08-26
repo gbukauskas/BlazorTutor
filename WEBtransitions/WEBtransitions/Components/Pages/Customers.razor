@@ -17,11 +17,7 @@
 
 @using System.Globalization
 @using System.Reflection
-@* @using Microsoft.AspNetCore.WebUtilities *@
-@* @using Microsoft.Data.Sqlite *@
-@* @using Microsoft.EntityFrameworkCore *@
 @using System.Diagnostics
-@* @using System.Text *@
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
 
@@ -107,11 +103,11 @@ else
 
     <div class="component-footer">
         <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
-        <CascadingValue Name="PageState" Value="@currentState">
+            <CascadingValue Name="PageState" Value="@currentState">
             <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
                           PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage" />
             <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
-                <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
+            <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
         </CascadingValue>
         </CascadingValue>
     </div>
@@ -168,6 +164,10 @@ else
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
+
+    /// <summary>
+    /// Cascading parameter
+    /// </summary>
     private StateForComponent? currentState = null;
 
     protected override async Task OnInitializedAsync()
@@ -195,25 +195,25 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        this.currentState = state.GetState("Customers", buttonCount, this.defaultPageSize);
+        this.currentState = state?.GetState("Customers", buttonCount, this.defaultPageSize);
 
         if (!String.IsNullOrEmpty(Argument))
         {
             if (Action == "sort")
             {
                 Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
-                this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }
             else if (Action == "page")
             {
-                this.currentState.PreparePaging(this.Argument, NavManager, "Customers/page", PageNumber ?? 1);
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Customers/page", PageNumber ?? 1);
             }
             else 
             {
                 throw new Exception($"Action '{Action}' is invalid.");
             }
         }
-        this.currentState.LastInsertedId = this.LastInsertedId;
+        this.currentState!.LastInsertedId = this.LastInsertedId;
 
         if (String.IsNullOrEmpty(Action))
         {
@@ -222,7 +222,7 @@ else
         SortParameter = dbSVC.ProcessCurrentPage(this.currentState, FieldNames);
         currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
 
-        state.SetState(this.currentState);
+        state!.SetState(this.currentState);
     }
 
     protected override void OnAfterRender(bool firstRender)

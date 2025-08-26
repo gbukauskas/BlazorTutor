@@ -107,7 +107,10 @@ else
 }
 
 @code {
-    // private Employee[]? CurrentPage;
+
+    // [CascadingParameter(Name = "StateData")]
+    // public IStateData? state { get; set; }
+
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "LastName", "FirstName", "Title", "TitleOfCourtesy", "BirthDate", "HireDate" };
     public List<string>? SortParameter; 
@@ -151,6 +154,10 @@ else
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Employee>? currentPage = null;
+
+    /// <summary>
+    /// Cascading parameter
+    /// </summary>
     private StateForComponent? currentState = null;
 
 

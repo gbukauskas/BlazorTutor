@@ -96,6 +96,16 @@
     display: block;
 }
 
+details.nav-item {
+    color: var(--bs-light);
+    padding-left: var(--bs-nav-link-padding-x);
+}
+
+details:open > summary {
+    font-weight: bolder;
+    color: burlywood;
+}
+
 @media (min-width: 641px) {
     .navbar-toggler {
         display: none;

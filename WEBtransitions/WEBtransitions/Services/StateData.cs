@@ -12,6 +12,11 @@ namespace WEBtransitions.Services
         private static ReaderWriterLock rwl = new ReaderWriterLock();
         private static int timeOut = 10000;     // 10 seconds
 
+        public StateData()
+        {
+            int i = 1;
+        }
+
         private Dictionary<string, StateForComponent> States { get; set; } = new();
 
         public StateForComponent GetState(string index, int buttonCount = 10, int pageSize = 9)

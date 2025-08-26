@@ -12,7 +12,7 @@
 
 <div class="filter" name="custom-filter">
     <span class="border-text">Filter</span>
-    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit" Enhance>
+    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -46,6 +46,7 @@
 
     [CascadingParameter(Name = "ActiveCulture")]
     private CultureInfo? activeCulture { get; set; }
+
     [CascadingParameter(Name = "PageState")]
     private StateForComponent? currentState { get; set; }
 
