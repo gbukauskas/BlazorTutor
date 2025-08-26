@@ -70,7 +70,8 @@
               "RelativeToolTip": "WEBtransitions\\Components\\Pages\\Customers.razor",
               "ViewState": "AgIAAJQAAAAAAAAAAAAUwLAAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-08-24T07:17:56.104Z"
+              "WhenOpened": "2025-08-24T07:17:56.104Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -92,9 +93,10 @@
               "RelativeDocumentMoniker": "WEBtransitions\\Services\\StateData.cs",
               "ToolTip": "D:\\darbas\\BlazorTutor\\WEBtransitions\\WEBtransitions\\Services\\StateData.cs",
               "RelativeToolTip": "WEBtransitions\\Services\\StateData.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAqwBAAAAAMAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-24T07:02:01.124Z"
+              "WhenOpened": "2025-08-24T07:02:01.124Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
