@@ -16,12 +16,9 @@
 *@
 
 @using System.Globalization
-@using System.Reflection
-@* @using Microsoft.AspNetCore.WebUtilities *@
-@* @using Microsoft.Data.Sqlite *@
-@* @using Microsoft.EntityFrameworkCore *@
+@* @using System.Reflection *@
 @using System.Diagnostics
-@* @using System.Text *@
+@* @using System.Text.Json *@
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
 
@@ -33,7 +30,9 @@
 @inject CustomerSvc dbSVC
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
-@inject IStateData state
+@inject StateSvc StateManager
+
+@implements IAsyncDisposable
 
 <PageTitle>Customers</PageTitle>
 
@@ -107,11 +106,11 @@ else
 
     <div class="component-footer">
         <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
-        <CascadingValue Name="PageState" Value="@currentState">
+            <CascadingValue Name="PageState" Value="@currentState">
             <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
                           PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Customers/page" ErrorMessage="@ErrorMessage" />
             <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
-                <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
+            <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
         </CascadingValue>
         </CascadingValue>
     </div>
@@ -152,13 +151,19 @@ else
     public string? DBerrorMessage { get; set; } = null;
 
     [SupplyParameterFromQuery(Name = "new_id")]
-    public string? LastInsertedId { get; set; } = null;
+    public string LastInsertedId { get; set; } = "-1";
 
+    /// <summary>
+    /// This property has no BaseUrl
+    /// </summary>
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+/*
     /// <summary>
     /// Number of rows in the page
     /// </summary>
     internal int? PageSize { get; set; } = null;
-
+*/
     /// <summary>
     /// Sort definition
     /// </summary>
@@ -168,21 +173,41 @@ else
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
+
+    //    private StateData? state;
+
+    /// <summary>
+    /// Cascading parameter
+    /// </summary>
     private StateForComponent? currentState = null;
+    private AppStateKey? stateId;
 
     protected override async Task OnInitializedAsync()
     {
         // await Task.Delay(1000);  // Test for stream rendering
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Customers");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Customers");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, StateKey.UserId, "Customers");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            stateData = await CreateNewState(stateId);
+        }
+        currentState = (StateForComponent)stateData;
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2))
+        {
+            currentState.FilterState = new Tuple<string, string, bool>("", "", false);
+        }
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
         {
             SortParameter.Add($"n_{FieldNames[i]}");
         }
-
-        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
-        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Customers");
-        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Customers");
 
         ActiveCulture = new CultureInfo(activeCultureStr);
         await base.OnInitializedAsync();
@@ -195,40 +220,41 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        this.currentState = state.GetState("Customers", buttonCount, this.defaultPageSize);
+        // this.currentState = state?.GetState("Customers", buttonCount, this.defaultPageSize);
 
         if (!String.IsNullOrEmpty(Argument))
         {
             if (Action == "sort")
             {
                 Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
-                this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }
             else if (Action == "page")
             {
-                this.currentState.PreparePaging(this.Argument, NavManager, "Customers/page", PageNumber ?? 1);
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Customers", PageNumber ?? 1);
             }
             else 
             {
                 throw new Exception($"Action '{Action}' is invalid.");
             }
         }
-        this.currentState.LastInsertedId = this.LastInsertedId;
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
 
         if (String.IsNullOrEmpty(Action))
         {
             this.Action = "page";
         }
-        SortParameter = dbSVC.ProcessCurrentPage(this.currentState, FieldNames);
-        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
-
-        state.SetState(this.currentState);
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        this.LastInsertedId = null;
+        this.LastInsertedId = "-1";
     }
 
     private string GetBoldClass(string customerId)
@@ -243,12 +269,41 @@ else
         }
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        Debug.Assert(this.currentState != null);
+        var x = (AppState)this.currentState;
+        await this.StateManager.UpdateEntity(x, false);
+    }
+
     void FilterChangedHandler(Tuple<string, string, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
-        state.SetState(this.currentState);
         NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
     }
 
+    private async Task<AppState> CreateNewState(AppStateKey stateId)
+    {
+        Debug.Assert(!String.IsNullOrEmpty(stateId.AppName) && !String.IsNullOrEmpty(stateId.UserId) && !String.IsNullOrEmpty(stateId.ComponentName));
+        var newState = new AppState()
+            {
+                AppName = stateId.AppName,
+                UserId = stateId.UserId,
+                ComponentName = stateId.ComponentName,
+                SortState = "",
+                FilterFieldName = "",
+                FilterFieldValue = "",
+                FilterIsDateValue = (short)0,
+                PagerButtonCount = this.buttonCount,
+                PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table
+                PagerPageCount = 0,     // The application will set actual value after reading dbo.Customers table
+                PagerPageNumber = 0,    // Display all records without paging
+                PagerPageSize = this.defaultPageSize,
+                PagerBaseUrl = "Customers",
+                IsDeleted = (byte)0,
+                LastInsertedId = "-1"   // The application has no information about insertion
+            };
+        return await StateManager.CreateEntity(newState);
+    }
 }

@@ -228,3 +228,21 @@ BEGIN
 		WHEN NEW.Version < OLD.Version THEN RAISE (ABORT, 'Concurrency error')
 	END;
 END;
+
+CREATE TABLE IF NOT EXISTS AppStates(
+	AppName TEXT NOT NULL,
+	UserId TEXT NOT NULL,
+	ComponentName TEXT NOT NULL,
+	SortState TEXT,
+	FilterFieldName TEXT,
+	FilterFieldValue TEXT,
+	FilterIsDateValue INTEGER,
+	PagerButtonCount INTEGER,
+	PagerRowCount INTEGER,
+	PagerPageCount INTEGER,
+	PagerPageNumber INTEGER,
+	PagerPageSize INTEGER,
+	PagerBaseUrl TEXT,
+	IsDeleted INTEGER NOT NULL DEFAULT 0,
+	PRIMARY KEY ( AppName, UserId, ComponentName)
+);

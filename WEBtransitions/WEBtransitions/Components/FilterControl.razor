@@ -12,7 +12,7 @@
 
 <div class="filter" name="custom-filter">
     <span class="border-text">Filter</span>
-    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit" Enhance>
+    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -22,13 +22,13 @@
                 <InputSelect @bind-value="Model!.Name" name="field-name">
                     @foreach (FilterElement item in ControlNames)
                     {
-                        <option value="@item.Name" selected="@(item.IsSelected)">@item.Name</option>
+                        <option value="@item.Name" selected="@item.IsSelected" disabled="@item.IsDisabled">@item.Name</option>
                     }
                 </InputSelect>
             </div>
             <label class="item21">Value:</label>
             <div class="item22">
-                <InputText id="title" @bind-Value="Model!.Value" name="search-value" />
+                <InputText id="title" @bind-Value="Model!.Value" name="search-value" title="Select field name and value" />
             </div>
             <div class="item13">
                 <button class="btn btn-sm" type="submit" style="float: right;">
@@ -46,6 +46,7 @@
 
     [CascadingParameter(Name = "ActiveCulture")]
     private CultureInfo? activeCulture { get; set; }
+
     [CascadingParameter(Name = "PageState")]
     private StateForComponent? currentState { get; set; }
 
@@ -85,17 +86,34 @@
 
     private List<FilterElement> GetControlNames()
     {
+        Debug.Assert(currentState != null && currentState.FilterState != null);
+
         PropertyInfo[] myPropertyInfo = typeof(T).GetProperties();
         var controlNames = new List<FilterElement>();
-        if (currentState != null && currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item1))
+        if (!String.IsNullOrEmpty(currentState.FilterState.Item1) && !String.IsNullOrEmpty(currentState.FilterState.Item2))
         {
             filterName = currentState.FilterState.Item1;
             filterValue = currentState.FilterState.Item2;
+        } 
+        else
+        {
+            filterName = filterValue = String.Empty;
         }
+
+        controlNames.Add(new FilterElement()
+        {
+            Name = "Select Element",
+            Value = "",
+            IsDateValue = false,
+            IsSelected = String.IsNullOrEmpty(currentState.FilterState.Item2),
+            IsDisabled = true
+        });
+
 
         for (int i = 0; i < myPropertyInfo.Length; i++)
         {
             var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
+            //            Model!.Value = "No filtering";
             if (propertyAttributes.Length > 0)
             {
                 var item = new FilterElement(myPropertyInfo[i]);
@@ -133,6 +151,12 @@
                 editContext!.NotifyValidationStateChanged();
             }
         }
+        if(String.IsNullOrEmpty(Model.Value))
+        {
+            // messageStore.Add(() => Model.Name, $"Select some name and write not empty string into the 'Value' box.");
+            // editContext!.NotifyValidationStateChanged();
+            Model.Name = ControlNames[0].Name;
+        }
     }
 
     public void Dispose()
@@ -149,6 +173,12 @@
         Debug.Assert(this.currentState != null);
 
         string searchValue = String.IsNullOrEmpty(Model.Value) ? "" : Model.Value;
+        if (String.IsNullOrEmpty(searchValue))
+        {
+            Model.Name = null;
+            ControlNames.ForEach(x => x.IsSelected = false);
+        }
+
         var filterState = Tuple.Create(Model.Name ?? "", searchValue, Model.IsDateValue);
 /*
         int i = Math.Max(ControlNames.FindIndex(0, (x) => x.Name == filterState.Item1), 0);     // Clear Error messages

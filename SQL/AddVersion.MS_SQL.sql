@@ -76,3 +76,30 @@ BEGIN
 	ALTER TABLE dbo.Territories ADD Version rowversion;
 END
 
+IF OBJECT_ID(N'dbo.[AppStates', N'U') IS NULL
+BEGIN
+	CREATE TABLE [dbo].[AppStates](
+		[AppName] [nvarchar](100) NOT NULL,
+		[UserId] [nvarchar](200) NOT NULL,
+		[ComponentName] [varchar](100) NOT NULL,
+		[SortState] [nvarchar](2000) NULL,
+		[FilterFieldName] [varchar](500) NULL,
+		[FilterFieldValue] [nvarchar](2000) NULL,
+		[FilterIsDateValue] [bit] NOT NULL,
+		[PagerButtonCount] [tinyint] NULL,
+		[PagerRowCount] [int] NULL,
+		[PagerPageCount] [smallint] NULL,
+		[PagerPageNumber] [smallint] NULL,
+		[PagerPageSize] [smallint] NULL,
+		[PagerBaseUrl] [varchar](200) NULL,
+		[IsDeleted] [bit] NOT NULL,
+		CONSTRAINT [PK_AppState] PRIMARY KEY CLUSTERED 
+	(
+		[AppName] ASC,
+		[UserId] ASC,
+		[ComponentName] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY]
+END
+GO
+

@@ -1,87 +1,45 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
+using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.Services
 {
-    public class StateData: IStateData
-    {
-        private static ReaderWriterLock rwl = new ReaderWriterLock();
-        private static int timeOut = 10000;     // 10 seconds
-
-        private Dictionary<string, StateForComponent> States { get; set; } = new();
-
-        public StateForComponent GetState(string index, int buttonCount = 10, int pageSize = 9)
-        {
-            StateForComponent rzlt;
-
-            rwl.AcquireReaderLock(timeOut);
-            try 
-            {
-                if (this.States.ContainsKey(index))    // TryGetValue(index, out rzlt))
-                {
-                    rzlt = (StateForComponent)this.States[index].Clone();
-                }
-                else
-                {
-                    rzlt = new StateForComponent(index, buttonCount, pageSize);
-                    this.States[index] = rzlt;
-                }
-            }
-            finally
-            {
-                rwl.ReleaseReaderLock();
-            }
-            return rzlt;
-        }
-
-        public void SetState(StateForComponent currentState)
-        {
-            Debug.Assert(currentState != null && !String.IsNullOrEmpty(currentState.ComponentName));
-            rwl.AcquireWriterLock(timeOut);
-            try
-            {
-                if (this.States.ContainsKey(currentState.ComponentName))
-                {
-                    States[currentState.ComponentName] = (StateForComponent)currentState.Clone();
-                }
-                else
-                {
-                    States.Add(currentState.ComponentName, (StateForComponent)currentState.Clone());
-                }
-            }
-            finally
-            {
-                rwl.ReleaseWriterLock();
-            }
-        }
-    }
-
     public class StateForComponent: ICloneable
     {
-        public string? ComponentName { get; set; }
-        public string? SortState {  get; set; } = string.Empty;
+        public string AppName { get; set; }             //+
+        public string UserId { get; set; }              //+
+        public string ComponentName { get; set; }       //+
+        public string? SortState {  get; set; } = string.Empty; //+
         public PgPostData? PagerState { get; set; } = null;
-        public Tuple<string, string, bool>? FilterState { get; set; } = null;
-        public string? LastInsertedId { get; set; } = null;
+
+        /// <summary>
+        /// name of the field, Value, true for date values
+        /// </summary>
+        public Tuple<string, string, bool> FilterState { get; set; }
+        public string LastInsertedId { get; set; }
 
 
-        public StateForComponent(string componentName, int buttonCount = 10, int pageSize = 9) 
+        public StateForComponent(string appName, string userId, string componentName, int buttonCount = 10, int pageSize = 9) 
         {
+            this.AppName = appName;
+            this.UserId = userId;
             this.ComponentName = componentName;
             this.SortState = string.Empty;
-            this.PagerState = new PgPostData(componentName, buttonCount, 1, 1, 1, pageSize, "Customers/page");
-            this.FilterState = null;
-            this.LastInsertedId = null;
+            this.PagerState = new PgPostData(buttonCount, 0, 0, 1, pageSize, "Customers"); // rowCount, pageCount, pageNumber will get real values after reading the database
+            this.FilterState = new Tuple<string, string, bool>("", "", false);
+            this.LastInsertedId = "";
         }
 
         public object Clone()
         {
             Debug.Assert(this.ComponentName != null);
-            var rzlt = new StateForComponent(this.ComponentName)
+            var rzlt = new StateForComponent(this.AppName, this.UserId, this.ComponentName)
             {
                 SortState = this.SortState,
                 FilterState = this.FilterState,
@@ -117,7 +75,7 @@ namespace WEBtransitions.Services
             {
                 this.PagerState.PageNumber = Convert.ToInt32(_initialCount);
             }
-            this.PagerState.BaseUrl = baseUrl;  //"Customers/page", "Employees/page";
+            this.PagerState.BaseUrl = $"{baseUrl}/page";  //"Customers/page", "Employees/page";
         }
 
 // Remove reference from customers
@@ -139,6 +97,59 @@ namespace WEBtransitions.Services
                 searchValue = Convert.ToString(_searchValue);
             }
             this.FilterState = Tuple.Create(fieldName, searchValue, false);
+        }
+
+
+        public static explicit operator StateForComponent(AppState dbState)
+        {
+            return new StateForComponent(dbState.AppName, dbState.UserId, dbState.ComponentName,
+                                         dbState.PagerButtonCount ?? 5,
+                                         dbState.PagerPageSize ?? 15)
+            {
+                UserId = dbState.UserId,
+                SortState = dbState.SortState,
+                PagerState = new PgPostData(dbState.PagerButtonCount ?? 5,
+                                            dbState.PagerRowCount ?? 0, dbState.PagerPageCount ?? 0,
+                                            dbState.PagerPageNumber ?? 1, dbState.PagerPageSize ?? 15,
+                                            dbState.PagerBaseUrl),
+                FilterState = new Tuple<string, string, bool>(dbState.FilterFieldName ?? "", dbState.FilterFieldValue ?? "", dbState.FilterIsDateValue == 1),
+                LastInsertedId = ""
+            };
+        }
+        public static explicit operator AppState(StateForComponent currentState)
+        {
+            Debug.Assert(currentState != null);
+            string baseUrl = $"{currentState.ComponentName}/page";
+            var rzlt = new AppState()
+            {
+                AppName = "WEBtransitions",
+                UserId = currentState.UserId,
+                ComponentName = currentState.ComponentName,
+                SortState = currentState.SortState,
+                FilterFieldName = currentState.FilterState.Item1,
+                FilterFieldValue = currentState.FilterState.Item2,
+                FilterIsDateValue = currentState.FilterState.Item3 ? (short)1 : (short)0,
+                PagerBaseUrl = baseUrl,
+                IsDeleted = 0
+            };
+            if (currentState.PagerState == null)
+            {
+                rzlt.PagerButtonCount = null;
+                rzlt.PagerRowCount = null;
+                rzlt.PagerPageCount = null;
+                rzlt.PagerPageNumber = null;
+                rzlt.PagerPageSize = null;
+            } 
+            else
+            {
+                rzlt.PagerButtonCount = currentState.PagerState.MaxButtons;
+                rzlt.PagerRowCount = currentState.PagerState.RowCount;
+                rzlt.PagerPageCount = currentState.PagerState.PageCount;
+                rzlt.PagerPageNumber = currentState.PagerState.PageNumber;
+                rzlt.PagerPageSize = currentState.PagerState.PageSize;
+                rzlt.PagerBaseUrl = currentState.PagerState.BaseUrl ?? baseUrl;
+            }
+            return rzlt;
         }
 
     }

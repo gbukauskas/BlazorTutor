@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿//using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext
@@ -9,6 +10,7 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
     {
         public int? EmployeeId { get; set; }
 
+        [NotMapped]
         public string ItemKey
         {
 
@@ -26,6 +28,7 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         [MaxLength(10, ErrorMessage = "First name would not be longer 10 characters.")]
         public string? FirstName { get; set; }
 
+        [NotMapped]
         public string ItemValue
         {
             get
@@ -73,8 +76,9 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? Extension { get; set; }
 
         public byte[]? Photo { get; set; }
-        public IFormFile? PhotoFile { get; set; }
+        //public IFormFile? PhotoFile { get; set; }
 
+        [NotMapped]
         public string PhotoUrl
         {
             get
@@ -94,6 +98,8 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? Notes { get; set; }
 
         public int? ReportsTo { get; set; }
+
+        [NotMapped]
         public string? ReportsToStr
         {
             get
@@ -137,12 +143,6 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                 entity
                     .ToTable("Employees")
                     .HasKey(e => e.EmployeeId).HasName("PK_Employees");
-
-                entity.Ignore(e => e.ItemValue);
-                entity.Ignore(e => e.ItemKey);
-                entity.Ignore(e => e.PhotoUrl);
-                entity.Ignore(e => e.ReportsToStr);
-                entity.Ignore(e => e.PhotoFile);
 
                 entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(20).HasColumnType("TEXT");

@@ -4,6 +4,7 @@
 @using System.Text
 @using Microsoft.AspNetCore.Http.Extensions
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
+@using WEBtransitions.Services
 
 <div class="pager" name="customer-pager">
     @foreach (var link in PrintableButtons)
@@ -79,7 +80,9 @@
     /// </summary>
     [Parameter]
     public string TotalRecords { get; set; } = "";
-
+    
+    [CascadingParameter(Name = "PageState")]
+    public required StateForComponent PageState { get; set; }
 
     private List<PgData> PrintableButtons = new List<PgData>();
 
@@ -91,8 +94,7 @@
             throw new ArgumentException("Base URL is empty");
         }
 
-        Model ??= new PgPostData("Customers");
-        Model.Id = "PagerNavigate";             // Input form name
+        Model ??= (PgPostData)PageState!.PagerState!.Clone();
         Model.MaxButtons = this.MaxButtons;
 
         int rowCount;

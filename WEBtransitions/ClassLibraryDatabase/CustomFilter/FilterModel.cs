@@ -71,6 +71,11 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
         /// </summary>
         public bool IsSelected { get; set; } = false;
 
+        /// <summary>
+        /// <code>true</code> - item is disabled
+        /// </summary>
+        public bool IsDisabled { get; set; } = false;
+
         public string SelectedAttribute
         {
             get => this.IsSelected ? "selected" : String.Empty;
