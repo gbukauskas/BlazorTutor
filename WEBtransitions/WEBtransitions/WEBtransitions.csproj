@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\Interfaces\IStateData.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Components\App - Copy.razor" />
     <Content Remove="Components\Autocomplete\OldVersion\Autocomplete.razor" />
     <Content Remove="Components\Pages\EditCustomer - Copy.razor" />

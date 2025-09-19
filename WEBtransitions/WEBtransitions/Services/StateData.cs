@@ -10,80 +10,6 @@ using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.Services
 {
- 
-    public class StateData: IStateData
-    {
-        private static ReaderWriterLock rwl = new ReaderWriterLock();
-        private static int timeOut = 10000;     // wait for reader/writer lock 10 seconds 
-        public const int defaultButtonCount = 10;
-        public const int defaultPageSize = 9;
-//        private ProtectedSessionStorage appState;
-
-/*
-        public StateData(ProtectedSessionStorage sessionState)
-        {
-            this.appState = sessionState;
-            //var stateTask = appState.GetAsync<Dictionary<string, StateForComponent>>("WebTransitions");
-            //var x = stateTask.Result;
-            //if (x.Success && x.Value != null)
-            //{
-            //    States = x.Value;
-            //}
-            //else
-            //{
-            //    States = new Dictionary<string, StateForComponent>();
-            //}
-        }
-*/
-
-        public Dictionary<string, StateForComponent>? States { get; set; } = new();
-
-        //public StateForComponent GetState(string index, int buttonCount = defaultButtonCount, int pageSize = defaultPageSize)
-        //{
-        //    StateForComponent rzlt;
-
-        //    rwl.AcquireReaderLock(timeOut);
-        //    try 
-        //    {
-        //        if (this.States.ContainsKey(index))    // TryGetValue(index, out rzlt))
-        //        {
-        //            rzlt = (StateForComponent)this.States[index].Clone();
-        //        }
-        //        else
-        //        {
-        //            rzlt = new StateForComponent(index, buttonCount, pageSize);
-        //            this.States[index] = rzlt;
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        rwl.ReleaseReaderLock();
-        //    }
-        //    return rzlt;
-        //}
-
-        public void SetState(StateForComponent currentState)
-        {
-            Debug.Assert(currentState != null && !String.IsNullOrEmpty(currentState.ComponentName));
-            rwl.AcquireWriterLock(timeOut);
-            try
-            {
-                if (this.States.ContainsKey(currentState.ComponentName))
-                {
-                    States[currentState.ComponentName] = (StateForComponent)currentState.Clone();
-                }
-                else
-                {
-                    States.Add(currentState.ComponentName, (StateForComponent)currentState.Clone());
-                }
-            }
-            finally
-            {
-                rwl.ReleaseWriterLock();
-            }
-        }
-    }
-
     public class StateForComponent: ICloneable
     {
         public string AppName { get; set; }             //+
@@ -177,14 +103,14 @@ namespace WEBtransitions.Services
         public static explicit operator StateForComponent(AppState dbState)
         {
             return new StateForComponent(dbState.AppName, dbState.UserId, dbState.ComponentName,
-                                         dbState.PagerButtonCount ?? StateData.defaultButtonCount,
-                                         dbState.PagerPageSize ?? StateData.defaultPageSize)
+                                         dbState.PagerButtonCount ?? 5,
+                                         dbState.PagerPageSize ?? 15)
             {
                 UserId = dbState.UserId,
                 SortState = dbState.SortState,
-                PagerState = new PgPostData(dbState.PagerButtonCount ?? StateData.defaultButtonCount,
+                PagerState = new PgPostData(dbState.PagerButtonCount ?? 5,
                                             dbState.PagerRowCount ?? 0, dbState.PagerPageCount ?? 0,
-                                            dbState.PagerPageNumber ?? 1, dbState.PagerPageSize ?? StateData.defaultPageSize,
+                                            dbState.PagerPageNumber ?? 1, dbState.PagerPageSize ?? 15,
                                             dbState.PagerBaseUrl),
                 FilterState = new Tuple<string, string, bool>(dbState.FilterFieldName ?? "", dbState.FilterFieldValue ?? "", dbState.FilterIsDateValue == 1),
                 LastInsertedId = ""

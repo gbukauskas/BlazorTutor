@@ -28,7 +28,8 @@ namespace TestBusinessPart
         public async Task Test1()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new StateSvc(ctxTest);
+            var svc = new StateSvc(null);
+            svc.SetDbContext(ctxTest);
 
             AppState state = new()
             {
@@ -63,7 +64,8 @@ namespace TestBusinessPart
         public async Task Test2()
         {
             NorthwindContext ctxTest = _fixture.DbContext;
-            var svc = new StateSvc(ctxTest);
+            var svc = new StateSvc(null);
+            svc.SetDbContext(ctxTest);
             var key = new AppStateKey(AppNameTest, UserName, "Test");
 
             await Test1();

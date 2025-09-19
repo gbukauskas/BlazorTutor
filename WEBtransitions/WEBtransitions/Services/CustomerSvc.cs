@@ -36,10 +36,10 @@ namespace WEBtransitions.Services
         {
             this.factory = factory;
         }
-        //public CustomerSvc(NorthwindContext ctx)
-        //{
-        //    this._ctx = ctx;
-        //}
+        public void SetDbContext(NorthwindContext ctx)
+        {
+            this._ctx = ctx;
+        }
 
         public void Dispose()
         {
