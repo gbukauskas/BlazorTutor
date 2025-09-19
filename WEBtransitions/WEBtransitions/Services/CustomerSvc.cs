@@ -17,10 +17,10 @@ namespace WEBtransitions.Services
         {
             get
             {
-                Debug.Assert(this.factory != null);
+                Debug.Assert(this.factory != null || _ctx != null);
                 if (_ctx == null)
                 {
-                    _ctx = factory.CreateDbContext();
+                    _ctx = factory!.CreateDbContext();
                 }
                 return _ctx!;
             }
@@ -36,6 +36,10 @@ namespace WEBtransitions.Services
         {
             this.factory = factory;
         }
+        //public CustomerSvc(NorthwindContext ctx)
+        //{
+        //    this._ctx = ctx;
+        //}
 
         public void Dispose()
         {

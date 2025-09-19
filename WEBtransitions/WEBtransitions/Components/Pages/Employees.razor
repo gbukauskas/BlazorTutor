@@ -18,6 +18,7 @@
 @using System.Diagnostics
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
+
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
 
@@ -26,7 +27,10 @@
 @inject EmployeeSvc dbSVC
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
-@inject IStateData state
+@* @inject IStateData state *@
+@inject StateSvc StateManager
+
+@implements IAsyncDisposable
 
 <PageTitle>Employees</PageTitle>
 
@@ -65,7 +69,7 @@ else
         <tbody>
             @foreach (var emp in currentPage.Items)
             {
-                <tr>
+                <tr @key=emp.ItemKey class="@GetBoldClass(emp.ItemKey)">
                     <td>
                         <img src="@emp.PhotoUrl" />
                     </td>
@@ -144,12 +148,18 @@ else
     public string? DBerrorMessage { get; set; } = null;
 
     [SupplyParameterFromQuery(Name = "new_id")]
-    public string? LastInsertedId { get; set; } = null;
+    public string LastInsertedId { get; set; } = "-1";
 
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+
+    /*    
     /// <summary>
     /// Number of rows in the page
     /// </summary>
     internal int? PageSize { get; set; } = null;
+
+*/
 
     private int defaultPageSize;
     private int buttonCount;
@@ -159,21 +169,34 @@ else
     /// Cascading parameter
     /// </summary>
     private StateForComponent? currentState = null;
-
+    private AppStateKey? stateId;
 
     protected override async Task OnInitializedAsync()
     {
         // await Task.Delay(1000);  // For debugging (stream rendering mode)
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Employees");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Employees");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, StateKey.UserId, "Employees");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            stateData = await CreateNewState(stateId);
+        }
+        currentState = (StateForComponent)stateData;
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2))
+        {
+            currentState.FilterState = new Tuple<string, string, bool>("", "", false);
+        }
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
         {
             SortParameter.Add($"n_{FieldNames[i]}");
         }
-
-        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
-        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Employees");
-        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Employees");
 
         ActiveCulture = new CultureInfo(activeCultureStr);
         await base.OnInitializedAsync();
@@ -182,50 +205,92 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        this.currentState = state.GetState("Employees", buttonCount, this.defaultPageSize);
+        // this.currentState = state.GetState("Employees", buttonCount, this.defaultPageSize);
 
         if (!String.IsNullOrEmpty(Argument))
         {
             if (Action == "sort")
             {
                 Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
-                this.currentState.SortState = $"{newSort.Item1}_{newSort.Item2}";
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
             }
             else if (Action == "page")
             {
-                this.currentState.PreparePaging(this.Argument, NavManager, "Employees/page", PageNumber ?? 1);
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Employees", PageNumber ?? 1);
             }
             else
             {
                 throw new Exception($"Action '{Action}' is invalid.");
             }
         }
-        this.currentState.LastInsertedId = this.LastInsertedId;
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
 
         if (String.IsNullOrEmpty(Action))
         {
             this.Action = "page";
         }
-        SortParameter = dbSVC.ProcessCurrentPage(this.currentState, FieldNames);
-        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState);
-
-        // currentPage.Items.First().Photo = null; // For Debugging
-
-        state.SetState(this.currentState);
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        this.LastInsertedId = null;
+        this.LastInsertedId = "-1";
+    }
+
+    private string GetBoldClass(string employeeId)
+    {
+        if (String.IsNullOrEmpty(this.LastInsertedId) || this.LastInsertedId != employeeId)
+        {
+            return "fw-normal";
+        }
+        else
+        {
+            return "fw-bold";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Debug.Assert(this.currentState != null);
+        var x = (AppState)this.currentState;
+        await this.StateManager.UpdateEntity(x, false);
     }
 
     void FilterChangedHandler(Tuple<string, string, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
-        state.SetState(this.currentState);
         NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
     }
+
+    private async Task<AppState> CreateNewState(AppStateKey stateId)
+    {
+        Debug.Assert(!String.IsNullOrEmpty(stateId.AppName) && !String.IsNullOrEmpty(stateId.UserId) && !String.IsNullOrEmpty(stateId.ComponentName));
+        var newState = new AppState()
+        {
+            AppName = stateId.AppName,
+            UserId = stateId.UserId,
+            ComponentName = stateId.ComponentName,
+            SortState = "",
+            FilterFieldName = "",
+            FilterFieldValue = "",
+            FilterIsDateValue = (short)0,
+            PagerButtonCount = this.buttonCount,
+            PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table
+            PagerPageCount = 0,     // The application will set actual value after reading dbo.Customers table
+            PagerPageNumber = 0,    // Display all records without paging
+            PagerPageSize = this.defaultPageSize,
+            PagerBaseUrl = "Employees",
+            IsDeleted = (byte)0,
+            LastInsertedId = "-1"   // The application has no information about insertion
+        };
+        return await StateManager.CreateEntity(newState);
+    }
+
     // https://learn.microsoft.com/en-us/aspnet/core/blazor/blazor-ef-core?view=aspnetcore-5.0#new-dbcontext-instances-5x
 }

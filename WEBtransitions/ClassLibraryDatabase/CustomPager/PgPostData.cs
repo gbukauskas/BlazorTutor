@@ -9,13 +9,21 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
     public class PgPostData: ICloneable
     {
         /// <summary>
-        /// 
+        /// 10 is default value. <see cref="StateData.defaultPageSize"/>
         /// </summary>
-        public string? Id { get; set; }
-        public int MaxButtons { get; set; }
-        public int RowCount { get; set; }
-        public int PageCount { get; set; }
-        public int PageNumber { get; set; }
+        public int MaxButtons { get; set; } //+
+        /// <summary>
+        /// Constructor sets value to 0. Real value will occur after reading dbo.Customers table
+        /// </summary>
+        public int RowCount { get; set; }   //+
+        /// <summary>
+        /// Constructor sets value to 0. Real value will occur after reading dbo.Customers table
+        /// </summary>
+        public int PageCount { get; set; }  //+
+        /// <summary>
+        /// Constructor sets value to 1. The User will set real value
+        /// </summary>
+        public int PageNumber { get; set; }     //+
         public string PageNumberStr {
             get
             {
@@ -29,12 +37,17 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
                     : tmpValue;
             }
         }
-        public int PageSize { get; set; }
-        public string? BaseUrl { get; set; }
+        /// <summary>
+        /// 9 is default value
+        /// </summary>
+        public int PageSize { get; set; } = 0;  //+
+        /// <summary>
+        /// Every component writes here the name.
+        /// </summary>
+        public string? BaseUrl { get; set; }    //+
 
-        public PgPostData(string? id, int maxButtons = 0, int rowCount = 0, int pageCount = 0, int pageNumber = 0, int pageSize = 0, string? baseUrl = "")
+        public PgPostData(int maxButtons = 0, int rowCount = 0, int pageCount = 0, int pageNumber = 0, int pageSize = 0, string? baseUrl = "")
         {
-            Id = id;
             MaxButtons = maxButtons;
             RowCount = rowCount;
             PageCount = pageCount;
@@ -45,7 +58,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomPager
 
         public object Clone()
         {
-            return new PgPostData(this.Id, this.MaxButtons, this.RowCount, this.PageCount, this.PageNumber, this.PageSize, this.BaseUrl);
+            return new PgPostData(this.MaxButtons, this.RowCount, this.PageCount, this.PageNumber, this.PageSize, this.BaseUrl);
         }
     }
 }

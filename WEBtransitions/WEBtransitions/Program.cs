@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Components;
+//using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
+//using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Components;
@@ -39,8 +40,13 @@ builder.Services
     .AddScoped<RegionSvc>()
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
-builder.Services.AddSingleton<IStateData, StateData>();
+builder.Services.AddSingleton<StateSvc, StateSvc>();
+
+//builder.Services.AddSingleton<IStateData, StateData>();
 //builder.Services.AddScoped<IStateData, StateData>();
+
+const string UserID = "{69FB454F-B49B-4876-A0CD-AE727DF941C1}"; // For DEMO only. Real application must put here value from authentication.
+builder.Services.AddCascadingValue("StateKey", sp => new AppStateKey("WEBtransitions", UserID));
 
 var app = builder.Build();
 
