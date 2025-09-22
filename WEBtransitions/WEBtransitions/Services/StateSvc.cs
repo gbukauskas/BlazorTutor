@@ -146,31 +146,6 @@ namespace WEBtransitions.Services
 
                 await Ctx.SaveChangesAsync();
                 return ComponentState;
-
-/*
-                await Ctx.AppStates
-                    .Where(u => u.AppName == key.AppName && u.UserId == key.UserId && u.ComponentName == key.ComponentName)
-                    .ExecuteUpdateAsync(s => s
-                        .SetProperty(b => b.SortState, entity.SortState)
-
-                        .SetProperty(b => b.FilterFieldName, entity.FilterFieldName)
-                        .SetProperty(b => b.FilterFieldValue, entity.FilterFieldValue)
-                        .SetProperty(b => b.FilterIsDateValue, entity.FilterIsDateValue)
-
-                        .SetProperty(b => b.PagerButtonCount, entity.PagerButtonCount)
-                        .SetProperty(b => b.PagerRowCount, entity.PagerRowCount)
-                        .SetProperty(b => b.PagerPageCount, entity.PagerPageCount)
-                        .SetProperty(b => b.PagerPageNumber, entity.PagerPageNumber)
-                        .SetProperty(b => b.PagerPageSize, entity.PagerPageSize)
-                        .SetProperty(b => b.PagerBaseUrl, entity.PagerBaseUrl)
-
-
-                        .SetProperty(b => b.IsDeleted, entity.IsDeleted)
-                        .SetProperty(b => b.LastInsertedId, entity.LastInsertedId)
-
-                        );
-*/
-
             }
             catch (Exception ex)
             { 

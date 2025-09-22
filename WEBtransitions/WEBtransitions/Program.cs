@@ -5,7 +5,6 @@ using WEBtransitions.ClassLibraryDatabase.DBContext;
 using WEBtransitions.Components;
 using WEBtransitions.Services;
 using WEBtransitions.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,3 +69,4 @@ app.Run();
 // https://www.learnblazor.com/layouts
 // Free hosting https://www.monsterasp.net/#plans
 // https://learn.microsoft.com/en-us/aspnet/core/blazor/state-management/protected-browser-storage?view=aspnetcore-9.0
+// https://learn.microsoft.com/en-us/ef/ef6/fundamentals/connection-management          // Unlock SQLite
