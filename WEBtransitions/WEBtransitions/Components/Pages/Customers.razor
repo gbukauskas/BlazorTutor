@@ -158,7 +158,7 @@ else
     /// </summary>
     [CascadingParameter(Name = "StateKey")]
     public AppStateKey? StateKey { get; set; }
-/*
+    /*
     /// <summary>
     /// Number of rows in the page
     /// </summary>
@@ -192,7 +192,7 @@ else
 
         Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
         stateId = new AppStateKey(StateKey.AppName, StateKey.UserId, "Customers");
-        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);       // Read state for the 'Customers' component
         if (stateData == null)
         {
             stateData = await CreateNewState(stateId);
@@ -222,7 +222,7 @@ else
         await base.OnParametersSetAsync();
         // this.currentState = state?.GetState("Customers", buttonCount, this.defaultPageSize);
 
-        if (!String.IsNullOrEmpty(Argument))
+        if (!String.IsNullOrEmpty(Argument))    // Modify the state
         {
             if (Action == "sort")
             {
@@ -248,7 +248,7 @@ else
             this.Action = "page";
         }
         SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
-        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);      // Read data for this page
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -269,6 +269,10 @@ else
         }
     }
 
+    /// <summary>
+    /// The procedure writes the modified state into th dbo.AppStates table. The application executes the code before closing the page (sitching to the another page or closing the application).
+    /// </summary>
+    /// <returns></returns>
     public async ValueTask DisposeAsync()
     {
         Debug.Assert(this.currentState != null);
@@ -276,6 +280,10 @@ else
         await this.StateManager.UpdateEntity(x, false);
     }
 
+    /// <summary>
+    /// The application executes this code after commiting the filter control.
+    /// </summary>
+    /// <param name="message"></param>
     void FilterChangedHandler(Tuple<string, string, bool> message)
     {
         Debug.Assert(this.currentState != null);
