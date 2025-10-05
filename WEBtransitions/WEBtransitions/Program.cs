@@ -12,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<CookieService>();
+
+
 /* It is possible but dangerous. Use AddDbContext in single-thread environment, use DbContextFactory in all other cases.
 builder.Services.AddDbContext<NorthwindContext>(options =>
         {

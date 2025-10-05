@@ -16,9 +16,7 @@
 *@
 
 @using System.Globalization
-@* @using System.Reflection *@
 @using System.Diagnostics
-@* @using System.Text.Json *@
 @using WEBtransitions.ClassLibraryDatabase.CustomPager
 @using WEBtransitions.Components.CrudLinks
 
@@ -31,6 +29,8 @@
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
 @inject StateSvc StateManager
+@inject IJSRuntime JsRuntime;
+@inject CookieService cookieService
 
 @implements IAsyncDisposable
 
@@ -186,12 +186,14 @@ else
     {
         // await Task.Delay(1000);  // Test for stream rendering
 
+        string? userId = cookieService.GetCookie("WebTransitions");
+
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
         this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Customers");
         this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Customers");
 
         Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
-        stateId = new AppStateKey(StateKey.AppName, StateKey.UserId, "Customers");
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Customers");
         AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);       // Read state for the 'Customers' component
         if (stateData == null)
         {
@@ -220,7 +222,6 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        // this.currentState = state?.GetState("Customers", buttonCount, this.defaultPageSize);
 
         if (!String.IsNullOrEmpty(Argument))    // Modify the state
         {
@@ -284,11 +285,13 @@ else
     /// The application executes this code after commiting the filter control.
     /// </summary>
     /// <param name="message"></param>
-    void FilterChangedHandler(Tuple<string, string, bool> message)
+    public async Task FilterChangedHandler(Tuple<string, string, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
-        NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
+        await this.StateManager.UpdateEntity((AppState)this.currentState, false);
+        NavManager.Refresh(true);
+        //NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
     }
 
     private async Task<AppState> CreateNewState(AppStateKey stateId)
@@ -306,7 +309,7 @@ else
                 PagerButtonCount = this.buttonCount,
                 PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table
                 PagerPageCount = 0,     // The application will set actual value after reading dbo.Customers table
-                PagerPageNumber = 0,    // Display all records without paging
+                PagerPageNumber = 1,    // Display first page
                 PagerPageSize = this.defaultPageSize,
                 PagerBaseUrl = "Customers",
                 IsDeleted = (byte)0,

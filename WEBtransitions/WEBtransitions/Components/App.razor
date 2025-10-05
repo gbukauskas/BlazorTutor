@@ -11,12 +11,17 @@
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+
+    <script type="module">
+        import { setCookie } from "./GlobalJsScript.js"
+        setCookie("WebTransitions");
+    </script>
+
 </head>
 
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
     <script src="_framework/blazor.web.js" suppress-error="BL9992"></script>
-    @* <script type="module" src="~/js/customExpander.js"></script> *@
 </body>
 
 </html>
