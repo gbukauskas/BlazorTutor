@@ -27,8 +27,8 @@
 @inject EmployeeSvc dbSVC
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
-@* @inject IStateData state *@
 @inject StateSvc StateManager
+@inject CookieService cookieService
 
 @implements IAsyncDisposable
 
@@ -111,10 +111,6 @@ else
 }
 
 @code {
-
-    // [CascadingParameter(Name = "StateData")]
-    // public IStateData? state { get; set; }
-
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
     private static readonly string[] FieldNames = { "LastName", "FirstName", "Title", "TitleOfCourtesy", "BirthDate", "HireDate" };
     public List<string>? SortParameter; 
@@ -153,14 +149,6 @@ else
     [CascadingParameter(Name = "StateKey")]
     public AppStateKey? StateKey { get; set; }
 
-    /*    
-    /// <summary>
-    /// Number of rows in the page
-    /// </summary>
-    internal int? PageSize { get; set; } = null;
-
-*/
-
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Employee>? currentPage = null;
@@ -174,13 +162,14 @@ else
     protected override async Task OnInitializedAsync()
     {
         // await Task.Delay(1000);  // For debugging (stream rendering mode)
+        string? userId = cookieService.GetCookie("WebTransitions");
 
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
         this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Employees");
         this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Employees");
 
         Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
-        stateId = new AppStateKey(StateKey.AppName, StateKey.UserId, "Employees");
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Employees");
         AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
         if (stateData == null)
         {
@@ -205,7 +194,6 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
-        // this.currentState = state.GetState("Employees", buttonCount, this.defaultPageSize);
 
         if (!String.IsNullOrEmpty(Argument))
         {
@@ -261,11 +249,12 @@ else
         await this.StateManager.UpdateEntity(x, false);
     }
 
-    void FilterChangedHandler(Tuple<string, string, bool> message)
+    async Task FilterChangedHandler(Tuple<string, string, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
-        NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
+        await this.StateManager.UpdateEntity((AppState)this.currentState, false);
+        NavManager.Refresh(true);
     }
 
     private async Task<AppState> CreateNewState(AppStateKey stateId)
@@ -283,7 +272,7 @@ else
             PagerButtonCount = this.buttonCount,
             PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table
             PagerPageCount = 0,     // The application will set actual value after reading dbo.Customers table
-            PagerPageNumber = 0,    // Display all records without paging
+            PagerPageNumber = 1,    // Display all records without paging
             PagerPageSize = this.defaultPageSize,
             PagerBaseUrl = "Employees",
             IsDeleted = (byte)0,

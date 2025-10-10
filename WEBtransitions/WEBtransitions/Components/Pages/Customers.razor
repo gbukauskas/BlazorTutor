@@ -29,7 +29,7 @@
 @inject IConfiguration Configuration
 @inject NavigationManager NavManager
 @inject StateSvc StateManager
-@inject IJSRuntime JsRuntime;
+@* @inject IJSRuntime JsRuntime; *@
 @inject CookieService cookieService
 
 @implements IAsyncDisposable
@@ -158,18 +158,7 @@ else
     /// </summary>
     [CascadingParameter(Name = "StateKey")]
     public AppStateKey? StateKey { get; set; }
-    /*
-    /// <summary>
-    /// Number of rows in the page
-    /// </summary>
-    internal int? PageSize { get; set; } = null;
-*/
-    /// <summary>
-    /// Sort definition
-    /// </summary>
-    // internal string? SortDefinition { get; set; } = null;   // ??
 
-    //    private int pageNumber;
     private int defaultPageSize;
     private int buttonCount;
     private PgResponse<Customer>? currentPage = null;
@@ -185,7 +174,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         // await Task.Delay(1000);  // Test for stream rendering
-
         string? userId = cookieService.GetCookie("WebTransitions");
 
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");

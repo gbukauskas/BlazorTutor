@@ -51,6 +51,9 @@ builder.Services.AddSingleton<StateSvc, StateSvc>();
 const string UserID = "{69FB454F-B49B-4876-A0CD-AE727DF941C1}"; // For DEMO only. Real application must put here value from authentication.
 builder.Services.AddCascadingValue("StateKey", sp => new AppStateKey("WEBtransitions", UserID));
 
+int cookieExpires = builder.Configuration.GetValue<int?>("AppSettings:CookieExpires") ?? 1;
+builder.Services.AddCascadingValue("CookieDuration", sp => cookieExpires);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

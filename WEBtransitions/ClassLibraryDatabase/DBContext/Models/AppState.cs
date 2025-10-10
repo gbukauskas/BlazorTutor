@@ -23,11 +23,12 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
 
         public required string PagerBaseUrl { get; set; }
         public byte IsDeleted { get; set; }
-        public string? LastInsertedId { get; set; }
+        public DateTime? DateCreated { get; set; }
 
         [NotMapped]
+        public string? LastInsertedId { get; set; }
+        [NotMapped]
         public byte IsNew { get; set; }
-
 
         static internal void Configure(ModelBuilder modelBuilder)
         {
@@ -56,7 +57,8 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
 
                 entity.Property(e => e.PagerBaseUrl).HasColumnName("PagerBaseUrl").HasColumnType("TEXT").HasMaxLength(200);
                 entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
-                entity.Property(e => e.LastInsertedId).HasColumnName("LastInsertedId").HasColumnType("TEXT").HasMaxLength(500);
+//                entity.Property(e => e.LastInsertedId).HasColumnName("LastInsertedId").HasColumnType("TEXT").HasMaxLength(500);
+                entity.Property(e => e.DateCreated).HasColumnName("DateCreated").HasColumnType("DATE").HasDefaultValueSql("GetUtcDate()");
             });
         }
     }

@@ -244,5 +244,6 @@ CREATE TABLE IF NOT EXISTS AppStates(
 	PagerPageSize INTEGER,
 	PagerBaseUrl TEXT,
 	IsDeleted INTEGER NOT NULL DEFAULT 0,
+	DateCreated DATE DEFAULT CURRENT_DATE,
 	PRIMARY KEY ( AppName, UserId, ComponentName)
 );

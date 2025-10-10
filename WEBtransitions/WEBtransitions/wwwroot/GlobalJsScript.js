@@ -11,11 +11,13 @@ export function SayHello() {
 export { setCookie, generateGuid }
 
 // https://www.w3schools.com/js/js_cookies.asp
-function setCookie(cname) {
+function setCookie(cname, days = 1) {
     let aCookie = getCookie(cname);
     if (!aCookie) {
+        let date = new Date(Date.now() + days * 86400e3);
+        date = date.toUTCString();
         let cvalue = generateGuid();
-        document.cookie = `${cname}=${cvalue};path=/`;
+        document.cookie = `${cname}=${cvalue}; expires=${date}; path=/`;
     }
 }
 

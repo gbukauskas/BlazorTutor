@@ -14,7 +14,7 @@
 
     <script type="module">
         import { setCookie } from "./GlobalJsScript.js"
-        setCookie("WebTransitions");
+        setCookie("WebTransitions", @CookieDuration);
     </script>
 
 </head>
@@ -25,3 +25,18 @@
 </body>
 
 </html>
+
+@code {
+    [CascadingParameter(Name = "CookieDuration")]
+    public int? CookieDuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (!CookieDuration.HasValue)
+        {
+            CookieDuration = 1;
+        }
+
+        base.OnInitialized();
+    }
+}

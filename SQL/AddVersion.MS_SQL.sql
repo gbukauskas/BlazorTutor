@@ -93,6 +93,7 @@ BEGIN
 		[PagerPageSize] [smallint] NULL,
 		[PagerBaseUrl] [varchar](200) NULL,
 		[IsDeleted] [bit] NOT NULL,
+		[DateCreated] [datetime] DEFAULT GETUTCDATE(),
 		CONSTRAINT [PK_AppState] PRIMARY KEY CLUSTERED 
 	(
 		[AppName] ASC,
