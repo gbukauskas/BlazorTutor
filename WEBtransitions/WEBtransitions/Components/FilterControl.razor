@@ -6,6 +6,7 @@
 @using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
+
 @typeparam T where T : class
 
 @implements IDisposable
@@ -18,18 +19,34 @@
 
         <div class="form-controls">
             <label class="item11">Field:</label>
+
             <div class="item12">
-                <InputSelect @bind-value="Model!.Name" name="field-name">
+                <select name="field-name" @bind="Model!.Name" @bind:after="ChangeModel">
                     @foreach (FilterElement item in ControlNames)
                     {
                         <option value="@item.Name" selected="@item.IsSelected" disabled="@item.IsDisabled">@item.Name</option>
                     }
-                </InputSelect>
+                </select>
             </div>
-            <label class="item21">Value:</label>
-            <div class="item22">
-                <InputText id="title" @bind-Value="Model!.Value" name="search-value" title="Select field name and value" />
-            </div>
+
+            @if (Model?.IsDateValue == true)
+            {
+                <label class="item21">Min:</label>
+                <div class="item22">
+                    <InputText id="value-min" @bind-Value="Model!.Value" name="search-value" title="Date interval: first value" />
+                </div>
+                <label class="item31">Max:</label>
+                <div class="item32">
+                    <InputText id="value-max" @bind-Value="Model!.MaxValue" name="search-value" title="Date interval: last value" />
+                </div>
+            }
+            else
+            {
+                <label class="item21">Value:</label>
+                <div class="item22">
+                    <InputText id="value" @bind-Value="Model!.Value" name="search-value" title="Part of text" />
+                </div>
+            }
             <div class="item13">
                 <button class="btn btn-sm" type="submit" style="float: right;">
                     <img src="/Images/icons8-search-50.png" alt="Search" width="50" height="50" title="Apply filter" />
@@ -51,15 +68,15 @@
     private StateForComponent? currentState { get; set; }
 
     [Parameter]
-    public EventCallback<Tuple<string, string, bool>> OnFilterChanged { get; set; }
+    public EventCallback<Tuple<string, string, string?, bool>> OnFilterChanged { get; set; }
 
     private EditContext? editContext;
     private ValidationMessageStore? messageStore;
 
     private string className = typeof(T).Name;
-    private string filterName = String.Empty;   // currentState!.FilterState!.Item1;
-    private string filterValue = String.Empty;  // currentState.FilterState!.Item2;
-
+    private string filterName = String.Empty;       // currentState!.FilterState!.Item1;
+    private string filterValue = String.Empty;      // currentState.FilterState!.Item2;
+    private string? filterMaxValue = null;          // currentState.FilterState!.Item3;
 
 #pragma warning disable CS8618
     private List<FilterElement> ControlNames;
@@ -74,12 +91,15 @@
         {
             throw new DatabaseException($"Class {className} has no AllowFilteringAttribute");
         }
-        if (Model == null)
+        int filterIndex = 0;
+        if (currentState != null && currentState.FilterState != null)
         {
-            Model = new FilterModel(ControlNames[0]);   // No element is selected
-        }
-        editContext = new(Model);
+            filterIndex = Math.Max(ControlNames.FindIndex(x => x.Name == currentState.FilterState.Item1), 0);
+            Model = new FilterModel(ControlNames[filterIndex]);
+        } 
+        Model = new FilterModel(ControlNames[filterIndex]);
 
+        editContext = new(Model);
         editContext.OnValidationRequested += HandleValidationRequested;
         messageStore = new(editContext);
     }
@@ -90,17 +110,19 @@
 
         PropertyInfo[] myPropertyInfo = typeof(T).GetProperties();
         var controlNames = new List<FilterElement>();
-        if (!String.IsNullOrEmpty(currentState.FilterState.Item1) && !String.IsNullOrEmpty(currentState.FilterState.Item2))
+        if (currentState != null)
         {
             filterName = currentState.FilterState.Item1;
             filterValue = currentState.FilterState.Item2;
-        } 
+            filterMaxValue = currentState.FilterState.Item3;
+        }
         else
         {
             filterName = filterValue = String.Empty;
+            filterMaxValue = null;
         }
 
-        controlNames.Add(new FilterElement()
+        controlNames.Add(new FilterElement(null)
         {
             Name = "Select Element",
             Value = "",
@@ -114,14 +136,15 @@
         {
             var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
             //            Model!.Value = "No filtering";
-            if (propertyAttributes.Length > 0)
+            if (propertyAttributes.Length > 0 && propertyAttributes.Length < i)
             {
-                var item = new FilterElement(myPropertyInfo[i]);
+                var item = FilterElement.CreateFilterElement(myPropertyInfo[i]);
 
                 if (!String.IsNullOrEmpty(filterName) && item.Name == filterName)
                 {
                     item.IsSelected = true;
                     item.Value = filterValue;
+                    item.MaxValue = filterMaxValue;
                     Model = new FilterModel(item);
                 }
                 controlNames.Add(item);
@@ -145,17 +168,45 @@
         if (currentElement.IsDateValue)
         {
             DateTime filterdate;
-            if (!DateTime.TryParse(this.Model.Value, activeCulture, out filterdate))
+            if (!String.IsNullOrEmpty(this.Model.Value) && !DateTime.TryParse(this.Model.Value, activeCulture, out filterdate))
             {
                 messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
                 editContext!.NotifyValidationStateChanged();
             }
-        }
-        if(String.IsNullOrEmpty(Model.Value))
+            if (!String.IsNullOrEmpty(this.Model.MaxValue) && !DateTime.TryParse(this.Model.MaxValue, activeCulture, out filterdate))
+            {
+                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
+        } 
+        if (String.IsNullOrEmpty(Model.Value) && String.IsNullOrEmpty(Model.MaxValue))
         {
             // messageStore.Add(() => Model.Name, $"Select some name and write not empty string into the 'Value' box.");
             // editContext!.NotifyValidationStateChanged();
-            Model.Name = ControlNames[0].Name;
+            for (int i = 0; i < ControlNames.Count; i++)
+            {
+                ControlNames[i].IsSelected = i < 1;
+            }
+            Model = ControlNames[0];
+            var filterState = new Tuple<string, string, string?, bool>(Model.Name ?? "", "", "", false);
+            OnFilterChanged.InvokeAsync(filterState);
+        }
+    }
+
+    public async Task ChangeModel()
+    {
+        await Task.Delay(1);
+        if (Model != null && !String.IsNullOrEmpty(Model.Name)) 
+        {
+            string fieldName = Model.Name;
+            foreach (var currentModel in ControlNames)
+            {
+                currentModel.IsSelected = currentModel.Name == fieldName;
+                if (currentModel.IsSelected)
+                {
+                    Model.IsDateValue = currentModel.IsDateValue;
+                }
+            }
         }
     }
 
@@ -173,20 +224,23 @@
         Debug.Assert(this.currentState != null);
 
         string searchValue = String.IsNullOrEmpty(Model.Value) ? "" : Model.Value;
-        if (String.IsNullOrEmpty(searchValue))
+        string searchValueMax = String.IsNullOrEmpty(Model.MaxValue) ? "" : Model.MaxValue;
+        if (String.IsNullOrEmpty(searchValue) && String.IsNullOrEmpty(searchValueMax))
         {
             Model.Name = null;
             ControlNames.ForEach(x => x.IsSelected = false);
         }
+        var filterState = new Tuple<string, string, string?, bool>(Model.Name ?? "", searchValue, searchValueMax, Model.IsDateValue);
 
-        var filterState = Tuple.Create(Model.Name ?? "", searchValue, Model.IsDateValue);
-/*
-        int i = Math.Max(ControlNames.FindIndex(0, (x) => x.Name == filterState.Item1), 0);     // Clear Error messages
-        Model = new FilterModel(ControlNames[i]);
-*/
-        if (filterState.Item1 != filterName || filterState.Item2 != filterValue)
-        {
-            OnFilterChanged.InvokeAsync(filterState);
-        }
+        // bool filterWasChanged = filterState.Item1 != filterName ||
+        //                         filterState.Item2 != filterValue ||
+        //                         filterState.Item3 != null && filterState.Item3 != filterMaxValue ||
+        //                         filterState.Item3 is null && !String.IsNullOrEmpty(filterMaxValue);
+
+        // if (filterWasChanged)
+        // {
+        //     OnFilterChanged.InvokeAsync(filterState);
+        // }
+        OnFilterChanged.InvokeAsync(filterState);
     }
 }

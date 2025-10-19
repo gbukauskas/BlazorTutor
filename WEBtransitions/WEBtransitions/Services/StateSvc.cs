@@ -58,6 +58,7 @@ namespace WEBtransitions.Services
                     dbState.SortState = newEntity.SortState;
                     dbState.FilterFieldName = newEntity.FilterFieldName;
                     dbState.FilterFieldValue = newEntity.FilterFieldValue;
+                    dbState.FilterFieldMaxValue = newEntity.FilterFieldMaxValue;
                     dbState.FilterIsDateValue = newEntity.FilterIsDateValue;
 
                     dbState.PagerButtonCount = newEntity.PagerButtonCount;
@@ -132,6 +133,7 @@ namespace WEBtransitions.Services
 
                 ComponentState.FilterFieldName = entity.FilterFieldName;
                 ComponentState.FilterFieldValue = entity.FilterFieldValue;
+                ComponentState.FilterFieldMaxValue = entity.FilterFieldMaxValue;
                 ComponentState.FilterIsDateValue = entity.FilterIsDateValue;
 
                 ComponentState.PagerButtonCount = entity.PagerButtonCount;

@@ -176,9 +176,9 @@ else
             stateData = await CreateNewState(stateId);
         }
         currentState = (StateForComponent)stateData;
-        if (String.IsNullOrEmpty(currentState.FilterState.Item2))
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
         {
-            currentState.FilterState = new Tuple<string, string, bool>("", "", false);
+            currentState.FilterState = new Tuple<string, string, string?, bool>("", "", "", false);
         }
 
         SortParameter = new List<string>();
@@ -249,7 +249,27 @@ else
         await this.StateManager.UpdateEntity(x, false);
     }
 
-    async Task FilterChangedHandler(Tuple<string, string, bool> message)
+    /// <summary>
+    /// The function updates filter value
+    /// </summary>
+    /// <param name="message">
+    ///     <list type="number">
+    ///         <item>
+    ///             <description>Field name</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Value</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Max value</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Is date value (boolean)</description>
+    ///         </item>
+    ///     </list>
+    /// </param>
+    /// <returns></returns>
+    async Task FilterChangedHandler(Tuple<string, string, string?, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
@@ -268,10 +288,11 @@ else
             SortState = "",
             FilterFieldName = "",
             FilterFieldValue = "",
+            FilterFieldMaxValue = "",
             FilterIsDateValue = (short)0,
             PagerButtonCount = this.buttonCount,
-            PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table
-            PagerPageCount = 0,     // The application will set actual value after reading dbo.Customers table
+            PagerRowCount = 0,      // The application will set actual value after reading dbo.Employees table
+            PagerPageCount = 0,     // The application will set actual value after reading dbo.Employees table
             PagerPageNumber = 1,    // Display all records without paging
             PagerPageSize = this.defaultPageSize,
             PagerBaseUrl = "Employees",

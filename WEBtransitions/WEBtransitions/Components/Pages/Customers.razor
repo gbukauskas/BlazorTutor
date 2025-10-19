@@ -188,9 +188,9 @@ else
             stateData = await CreateNewState(stateId);
         }
         currentState = (StateForComponent)stateData;
-        if (String.IsNullOrEmpty(currentState.FilterState.Item2))
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
         {
-            currentState.FilterState = new Tuple<string, string, bool>("", "", false);
+            currentState.FilterState = new Tuple<string, string, string?, bool>("", "", "", false);
         }
 
         SortParameter = new List<string>();
@@ -273,13 +273,12 @@ else
     /// The application executes this code after commiting the filter control.
     /// </summary>
     /// <param name="message"></param>
-    public async Task FilterChangedHandler(Tuple<string, string, bool> message)
+    public async Task FilterChangedHandler(Tuple<string, string, string?, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
         await this.StateManager.UpdateEntity((AppState)this.currentState, false);
         NavManager.Refresh(true);
-        //NavManager.NavigateTo($"/{this.currentState.ComponentName}", true);  // Refresh this page
     }
 
     private async Task<AppState> CreateNewState(AppStateKey stateId)
@@ -293,6 +292,7 @@ else
                 SortState = "",
                 FilterFieldName = "",
                 FilterFieldValue = "",
+                FilterFieldMaxValue = "",
                 FilterIsDateValue = (short)0,
                 PagerButtonCount = this.buttonCount,
                 PagerRowCount = 0,      // The application will set actual value after reading dbo.Customers table

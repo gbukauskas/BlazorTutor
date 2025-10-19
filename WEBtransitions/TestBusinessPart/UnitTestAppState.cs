@@ -40,6 +40,7 @@ namespace TestBusinessPart
                 SortState = "a_LastName",
                 FilterFieldName = "FirstName",
                 FilterFieldValue = "Nancy",
+                FilterFieldMaxValue = "",
                 FilterIsDateValue = 0,
 
                 PagerButtonCount = 5,

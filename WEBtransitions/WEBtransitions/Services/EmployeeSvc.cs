@@ -187,19 +187,25 @@ namespace WEBtransitions.Services
         {
             Debug.Assert(currentState != null);
             StringBuilder bld = new StringBuilder("SELECT * FROM Employees WHERE IsDeleted = 0 ");
-            if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
+            if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item1))
             {
-                if (currentState.FilterState.Item3)    // Date value
+                if (currentState.FilterState.Item4)     // Date value?
                 {
-                    string argument = String.Format("AND {0} >= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item2);
-                    bld.AppendLine(argument);
-//                    bld.AppendLine($"AND {currentState.FilterState.Item1} >= 'currentState.FilterState.Item2' ");
+                    if (!String.IsNullOrEmpty(currentState.FilterState.Item2))
+                    {
+                        bld.Append(String.Format("AND {0} >= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item2));
+                    }
+                    if (!String.IsNullOrEmpty(currentState.FilterState.Item3))
+                    {
+                        bld.Append(String.Format("AND {0} <= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item3));
+                    }
                 }
-                else                                   // Text
+                else if (!String.IsNullOrEmpty(currentState.FilterState.Item2))
                 {
-                    bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
+                    bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' "); // Filter using text value
                 }
             }
+
             if (!String.IsNullOrEmpty(currentState.SortState) && !currentState.SortState.StartsWith("n"))
             {
                 Tuple<string?, string> sortDefinition = SetSort(currentState.SortState, false);

@@ -17,55 +17,42 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
         public string? Name { get; set; }
 
         /// <summary>
-        /// Filter value
+        /// Filter value (min value for dates)
         /// </summary>
         public string? Value { get; set; }
+
+        /// <summary>
+        /// Max value for dates
+        /// </summary>
+        public string? MaxValue { get; set; }
 
         /// <summary>
         /// <code>true</code> - convert string to date value before filtering
         /// </summary>
         public bool IsDateValue { get; set; } = false;
 
-        public FilterModel(FilterElement element)
+        public FilterModel(FilterElement? element)
         {
-            this.Name = element.Name;
-            this.Value = element.Value;
-            this.IsDateValue = element.IsDateValue;
+            if (element != null)
+            {
+                this.Name = element.Name;
+                this.Value = element.Value;
+                this.MaxValue = element.MaxValue;
+                this.IsDateValue = element.IsDateValue;
+            }
+        }
+
+        public FilterModel(Tuple<string, string, string?, bool> filterState) 
+        {
+            this.Name = filterState.Item1;
+            this.Value = filterState.Item2;
+            this.MaxValue = filterState.Item3;
+            this.IsDateValue = filterState.Item4;
         }
     }
 
-    /*
-        public class FilterArgs
-        {
-            public string Name { get; set; }
-            public string? Value { get; set; }
-
-            public bool IsDateValue { get; set; } = false;
-
-            public FilterArgs(string name, string? value) 
-            {
-                Name = name;
-                Value = value;
-            }
-        }
-    */
-    public class FilterElement : ICloneable
+    public class FilterElement: FilterModel, ICloneable
     {
-        /// <summary>
-        /// Field name
-        /// </summary>
-        public string? Name { get; set; }
-
-        /// <summary>
-        /// Filter value
-        /// </summary>
-        public string? Value { get; set; }
-
-        /// <summary>
-        /// <code>true</code> - convert string to date value before filtering
-        /// </summary>
-        public bool IsDateValue { get; set; } = false;
-
         /// <summary>
         /// <code>true</code> - item is selected
         /// </summary>
@@ -81,16 +68,33 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
             get => this.IsSelected ? "selected" : String.Empty;
         }
 
-        public FilterElement()
+        public FilterElement(FilterElement? element): base(element)
         {
+            if (element == null)
+            {
+                this.IsSelected = false;
+                this.IsDisabled = false;
+            }
+            else
+            {
+                this.IsSelected = element.IsSelected;
+                this.IsDisabled = element.IsDisabled;
+            }
         }
 
-        public FilterElement(PropertyInfo fldInfo, string? value = null, bool isSelected = false) 
+        public static FilterElement CreateFilterElement(PropertyInfo fldInfo, string? value = null, string? maxValue = null,
+                                                        bool isSelected = false, bool isDisabled = false) 
         {
-            this.Name = fldInfo.Name;
-            this.Value = value;
-            this.IsDateValue = fldInfo.PropertyType == typeof(System.Nullable<System.DateOnly>);
-            IsSelected = isSelected;
+            var result = new FilterElement(null)
+            {
+                Name = fldInfo.Name,
+                Value = value,
+                MaxValue = maxValue,
+                IsDateValue = fldInfo.PropertyType == typeof(System.Nullable<System.DateOnly>),
+                IsSelected = isSelected,
+                IsDisabled = isDisabled
+            };
+            return result;
         }
 
         public string TargetUrl 
@@ -100,13 +104,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
 
         public object Clone()
         {
-            return new FilterElement()
-            {
-                Name = this.Name,
-                Value = this.Value,
-                IsDateValue = this.IsDateValue,
-                IsSelected = this.IsSelected
-            };
+            return new FilterElement(this);
         }
     }
 }

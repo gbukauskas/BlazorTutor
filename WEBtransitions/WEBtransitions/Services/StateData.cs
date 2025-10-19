@@ -21,7 +21,8 @@ namespace WEBtransitions.Services
         /// <summary>
         /// name of the field, Value, true for date values
         /// </summary>
-        public Tuple<string, string, bool> FilterState { get; set; }
+        public Tuple<string, string, string?, bool> FilterState { get; set; }
+
         public string LastInsertedId { get; set; }
 
 
@@ -32,7 +33,7 @@ namespace WEBtransitions.Services
             this.ComponentName = componentName;
             this.SortState = string.Empty;
             this.PagerState = new PgPostData(buttonCount, 0, 0, 1, pageSize, "Customers"); // rowCount, pageCount, pageNumber will get real values after reading the database
-            this.FilterState = new Tuple<string, string, bool>("", "", false);
+            this.FilterState = new Tuple<string, string, string?, bool>("", "", "", false);
             this.LastInsertedId = "";
         }
 
@@ -96,7 +97,7 @@ namespace WEBtransitions.Services
             {
                 searchValue = Convert.ToString(_searchValue);
             }
-            this.FilterState = Tuple.Create(fieldName, searchValue, false);
+            this.FilterState = new Tuple<string, string, string?, bool>(fieldName, searchValue, "", false);
         }
 
 
@@ -112,7 +113,11 @@ namespace WEBtransitions.Services
                                             dbState.PagerRowCount ?? 0, dbState.PagerPageCount ?? 0,
                                             dbState.PagerPageNumber ?? 1, dbState.PagerPageSize ?? 15,
                                             dbState.PagerBaseUrl),
-                FilterState = new Tuple<string, string, bool>(dbState.FilterFieldName ?? "", dbState.FilterFieldValue ?? "", dbState.FilterIsDateValue == 1),
+                FilterState = new Tuple<string, string, string?, bool>(
+                                            dbState.FilterFieldName ?? "", 
+                                            dbState.FilterFieldValue ?? "",
+                                            dbState.FilterFieldMaxValue ?? "",
+                                            dbState.FilterIsDateValue == 1),
                 LastInsertedId = ""
             };
         }
@@ -128,7 +133,8 @@ namespace WEBtransitions.Services
                 SortState = currentState.SortState,
                 FilterFieldName = currentState.FilterState.Item1,
                 FilterFieldValue = currentState.FilterState.Item2,
-                FilterIsDateValue = currentState.FilterState.Item3 ? (short)1 : (short)0,
+                FilterFieldMaxValue = currentState.FilterState.Item3,
+                FilterIsDateValue = currentState.FilterState.Item4 ? (short)1 : (short)0,
                 PagerBaseUrl = baseUrl,
                 IsDeleted = 0
             };

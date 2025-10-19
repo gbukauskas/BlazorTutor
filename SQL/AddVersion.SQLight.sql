@@ -236,6 +236,7 @@ CREATE TABLE IF NOT EXISTS AppStates(
 	SortState TEXT,
 	FilterFieldName TEXT,
 	FilterFieldValue TEXT,
+	FilterFieldMaxValue TEXT,
 	FilterIsDateValue INTEGER,
 	PagerButtonCount INTEGER,
 	PagerRowCount INTEGER,

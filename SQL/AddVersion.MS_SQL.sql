@@ -85,6 +85,7 @@ BEGIN
 		[SortState] [nvarchar](2000) NULL,
 		[FilterFieldName] [varchar](500) NULL,
 		[FilterFieldValue] [nvarchar](2000) NULL,
+		[FilterFieldMaxValue] [nvarchar](2000) NULL,
 		[FilterIsDateValue] [bit] NOT NULL,
 		[PagerButtonCount] [tinyint] NULL,
 		[PagerRowCount] [int] NULL,

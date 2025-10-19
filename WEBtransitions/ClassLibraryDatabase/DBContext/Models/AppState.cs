@@ -13,6 +13,7 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? SortState { get; set; }
         public string? FilterFieldName { get; set; }
         public string? FilterFieldValue { get; set; }
+        public string? FilterFieldMaxValue { get; set; }
         public short FilterIsDateValue { get; set; }    // Consider converter: https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=fluent-api
 
         public int? PagerButtonCount { get; set; }
@@ -47,6 +48,7 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                 entity.Property(e => e.SortState).HasColumnName("SortState").HasColumnType("TEXT").HasMaxLength(2000);
                 entity.Property(e => e.FilterFieldName).HasColumnName("FilterFieldName").HasColumnType("TEXT").HasMaxLength(500);
                 entity.Property(e => e.FilterFieldValue).HasColumnName("FilterFieldValue").HasColumnType("TEXT").HasMaxLength(2000);
+                entity.Property(e => e.FilterFieldMaxValue).HasColumnName("FilterFieldMaxValue").HasColumnType("TEXT").HasMaxLength(2000);
                 entity.Property(e => e.FilterIsDateValue).HasColumnName("FilterIsDateValue").IsRequired().HasColumnType("INTEGER");
 
                 entity.Property(e => e.PagerButtonCount).HasColumnName("PagerButtonCount").HasColumnType("INTEGER");
