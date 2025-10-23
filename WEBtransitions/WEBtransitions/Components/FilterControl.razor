@@ -2,6 +2,7 @@
 @using System.Diagnostics
 @using System.Web
 @using System.Globalization
+@using System.Text.RegularExpressions
 @using WEBtransitions.ClassLibraryDatabase.CustomFilter
 @using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
@@ -155,6 +156,8 @@
 
     private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
     {
+        Func<string?, bool> dateIsValid = dateStr => String.IsNullOrEmpty(dateStr) || DateRegex.IsMatch(dateStr);
+
         Debug.Assert(this.Model != null && !String.IsNullOrEmpty(this.Model.Name) && this.messageStore != null);
         Debug.Assert(this.ControlNames != null && this.ControlNames.Count > 0);
 
@@ -167,17 +170,29 @@
         Model.IsDateValue = currentElement.IsDateValue;
         if (currentElement.IsDateValue)
         {
-            DateTime filterdate;
+            if (!dateIsValid(this.Model.Value) || !dateIsValid(this.Model.MaxValue))
+            {
+                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
+
+/*
+            if (!DateIsValid(this.Model.Value) || !DateIsValid(this.Model.MaxValue))
+            {
+                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
             if (!String.IsNullOrEmpty(this.Model.Value) && !DateTime.TryParse(this.Model.Value, activeCulture, out filterdate))
             {
                 messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
                 editContext!.NotifyValidationStateChanged();
-            }
+                }
             if (!String.IsNullOrEmpty(this.Model.MaxValue) && !DateTime.TryParse(this.Model.MaxValue, activeCulture, out filterdate))
             {
                 messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
                 editContext!.NotifyValidationStateChanged();
-            }
+                }
+*/
         } 
         if (String.IsNullOrEmpty(Model.Value) && String.IsNullOrEmpty(Model.MaxValue))
         {
@@ -191,6 +206,17 @@
             var filterState = new Tuple<string, string, string?, bool>(Model.Name ?? "", "", "", false);
             OnFilterChanged.InvokeAsync(filterState);
         }
+    }
+
+    private static readonly Regex DateRegex = new Regex("^\\d{4}-\\d{1,2}-\\d{1,2}/$");
+    /// <summary>
+    /// The function returns true for a valid date format
+    /// </summary>
+    /// <param name="dateStr">Date value in string format</param>
+    /// <returns><code>true</code> - in case of correct date dormat</returns>
+    private bool DateIsValid(string? dateStr)
+    {
+        return String.IsNullOrEmpty(dateStr) || DateRegex.IsMatch(dateStr);
     }
 
     public async Task ChangeModel()

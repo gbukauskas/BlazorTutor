@@ -36,11 +36,13 @@ div.form-controls {
 .item31 {
     grid-column: 1 / 2;
     grid-row: 3 / 4;
+    margin-top: 4px;
 }
 
 .item32 {
     grid-column: 2 / 3;
     grid-row: 3 / 4;
+    margin-top: 4px;
 }
 
 .item13 {
@@ -48,6 +50,8 @@ div.form-controls {
     grid-row: 1 / 3;
     align-self: center;
     justify-self: center;
+    float: right;
+    border: none !important;
 }
 
 .border-text {
