@@ -324,11 +324,16 @@ namespace WEBtransitions.Services
                     dbCustomer.RememberRegion = entity.RememberRegion;
 
                     int status = this.Ctx.SaveChanges();
+                    if (status < 1)
+                    {
+                        throw new DbUpdateException();
+                    }
+                    this.Ctx.Entry(dbCustomer).Reload();  // Mandatory for SQLite; no need in this operation for MS SQL Server, mySQL and PostgreSQL 
                     return dbCustomer;
                 }
                 else
                 {
-                    return entity;
+                    throw new NotFoundException($"Customer ID={entity.CustomerId} was not found.");
                 }
             }
             catch (DbUpdateException ex)
@@ -347,7 +352,7 @@ namespace WEBtransitions.Services
                 if (dbCustomer != null)
                 {
                     dbCustomer.IsDeleted = 1;
-                    dbCustomer.Version = dbCustomer.IgnoreConcurency ? -1 : entity.Version;
+                    dbCustomer.Version = entity.IgnoreConcurency ? -1 : entity.Version;
                     this.Ctx.SaveChanges();
                     return true;
                 }

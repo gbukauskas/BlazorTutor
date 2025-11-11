@@ -7,3 +7,7 @@ input[type=text] {
     background-repeat: no-repeat;
     padding-left: 2em;
 }
+
+::deep .wide-input-control {
+    width: 500px;
+}

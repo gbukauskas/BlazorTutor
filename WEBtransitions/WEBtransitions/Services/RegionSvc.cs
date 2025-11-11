@@ -63,10 +63,7 @@ namespace WEBtransitions.Services
                     await Ctx.SaveChangesAsync();
                     return dbRegion;
                 }
-                else
-                {
-                    throw new DbUpdateException($"Key {entity.RegionDescription} is already used");
-                }
+                return dbRegion;    // Ignore dublications
             }
             catch (DbUpdateException ex)
             {

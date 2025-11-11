@@ -125,6 +125,10 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
 
         public int Version { get; set; }
 
+        public bool IgnoreConcurency { get; set; } = false;
+        public bool RememberRegion { get; set; } = false;
+
+
         public virtual ICollection<Employee> InverseReportsToNavigation { get; set; } = new List<Employee>();
 
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
@@ -143,6 +147,9 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                 entity
                     .ToTable("Employees")
                     .HasKey(e => e.EmployeeId).HasName("PK_Employees");
+
+                entity.Ignore(t => t.IgnoreConcurency);
+                entity.Ignore(t => t.RememberRegion);
 
                 entity.Property(e => e.EmployeeId).HasColumnName("EmployeeID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
                 entity.Property(e => e.LastName).IsRequired().HasMaxLength(20).HasColumnType("TEXT");

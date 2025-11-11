@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
+using WEBtransitions.Components.Pages;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
 
@@ -62,14 +63,43 @@ namespace WEBtransitions.Services
             throw new NotImplementedException();
         }
 
-        public Task<Employee> CreateEntity(Employee newEntity)
+        public async Task<Employee> CreateEntity(Employee entity)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && !entity.EmployeeId.HasValue);
+            try
+            {
+                Ctx.Add(entity);
+                await Ctx.SaveChangesAsync();
+                return entity;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("An error occurred while saving the entity changes.", ex);
+            }
         }
 
-        public Task<bool> DeleteEntityByIdAsync(Employee entity, bool ignoreConcurrencyError = false)
+        public async Task<bool> DeleteEntityByIdAsync(Employee entity, bool ignoreConcurrencyError = false)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && entity.EmployeeId.HasValue);
+            try
+            {
+                Employee? dbEmployee = await this.Ctx.Employees.Where(x => x.EmployeeId == entity.EmployeeId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (dbEmployee != null)
+                {
+                    dbEmployee.IsDeleted = 1;
+                    dbEmployee.Version = entity.IgnoreConcurency ? -1 : entity.Version;
+                    this.Ctx.SaveChanges();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException("An error occurred while removing the entity.", ex);
+            }
         }
 
         public async Task<Employee?> GetEntityByIdAsync(string id)
@@ -83,9 +113,70 @@ namespace WEBtransitions.Services
             return await this.Ctx.Employees.Where(x => x.EmployeeId == employeeId && x.IsDeleted == 0).FirstOrDefaultAsync();
         }
 
-        public Task<Employee> UpdateEntity(Employee entity, bool ignoreConcurrencyError=false)
+        public async Task<Employee> UpdateEntity(Employee entity, bool ignoreConcurrencyError=false)
         {
-            throw new NotImplementedException();
+            Debug.Assert(entity != null && entity.EmployeeId.HasValue && entity.EmployeeId > 0);
+            try
+            {
+                Employee? employee = await this.Ctx.Employees.Where(x => x.EmployeeId == entity.EmployeeId.Value && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (employee != null)
+                {
+                    employee.LastName = entity.LastName;
+                    employee.FirstName = entity.FirstName;
+                    employee.Title = entity.Title;
+                    employee.TitleOfCourtesy = entity.TitleOfCourtesy;
+                    employee.BirthDate = entity.BirthDate;
+                    employee.HireDate = entity.HireDate;
+                    employee.Address = entity.Address;
+                    employee.City = entity.City;
+                    employee.Region = entity.Region;
+                    employee.PostalCode = entity.PostalCode;
+                    employee.Country = entity.Country;
+                    employee.HomePhone = entity.HomePhone;
+                    employee.Extension = entity.Extension;
+                    employee.Notes = entity.Notes;
+                    employee.ReportsTo = entity.ReportsTo;
+                    employee.Version = entity.IgnoreConcurency ? -1 : entity.Version;
+                    employee.RememberRegion = entity.RememberRegion;
+
+                    int status = this.Ctx.SaveChanges();
+                    if (status < 1)
+                    {
+                        throw new DbUpdateException();
+                    }
+                    this.Ctx.Entry(employee).Reload();  // Mandatory for SQLite; no need in this operation for MS SQL Server, mySQL and PostgreSQL 
+                    return employee;
+                }
+                else
+                {
+                    throw new NotFoundException($"Employee ID={entity.ItemKey} was not found.");
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DatabaseException($"An error occurred while saving the entity changes, ID={entity.ItemKey}", ex);
+            }
+        }
+
+        /// <summary>
+        /// Updates field Photo
+        /// </summary>
+        /// <param name="EmployeeId"></param>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdatePhoto(int employeeId, byte[] image)
+        {
+            try
+            {
+                int recNumber = await this.Ctx.Employees
+                                        .Where(e => e.IsDeleted == 0 && e.EmployeeId == employeeId)
+                                        .ExecuteUpdateAsync(e => e.SetProperty(u => u.Photo, image));
+                return recNumber == 1;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException($"An error occurred while saving photo, ID={employeeId}", ex);
+            }
         }
 
         // TODO: Remove it

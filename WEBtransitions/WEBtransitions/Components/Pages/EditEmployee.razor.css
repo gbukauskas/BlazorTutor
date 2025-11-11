@@ -14,6 +14,17 @@ div.img-content {
     /*width: 160px;*/
 }
 
+fieldset {
+    padding: 4px;
+    border: 1px solid gray;
+}
+fieldset > img {
+    margin-bottom: 1ex;
+}
+::deep fieldset > img > color-profile:hover {
+    cursor: pointer;
+}
+
 div.form-content {
     flex-grow: 1;
     flex-shrink: 1;
@@ -25,6 +36,43 @@ div.form-content > h2 {
     padding-left: 7em;
 }
 
+form {
+    margin-top: 2ex;
+}
+
+a > img {
+    display: inline-block;
+    margin-top: -2px;
+    margin-right: 0.5em;
+}
+
+button > img {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+p.text-danger {
+    font-size: larger;
+    font-weight: bolder;
+    margin-top: 2ex;
+}
+
+div.confirmation {
+    margin-top: 2ex;
+    padding-left: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2em;
+}
+
+div.confirmation > button {
+    flex: none;
+}
+
+
 label.left-column {
     width: 10em;
     text-align: right;
@@ -33,6 +81,18 @@ label.left-column {
 
 div.form-group {
     margin-bottom: 5px;
+}
+
+span[name="remember-region"] {
+    display: inline-block;
+    margin-left: 1em;
+}
+
+::deep .wide-input-control {
+    width: 500px;
+}
+::deep .narrow-input-control {
+    width: 200px;
 }
 
 

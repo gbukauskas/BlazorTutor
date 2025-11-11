@@ -4,6 +4,7 @@
 @using System.Diagnostics
 @using Microsoft.EntityFrameworkCore
 @using System.Web
+
 @using WEBtransitions.CustomErrors
 @using WEBtransitions.Services
 @using WEBtransitions.Services.Interfaces
@@ -50,27 +51,27 @@
     }
     <div class="form-group">
         <label class="left-column" for="company-name">Company name</label>
-        <InputText name="company-name" @bind-Value="Model!.CompanyName" style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="company-name" @bind-Value="Model!.CompanyName" class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-name">Contact name</label>
-        <InputText name="contact-name" @bind-Value=Model!.ContactName style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="contact-name" @bind-Value=Model!.ContactName class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="contact-title">Contact title</label>
-        <InputText name="contact-title" @bind-Value=Model!.ContactTitle style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="contact-title" @bind-Value=Model!.ContactTitle class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="address">Address</label>
-        <InputText name="address" @bind-Value=Model!.Address style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="address" @bind-Value=Model!.Address class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="city">City</label>
-        <InputText name="city" @bind-Value=Model!.City style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="city" @bind-Value=Model!.City class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
-        <Autocomplete name="region" @bind-Value=@Model!.Region style="width: 500px; display: inline-block;" action="@Action" RegionChanged="RegionChangedHanler">
+        <Autocomplete name="region" @bind-Value=@Model!.Region ClassInput="narrow-input-control" action="@Action" RegionChanged="RegionChangedHanler">
             @foreach (var item in allRegions)
             {
                 <option value=@item />
@@ -83,19 +84,19 @@
     </div>
     <div class="form-group">
         <label class="left-column" for="postal-code">Postal code</label>
-        <InputText name="postal-code" @bind-Value=Model!.PostalCode style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="postal-code" @bind-Value=Model!.PostalCode class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="country">Country</label>
-        <InputText name="country" @bind-Value=Model!.Country style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="country" @bind-Value=Model!.Country class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="phone">Phone number</label>
-        <InputText name="phone" @bind-Value=Model!.Phone style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="phone" @bind-Value=Model!.Phone class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     <div class="form-group">
         <label class="left-column" for="fax">Fax number</label>
-        <InputText name="fax" @bind-Value=Model!.Fax style="width: 500px;" Disabled="@IsReadOnly"></InputText>
+        <InputText name="fax" @bind-Value=Model!.Fax class="wide-input-control" Disabled="@IsReadOnly"></InputText>
     </div>
     @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
     {
@@ -118,7 +119,7 @@
                 <button class="btn btn-primary" type="submit">
                     <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
                 </button>
-                <a href="/Customers" class="btn btn-secondary">
+                <a href="/Customers/" class="btn btn-secondary">
                     <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
                 </a>
             </div>
@@ -127,7 +128,8 @@
         {
             <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
             <div class="confirmation">
-                <button class="btn btn-danger" @onclick="async () => await DeleteCustomerAsync(Model)">
+                <button class="btn btn-danger" @onclick="async () => await DeleteCustomerAsync(Model)"
+                                               @onclick:preventDefault @onclick:stopPropagation>
                     <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
                 </button>
                 <a href="/Customers" class="btn btn-secondary">

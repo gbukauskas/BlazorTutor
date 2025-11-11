@@ -66,7 +66,7 @@
     {
         base.OnInitialized();
         UUID = Guid.NewGuid().ToString();   // TODO: patikrinti, kaip dirba keli kontrolsai
-        AllClasses = $"@(ClassInput??String.Empty)";
+        AllClasses = ClassInput??String.Empty;
     }
 
     private async Task UpdateSelection(ChangeEventArgs e)

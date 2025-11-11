@@ -110,7 +110,7 @@ public partial class Customer
             entity.Property(e => e.Fax).HasColumnType("TEXT").HasMaxLength(24);
 
             entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
-            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0);
+            entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();
 
             // M-M relation between Customer and CustomerDemographic
             entity.HasMany(d => d.CustomerTypes).WithMany(p => p.Customers)
