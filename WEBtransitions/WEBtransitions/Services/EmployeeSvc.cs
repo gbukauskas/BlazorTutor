@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
-using WEBtransitions.Components.Pages;
 using WEBtransitions.CustomErrors;
 using WEBtransitions.Services.Interfaces;
 
@@ -11,6 +11,8 @@ namespace WEBtransitions.Services
 {
     public class EmployeeSvc: CommonSvc, IDatabaseSvc<Employee, string>, IPagedCollection<Employee>, IDisposable
     {
+        const int MAX_FILESIZE = 5000 * 1024;
+
         private NorthwindContext? _ctx = null;
         internal NorthwindContext Ctx
         {
@@ -78,6 +80,23 @@ namespace WEBtransitions.Services
             }
         }
 
+        public async Task<byte[]?> BytesFromStream(IBrowserFile? PhotoFile)
+        {
+            if (PhotoFile != null && PhotoFile.Size > 0)
+            {
+                var fileStream = PhotoFile.OpenReadStream(MAX_FILESIZE);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await fileStream.CopyToAsync(ms);
+                    return ms.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> DeleteEntityByIdAsync(Employee entity, bool ignoreConcurrencyError = false)
         {
             Debug.Assert(entity != null && entity.EmployeeId.HasValue);
@@ -138,6 +157,7 @@ namespace WEBtransitions.Services
                     employee.ReportsTo = entity.ReportsTo;
                     employee.Version = entity.IgnoreConcurency ? -1 : entity.Version;
                     employee.RememberRegion = entity.RememberRegion;
+                    employee.Photo = entity.Photo;
 
                     int status = this.Ctx.SaveChanges();
                     if (status < 1)

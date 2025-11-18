@@ -1,8 +1,10 @@
 ﻿//using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using WEBtransitions.ClassLibraryDatabase.CustomFilter;
+
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext
 {
@@ -76,6 +78,12 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? Extension { get; set; }
 
         public byte[]? Photo { get; set; }
+
+        /// <summary>
+        /// This property may be used instead of <code>Photo</code>. It will allow you reading file on server (inside <code>HandleSubmit</code> procedure).
+        /// You can use <code>@bind-Value="Model!.PhotoFile"</code> but image will be updated after form post.
+        /// </summary>
+        //[NotMapped]
         //public IFormFile? PhotoFile { get; set; }
 
         [NotMapped]
@@ -94,6 +102,9 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                 }
             }
         }
+
+        [NotMapped]
+        public IBrowserFile? PhotoFile { get; set; }
 
         public string? Notes { get; set; }
 
@@ -193,5 +204,19 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
                         });
             });
         }
-}
+    }
+
+/*
+    [NotMapped]
+    public class EmployeePost: Employee
+    {
+        [Required]
+        public IBrowserFile? FormFile { get; set; }
+
+        public EmployeePost(): base()
+        {
+            this.FormFile = null;
+        }
+    }
+*/
 }
