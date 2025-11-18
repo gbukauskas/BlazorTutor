@@ -95,4 +95,8 @@ span[name="remember-region"] {
     width: 200px;
 }
 
+::deep form {
+    display: flex;
+    flex-direction: row;
+}
 

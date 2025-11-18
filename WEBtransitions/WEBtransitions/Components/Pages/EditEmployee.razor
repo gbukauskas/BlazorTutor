@@ -29,25 +29,29 @@
 *@
 
 <div class="page-content">
-    <div class="img-content">
-        @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
-        {
-            <fieldset>
-                <legend>Upload image:</legend>
+    <EditForm EditContext="editContext" OnValidSubmit=@HandleSubmit FormName="EditEmployee" method="POST" enctype="multipart/form-data" Enhance>
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="img-content">
+            @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+            {
+                <fieldset>
+                    <legend>Upload image:</legend>
+                    <img src="@Model!.PhotoUrl" />
+                    <InputFile OnChange="FileUploaded" />
+
+                    @* Uploading files using IBrowserFile (IBrowserFileCollection) is explained on site https://www.youtube.com/watch?v=a5-iQ5IGtT0  *@
+                    @* https://github.com/alex-wolf-ps/blazor-file-uploads/tree/main *@
+                    @* <InputFile name="Employee.PhotoFile" /> *@
+                </fieldset>
+            }
+            else
+            {
                 <img src="@Model!.PhotoUrl" />
-                <InputFile OnChange="FileUploaded" />
-            </fieldset>
-        }
-        else
-        {
-            <img src="@Model!.PhotoUrl" />
-        }
-    </div>
-    <div class="form-content">
-        <h2>@Model.ItemValue</h2>
-        <EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditEmployee">
-            <DataAnnotationsValidator />  
-            <ValidationSummary />
+            }
+        </div>
+        <div class="form-content">
+            <h2>@Model.ItemValue</h2>
 
             <div class="form-group">
                 <label class="left-column" for="first-name">First name</label>
@@ -157,15 +161,8 @@
                     </div>
                 }
             </div>
-
-
-
-@*             <button class="btn btn-primary" type="submit">
-                <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
-            </button>
- *@
-        </EditForm>
-    </div>
+        </div>
+    </EditForm>
 </div>
 
 @code {
@@ -182,7 +179,7 @@
     public string? Argument { get; set; } = null;
 
     [SupplyParameterFromForm(FormName = "Editemployee")]
-    private Employee? Model { get; set; }
+    private Employee Model { get; set; } = new();
 
     private EditContext? editContext;
     private string TitleClass = "d-none";
@@ -313,30 +310,8 @@
 
     public async Task FileUploaded(InputFileChangeEventArgs e)
     {
-        Debug.Assert(Model != null);
-
-        var browserFile = e.File;
-
-        if (browserFile != null)
-        {
-            try
-            {
-                var fileStream = browserFile.OpenReadStream(MAX_FILESIZE);
-
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    await fileStream.CopyToAsync(ms);
-                    Model.Photo = ms.ToArray();
-#if DEBUG
-                    // File.WriteAllBytes("d:\\tmp\\Image004.png", ms.ToArray()); 
-#endif
-                }
-            }
-            catch (Exception exception)
-            {
-                ErrorMessage = exception.Message;
-                MyNavigationManager.NavigateTo($"/Employees?db_error={ErrorMessage}");
-            }
-        }
+        Debug.Assert(Model != null && e.File != null);
+        Model.Photo = await dbsvc.BytesFromStream(e.File);
     }
+
 }
