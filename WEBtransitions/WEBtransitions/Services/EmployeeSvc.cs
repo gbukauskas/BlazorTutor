@@ -178,28 +178,6 @@ namespace WEBtransitions.Services
             }
         }
 
-        /// <summary>
-        /// Updates field Photo
-        /// </summary>
-        /// <param name="EmployeeId"></param>
-        /// <param name="image"></param>
-        /// <returns></returns>
-        public async Task<bool> UpdatePhoto(int employeeId, byte[] image)
-        {
-            try
-            {
-                int recNumber = await this.Ctx.Employees
-                                        .Where(e => e.IsDeleted == 0 && e.EmployeeId == employeeId)
-                                        .ExecuteUpdateAsync(e => e.SetProperty(u => u.Photo, image));
-                return recNumber == 1;
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException($"An error occurred while saving photo, ID={employeeId}", ex);
-            }
-        }
-
-        // TODO: Remove it
         public PgResponse<Employee> GetPage(IEnumerable<Employee> collection, int pageSize, int pageNumber)
         {
             Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
