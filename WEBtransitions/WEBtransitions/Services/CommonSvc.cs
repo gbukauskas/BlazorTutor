@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System.Collections;
 using System.Diagnostics;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
@@ -9,6 +11,8 @@ namespace WEBtransitions.Services
 {
     public class CommonSvc
     {
+        const int MAX_FILESIZE = 5000 * 1024;
+
         /// <summary>
         /// Precision for comparision of double constatns
         /// </summary>
@@ -127,6 +131,50 @@ namespace WEBtransitions.Services
             }
             return defaultPageSize;
         }
+
+        public AppState CreateNewState(AppStateKey stateId, int buttonCount, int defaultPageSize, string pagerBaseUrl)
+        {
+            Debug.Assert(!String.IsNullOrEmpty(stateId.AppName) && !String.IsNullOrEmpty(stateId.UserId) && !String.IsNullOrEmpty(stateId.ComponentName));
+            var newState = new AppState()
+            {
+                AppName = stateId.AppName,
+                UserId = stateId.UserId,
+                ComponentName = stateId.ComponentName,
+                SortState = "",
+                FilterFieldName = "",
+                FilterFieldValue = "",
+                FilterFieldMaxValue = "",
+                FilterIsDateValue = (byte)0,
+                PagerButtonCount = buttonCount,
+                PagerRowCount = 0,      // The application will set actual value after reading dbo.Employees table
+                PagerPageCount = 0,     // The application will set actual value after reading dbo.Employees table
+                PagerPageNumber = 1,    // Display all records without paging
+                PagerPageSize = defaultPageSize,
+                PagerBaseUrl = pagerBaseUrl,
+                IsDeleted = (byte)0,
+                LastInsertedId = "-1"   // The application has no information about insertion
+            };
+            return newState;
+//            return await StateManager.CreateEntity(newState);
+        }
+
+        public async Task<byte[]?> BytesFromStream(IBrowserFile? PhotoFile)
+        {
+            if (PhotoFile != null && PhotoFile.Size > 0)
+            {
+                var fileStream = PhotoFile.OpenReadStream(MAX_FILESIZE);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    await fileStream.CopyToAsync(ms);
+                    return ms.ToArray();
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 
         /*
                 public string GetImageURL(byte[] img)

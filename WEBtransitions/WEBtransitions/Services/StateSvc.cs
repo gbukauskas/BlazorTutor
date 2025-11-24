@@ -134,7 +134,7 @@ namespace WEBtransitions.Services
                 ComponentState.FilterFieldName = entity.FilterFieldName;
                 ComponentState.FilterFieldValue = entity.FilterFieldValue;
                 ComponentState.FilterFieldMaxValue = entity.FilterFieldMaxValue;
-                ComponentState.FilterIsDateValue = entity.FilterIsDateValue;
+                ComponentState.FilterIsDateValue = entity.FilterIsDateValue ;
 
                 ComponentState.PagerButtonCount = entity.PagerButtonCount;
                 ComponentState.PagerRowCount = entity.PagerRowCount;

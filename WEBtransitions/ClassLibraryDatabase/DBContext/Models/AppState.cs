@@ -14,7 +14,15 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
         public string? FilterFieldName { get; set; }
         public string? FilterFieldValue { get; set; }
         public string? FilterFieldMaxValue { get; set; }
-        public short FilterIsDateValue { get; set; }    // Consider converter: https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=fluent-api
+
+        /// <summary>
+        /// <list type="bullet">
+        ///     <item>1 - date</item>
+        ///     <item>2 - integer number</item>
+        ///     <item>0 - all other types</item>
+        /// </list>
+        /// </summary>
+        public byte FilterIsDateValue { get; set; }    // Consider converter: https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=fluent-api
 
         public int? PagerButtonCount { get; set; }
         public int? PagerRowCount { get; set; }

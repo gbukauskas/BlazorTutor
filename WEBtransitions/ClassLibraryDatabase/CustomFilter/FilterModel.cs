@@ -31,6 +31,11 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
         /// </summary>
         public bool IsDateValue { get; set; } = false;
 
+        /// <summary>
+        /// <code>true</code> - convert string to integer value before filtering
+        /// </summary>
+        public bool IsIntegerValue { get; set; } = false;
+
         public FilterModel(FilterElement? element)
         {
             if (element != null)
@@ -39,9 +44,10 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
                 this.Value = element.Value;
                 this.MaxValue = element.MaxValue;
                 this.IsDateValue = element.IsDateValue;
+                this.IsIntegerValue = element.IsIntegerValue;
             }
         }
-
+/*
         public FilterModel(Tuple<string, string, string?, bool> filterState) 
         {
             this.Name = filterState.Item1;
@@ -49,6 +55,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
             this.MaxValue = filterState.Item3;
             this.IsDateValue = filterState.Item4;
         }
+*/
     }
 
     public class FilterElement: FilterModel, ICloneable
@@ -91,6 +98,7 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
                 Value = value,
                 MaxValue = maxValue,
                 IsDateValue = fldInfo.PropertyType == typeof(System.Nullable<System.DateOnly>),
+                IsIntegerValue = fldInfo.PropertyType == typeof(System.Nullable<System.Int32>),
                 IsSelected = isSelected,
                 IsDisabled = isDisabled
             };

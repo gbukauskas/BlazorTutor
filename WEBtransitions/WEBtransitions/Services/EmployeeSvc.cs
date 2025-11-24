@@ -9,9 +9,9 @@ using WEBtransitions.Services.Interfaces;
 
 namespace WEBtransitions.Services
 {
-    public class EmployeeSvc: CommonSvc, IDatabaseSvc<Employee, string>, IPagedCollection<Employee>, IDisposable
+    public class EmployeeSvc: CommonSvc, IDatabaseSvc<Employee, string>, IDisposable        // IPagedCollection<Employee>, 
     {
-        const int MAX_FILESIZE = 5000 * 1024;
+        //const int MAX_FILESIZE = 5000 * 1024;
 
         private NorthwindContext? _ctx = null;
         internal NorthwindContext Ctx
@@ -79,7 +79,7 @@ namespace WEBtransitions.Services
                 throw new DatabaseException("An error occurred while saving the entity changes.", ex);
             }
         }
-
+/*
         public async Task<byte[]?> BytesFromStream(IBrowserFile? PhotoFile)
         {
             if (PhotoFile != null && PhotoFile.Size > 0)
@@ -96,10 +96,10 @@ namespace WEBtransitions.Services
                 return null;
             }
         }
-
+*/
         public async Task<bool> DeleteEntityByIdAsync(Employee entity, bool ignoreConcurrencyError = false)
         {
-            Debug.Assert(entity != null && entity.EmployeeId.HasValue);
+            Debug.Assert(entity != null && entity.EmployeeId.HasValue && entity.EmployeeId.Value > 0);
             try
             {
                 Employee? dbEmployee = await this.Ctx.Employees.Where(x => x.EmployeeId == entity.EmployeeId && x.IsDeleted == 0).FirstOrDefaultAsync();
@@ -178,44 +178,44 @@ namespace WEBtransitions.Services
             }
         }
 
-        public PgResponse<Employee> GetPage(IEnumerable<Employee> collection, int pageSize, int pageNumber)
-        {
-            Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
-            try
-            {
-                int recordsCount = collection.Count();
+        //public PgResponse<Employee> GetPage(IEnumerable<Employee> collection, int pageSize, int pageNumber)
+        //{
+        //    Debug.Assert(collection != null && (pageNumber == -1 || pageSize > 0 && pageNumber >= 0));   // pageNumber == 0 returns last page
+        //    try
+        //    {
+        //        int recordsCount = collection.Count();
 
-                if (recordsCount < 1)
-                {
-                    var emptyList = new List<Employee>().ToArray();
-                    return new PgResponse<Employee>(recordsCount, pageSize, pageNumber, 0, emptyList);
-                }
-                else if (pageNumber == -1)
-                {
-                    return new PgResponse<Employee>(recordsCount, pageSize, 1, 1, collection.ToArray());
-                }
-                else
-                {
-                    double pgCount = (double)recordsCount / (double)pageSize;
-                    double integral = Math.Truncate(pgCount);
-                    double fractional = Math.Abs(pgCount - integral);
-                    int totalPages = fractional <= DELTA ? (int)integral : (int)integral + 1;
-                    int currentPage = (pageNumber < 1) ? totalPages
-                                                       : pageNumber > totalPages ? 1 : pageNumber;
+        //        if (recordsCount < 1)
+        //        {
+        //            var emptyList = new List<Employee>().ToArray();
+        //            return new PgResponse<Employee>(recordsCount, pageSize, pageNumber, 0, emptyList);
+        //        }
+        //        else if (pageNumber == -1)
+        //        {
+        //            return new PgResponse<Employee>(recordsCount, pageSize, 1, 1, collection.ToArray());
+        //        }
+        //        else
+        //        {
+        //            double pgCount = (double)recordsCount / (double)pageSize;
+        //            double integral = Math.Truncate(pgCount);
+        //            double fractional = Math.Abs(pgCount - integral);
+        //            int totalPages = fractional <= DELTA ? (int)integral : (int)integral + 1;
+        //            int currentPage = (pageNumber < 1) ? totalPages
+        //                                               : pageNumber > totalPages ? 1 : pageNumber;
 
-                    var pageContent = collection
-                                        .Skip<Employee>((currentPage - 1) * pageSize)
-                                        .Take<Employee>(pageSize)
-                                        .ToArray();
+        //            var pageContent = collection
+        //                                .Skip<Employee>((currentPage - 1) * pageSize)
+        //                                .Take<Employee>(pageSize)
+        //                                .ToArray();
 
-                    return new PgResponse<Employee>(recordsCount, pageSize, pageNumber, totalPages, pageContent);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException("GetPage failed.", ex);
-            }
-        }
+        //            return new PgResponse<Employee>(recordsCount, pageSize, pageNumber, totalPages, pageContent);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new DatabaseException("GetPage failed.", ex);
+        //    }
+        //}
 
         public async Task<PgResponse<Employee>> GetCurrentPageAsync(StateForComponent currentState)
         {

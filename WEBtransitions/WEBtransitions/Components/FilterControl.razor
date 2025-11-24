@@ -30,7 +30,7 @@
                 </select>
             </div>
 
-            @if (Model?.IsDateValue == true)
+            @if (Model?.IsDateValue == true || Model?.IsIntegerValue == true)
             {
                 <label class="item21">Min:</label>
                 <div class="item22">
@@ -38,14 +38,14 @@
                 </div>
                 <label class="item31">Max:</label>
                 <div class="item32">
-                    <InputText id="value-max" @bind-Value="Model!.MaxValue" name="search-value" title="Date interval: last value" />
+                    <InputText id="value-max" @bind-Value="Model!.MaxValue" name="search-value" title="Number: last value" />
                 </div>
             }
             else
             {
                 <label class="item21">Value:</label>
                 <div class="item22">
-                    <InputText id="value" @bind-Value="Model!.Value" name="search-value" title="Part of text" />
+                    <InputText id="value" @bind-Value="Model!.Value" name="search-value" title="Part of text or first value" />
                 </div>
             }
             <div class="item13">
@@ -69,7 +69,7 @@
     private StateForComponent? currentState { get; set; }
 
     [Parameter]
-    public EventCallback<Tuple<string, string, string?, bool>> OnFilterChanged { get; set; }
+    public EventCallback<Tuple<string, string, string?, bool, bool>> OnFilterChanged { get; set; }
 
     private EditContext? editContext;
     private ValidationMessageStore? messageStore;
@@ -128,7 +128,8 @@
             Name = "Select Element",
             Value = "",
             IsDateValue = false,
-            IsSelected = String.IsNullOrEmpty(currentState.FilterState.Item2),
+            IsIntegerValue = false,
+            IsSelected = String.IsNullOrEmpty(currentState!.FilterState.Item2),
             IsDisabled = true
         });
 
@@ -137,7 +138,7 @@
         {
             var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
             //            Model!.Value = "No filtering";
-            if (propertyAttributes.Length > 0 && propertyAttributes.Length < i)
+            if (propertyAttributes.Length > 0)      //  && propertyAttributes.Length < i
             {
                 var item = FilterElement.CreateFilterElement(myPropertyInfo[i]);
 
@@ -157,6 +158,7 @@
     private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
     {
         Func<string?, bool> dateIsValid = dateStr => String.IsNullOrEmpty(dateStr) || DateRegex.IsMatch(dateStr);
+        Func<string?, bool> integerIsValid = numberStr => String.IsNullOrEmpty(numberStr) || IntegerRegex.IsMatch(numberStr);
 
         Debug.Assert(this.Model != null && !String.IsNullOrEmpty(this.Model.Name) && this.messageStore != null);
         Debug.Assert(this.ControlNames != null && this.ControlNames.Count > 0);
@@ -175,49 +177,35 @@
                 messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
                 editContext!.NotifyValidationStateChanged();
             }
-
-/*
-            if (!DateIsValid(this.Model.Value) || !DateIsValid(this.Model.MaxValue))
+        } 
+        if (currentElement.IsIntegerValue)
+        {
+            if (!integerIsValid(this.Model.Value) || !integerIsValid(this.Model.MaxValue))
             {
-                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                messageStore.Add(() => Model.Name, $"Number {this.Model.Value} has invalid format.");
                 editContext!.NotifyValidationStateChanged();
             }
-            if (!String.IsNullOrEmpty(this.Model.Value) && !DateTime.TryParse(this.Model.Value, activeCulture, out filterdate))
-            {
-                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
-                editContext!.NotifyValidationStateChanged();
-                }
-            if (!String.IsNullOrEmpty(this.Model.MaxValue) && !DateTime.TryParse(this.Model.MaxValue, activeCulture, out filterdate))
-            {
-                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
-                editContext!.NotifyValidationStateChanged();
-                }
-*/
-        } 
+        }
         if (String.IsNullOrEmpty(Model.Value) && String.IsNullOrEmpty(Model.MaxValue))
         {
-            // messageStore.Add(() => Model.Name, $"Select some name and write not empty string into the 'Value' box.");
-            // editContext!.NotifyValidationStateChanged();
             for (int i = 0; i < ControlNames.Count; i++)
             {
                 ControlNames[i].IsSelected = i < 1;
             }
             Model = ControlNames[0];
-            var filterState = new Tuple<string, string, string?, bool>(Model.Name ?? "", "", "", false);
+            var filterState = new Tuple<string, string, string?, bool, bool>(Model.Name ?? "", "", "", false, false);
             OnFilterChanged.InvokeAsync(filterState);
         }
     }
 
+    /// <summary>
+    /// The Regex verifies dates. It accepts ISO format only (YYYY-MM-DD)
+    /// </summary>
     private static readonly Regex DateRegex = new Regex("^\\d{4}-\\d{1,2}-\\d{1,2}/$");
     /// <summary>
-    /// The function returns true for a valid date format
+    /// The Regex verifies integer values. The value must have up to 6 digits with optional sign
     /// </summary>
-    /// <param name="dateStr">Date value in string format</param>
-    /// <returns><code>true</code> - in case of correct date dormat</returns>
-    private bool DateIsValid(string? dateStr)
-    {
-        return String.IsNullOrEmpty(dateStr) || DateRegex.IsMatch(dateStr);
-    }
+    private static readonly Regex IntegerRegex = new Regex(@"^[+-]?[0-9]{1,6}$");
 
     public async Task ChangeModel()
     {
@@ -231,6 +219,7 @@
                 if (currentModel.IsSelected)
                 {
                     Model.IsDateValue = currentModel.IsDateValue;
+                    Model.IsIntegerValue = currentModel.IsIntegerValue;
                 }
             }
         }
@@ -256,17 +245,7 @@
             Model.Name = null;
             ControlNames.ForEach(x => x.IsSelected = false);
         }
-        var filterState = new Tuple<string, string, string?, bool>(Model.Name ?? "", searchValue, searchValueMax, Model.IsDateValue);
-
-        // bool filterWasChanged = filterState.Item1 != filterName ||
-        //                         filterState.Item2 != filterValue ||
-        //                         filterState.Item3 != null && filterState.Item3 != filterMaxValue ||
-        //                         filterState.Item3 is null && !String.IsNullOrEmpty(filterMaxValue);
-
-        // if (filterWasChanged)
-        // {
-        //     OnFilterChanged.InvokeAsync(filterState);
-        // }
+        var filterState = new Tuple<string, string, string?, bool, bool>(Model.Name ?? "", searchValue, searchValueMax, Model.IsDateValue, Model.IsIntegerValue);
         OnFilterChanged.InvokeAsync(filterState);
     }
 }

@@ -71,7 +71,7 @@ else
             {
                 <tr @key=emp.ItemKey class="@GetBoldClass(emp.ItemKey)">
                     <td>
-                        <img src="@emp.PhotoUrl" />
+                        <img src="@emp.PhotoUrl" class="row-image" />
                     </td>
                     <td>@emp.LastName</td>
                     <td>@emp.FirstName</td>
@@ -161,7 +161,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // await Task.Delay(1000);  // For debugging (stream rendering mode)
         string? userId = cookieService.GetCookie("WebTransitions");
 
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
@@ -173,12 +172,13 @@ else
         AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
         if (stateData == null)
         {
-            stateData = await CreateNewState(stateId);
+            AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Employees");
+            stateData = await StateManager.CreateEntity(newState);
         }
         currentState = (StateForComponent)stateData;
         if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
         {
-            currentState.FilterState = new Tuple<string, string, string?, bool>("", "", "", false);
+            currentState.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
         }
 
         SortParameter = new List<string>();
@@ -269,37 +269,12 @@ else
     ///     </list>
     /// </param>
     /// <returns></returns>
-    async Task FilterChangedHandler(Tuple<string, string, string?, bool> message)
+    async Task FilterChangedHandler(Tuple<string, string, string?, bool, bool> message)
     {
         Debug.Assert(this.currentState != null);
         this.currentState.FilterState = message;
         await this.StateManager.UpdateEntity((AppState)this.currentState, false);
         NavManager.Refresh(true);
-    }
-
-    private async Task<AppState> CreateNewState(AppStateKey stateId)
-    {
-        Debug.Assert(!String.IsNullOrEmpty(stateId.AppName) && !String.IsNullOrEmpty(stateId.UserId) && !String.IsNullOrEmpty(stateId.ComponentName));
-        var newState = new AppState()
-        {
-            AppName = stateId.AppName,
-            UserId = stateId.UserId,
-            ComponentName = stateId.ComponentName,
-            SortState = "",
-            FilterFieldName = "",
-            FilterFieldValue = "",
-            FilterFieldMaxValue = "",
-            FilterIsDateValue = (short)0,
-            PagerButtonCount = this.buttonCount,
-            PagerRowCount = 0,      // The application will set actual value after reading dbo.Employees table
-            PagerPageCount = 0,     // The application will set actual value after reading dbo.Employees table
-            PagerPageNumber = 1,    // Display all records without paging
-            PagerPageSize = this.defaultPageSize,
-            PagerBaseUrl = "Employees",
-            IsDeleted = (byte)0,
-            LastInsertedId = "-1"   // The application has no information about insertion
-        };
-        return await StateManager.CreateEntity(newState);
     }
 
     // https://learn.microsoft.com/en-us/aspnet/core/blazor/blazor-ef-core?view=aspnetcore-5.0#new-dbcontext-instances-5x

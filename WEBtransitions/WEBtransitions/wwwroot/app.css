@@ -58,3 +58,142 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* Overwiew table */
+table.reportTable > thead > tr {
+    background-color: lightskyblue;
+}
+
+table.reportTable > tfoot > tr {
+    background-color: lightgray;
+}
+
+th, tfoot > tr > td {
+    background-color: inherit;
+}
+
+table.reportTable > thead > tr a {
+    text-decoration: none;
+}
+
+table.reportTable > thead > tr > th[data-sort="a"] > a::before {
+    content: "\21E7\00a0";
+}
+
+table.reportTable > thead > tr > th[data-sort="d"] > a::before {
+    content: "\21E9\00a0";
+}
+
+table > caption {
+    caption-side: top;
+    font-size: larger;
+    font-weight: bold;
+    text-align: center;
+}
+
+tbody > tr img.row-image {
+    width: 48px;
+    height: 48px;
+}
+
+tbody > tr > td:not(:first-child) {
+    vertical-align: middle;
+}
+
+div.component-footer {
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1ex;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    align-content: flex-start;
+    gap: 2em;
+}
+
+/* Details screen*/
+div.page-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    align-content: flex-start;
+    gap: 10px;
+}
+
+div.img-content {
+    flex: none;
+    flex-basis: 160px;
+}
+
+label.left-column {
+    width: 10em;
+    text-align: right;
+    margin-right: 0.5em;
+}
+
+div.form-group {
+    margin-bottom: 5px;
+}
+
+fieldset {
+    padding: 4px;
+    border: 1px solid gray;
+}
+
+fieldset > img {
+    margin-bottom: 1ex;
+}
+
+/* Input form */
+
+div.form-content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 512px;
+}
+
+div.form-content > h2 {
+    text-align: left;
+    padding-left: 7em;
+}
+
+form {
+    margin-top: 2ex;
+}
+
+a > img {
+    display: inline-block;
+    margin-top: -2px;
+    margin-right: 0.5em;
+}
+
+button > img {
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+p.text-danger {
+    font-size: larger;
+    font-weight: bolder;
+    margin-top: 2ex;
+}
+
+div.confirmation {
+    margin-top: 2ex;
+    padding-left: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2em;
+}
+
+div.confirmation > button {
+    flex: none;
+}
+

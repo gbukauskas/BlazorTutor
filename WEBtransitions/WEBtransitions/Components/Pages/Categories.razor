@@ -1,0 +1,273 @@
+﻿@page "/Categories/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@using System.Diagnostics
+
+@using System.Globalization
+@using WEBtransitions.Components.CrudLinks
+@using WEBtransitions.Services
+@using WEBtransitions.ClassLibraryDatabase.CustomPager
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</code></item>
+        <item>Page size when <code>action == 'page'</code> </item>
+    </list>
+*@
+
+@attribute [StreamRendering(true)]
+
+@inject CategorySvc dbSVC
+@inject IConfiguration Configuration
+@inject NavigationManager NavManager
+@inject StateSvc StateManager
+@inject CookieService cookieService
+
+@implements IAsyncDisposable
+
+<PageTitle>Employees</PageTitle>
+
+@if (currentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table reportTable" name="list-of-categories">
+        <caption>Categories</caption>
+        <thead>
+            <tr>
+                <th name="CategoryID" data-sort="@SortParameter![0].Substring(0, 1)">
+                    <a href="/Categories/sort/@SortParameter[0]">Category ID</a>
+                </th>
+                <th>Photo</th>
+                <th name="CategoryName" data-sort="@SortParameter![1].Substring(0, 1)">
+                    <a href="/Categories/sort/@SortParameter[1]">Category Name</a>
+                </th>
+                @* For SqLite only. Use commented line for MS SQL, MySQL and PostgreSQL databases. *@
+                <th name="Description" data-sort="@SortParameter![2].Substring(0, 1)">
+                    <a href="/Categories/sort/@SortParameter[2]">Description</a>
+                </th>
+                @* <th>Description</th> *@
+                 <th>Command</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ctg in currentPage.Items)
+            {
+                <tr @key=ctg.ItemKey class="@GetBoldClass(ctg.ItemKey)">
+                    <td>@ctg.CategoryId</td>
+                    <td>
+                        <img src="@ctg.PictureUrl" class="row-image" />
+                    </td>
+                    <td>@ctg.CategoryName</td>
+                    <td>@ctg.Description</td>
+                    <td>
+                        <CrudLinksControl Url="/EditCategory" Id="@ctg.ItemKey" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+        @if (!String.IsNullOrEmpty(DBerrorMessage))
+        {
+            <tfoot>
+                <tr>
+                    <td colspan="10">
+                        <span class="text-danger">@DBerrorMessage</span>
+                    </td>
+                </tr>
+            </tfoot>
+        }
+
+    </table>
+    <div class="component-footer">
+        <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
+            <CascadingValue Name="PageState" Value="@currentState">
+                <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                              PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
+                <a href="/EditEmployee/new" class="new-item-link" title="Insert new employee">New Category</a>
+                <FilterControl T="Category" OnFilterChanged="FilterChangedHandler"></FilterControl>
+            </CascadingValue>
+        </CascadingValue>
+    </div>
+
+}
+
+@code {
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+    private static readonly string[] FieldNames = { "CategoryID", "CategoryName", "Description" };  // Description is sortable in LiteSql database only
+    // private static readonly string[] FieldNames = { "CategoryID", "CategoryName" };  // Use this in MS SQL, mySQL and PostgreSQL databases
+    public List<string>? SortParameter;
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+
+    /// <summary>
+    /// Cascading parameter
+    /// </summary>
+    private StateForComponent? currentState = null;
+    private AppStateKey? stateId;
+    private PgResponse<Category>? currentPage = null;
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name = "db_error")]
+    public string? DBerrorMessage { get; set; } = null;
+
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string LastInsertedId { get; set; } = "-1";
+
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+
+    private int defaultPageSize = 9;
+    private int buttonCount = 5;
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        this.LastInsertedId = "-1";
+    }
+
+    private string GetBoldClass(string categoryId)
+    {
+        if (String.IsNullOrEmpty(this.LastInsertedId) || this.LastInsertedId != categoryId)
+        {
+            return "fw-normal";
+        }
+        else
+        {
+            return "fw-bold";
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        string? userId = cookieService.GetCookie("WebTransitions");
+        currentPage = null;
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Categories");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Categories");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Categories");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Categories");
+            stateData = await StateManager.CreateEntity(newState);
+        }
+        currentState = (StateForComponent)stateData;
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
+        {
+            currentState.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
+        }
+
+        SortParameter = new List<string>();
+        for (int i = 0; i < FieldNames.Length; i++)
+        {
+            SortParameter.Add($"n_{FieldNames[i]}");
+        }
+
+        ActiveCulture = new CultureInfo(activeCultureStr);
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Categories", PageNumber ?? 1);
+            }
+            else
+            {
+                throw new Exception($"Action '{Action}' is invalid.");
+            }
+        }
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
+
+        if (String.IsNullOrEmpty(Action))
+        {
+            this.Action = "page";
+        }
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+    }
+
+    /// <summary>
+    /// The function updates filter value
+    /// </summary>
+    /// <param name="message">
+    ///     <list type="number">
+    ///         <item>
+    ///             <description>Field name</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Value</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Max value</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Is date value (boolean)</description>
+    ///         </item>
+    ///     </list>
+    /// </param>
+    /// <returns></returns>
+    async Task FilterChangedHandler(Tuple<string, string, string?, bool, bool> message)
+    {
+        Debug.Assert(this.currentState != null);
+        this.currentState.FilterState = message;
+        await this.StateManager.UpdateEntity((AppState)this.currentState, false);
+        NavManager.Refresh(true);
+    }
+
+
+    public async ValueTask DisposeAsync()
+    {
+        Debug.Assert(this.currentState != null);
+        var x = (AppState)this.currentState;
+        await this.StateManager.UpdateEntity(x, false);
+    }
+
+}

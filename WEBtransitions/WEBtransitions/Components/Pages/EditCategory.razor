@@ -1,0 +1,204 @@
+﻿@page "/EditCategory/{action}/{argument?}"
+@using System.Diagnostics
+@using System.Globalization
+@using System.Web
+@using WEBtransitions.CustomErrors
+@using WEBtransitions.Services
+
+@inject CategorySvc dbsvc
+@inject NavigationManager MyNavigationManager
+
+<div class="page-content">
+    <EditForm EditContext="editContext" OnValidSubmit=@HandleSubmit FormName="EditEmployee" method="POST" enctype="multipart/form-data" Enhance >
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="img-content">
+            @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+            {
+                <fieldset>
+                    <legend>Upload image:</legend>
+                    <img src="@Model!.PictureUrl" />
+                    <InputFile OnChange="FileUploaded" />
+                </fieldset>
+            }
+            else
+            {
+                <img src="@Model!.PictureUrl" />
+            }
+        </div>
+        <div class="form-content">
+            <h2>@(Model.CategoryName ?? "New category")</h2>
+
+            <div class="form-group">
+                <label class="left-column" for="category-name">Name</label>
+                <InputText name="category-name" @bind-Value="Model!.CategoryName" Disabled="@IsReadOnly" class="wide-input-control"></InputText>
+            </div>
+
+            <div class="form-group">
+                <label class="left-column" for="description" style="vertical-align: top;">Description</label>
+                @* <InputText name="description" @bind-Value="Model!.Description" Disabled="@IsReadOnly" class="wide-input-control"></InputText> *@
+                <InputTextArea name="description" @bind-Value="Model!.Description" style="overflow-y: auto;" Disabled="@IsReadOnly" Rows="5" class="wide-input-control"></InputTextArea>
+            </div>
+
+            <div class="form-group">
+                @if (String.IsNullOrEmpty(Action) || Action == "view")
+                {
+                    <a href="/Categories" class="btn btn-primary">
+                        <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
+                    </a>
+                }
+                else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+                {
+                    <div class="confirmation">
+                        <button class="btn btn-primary" type="submit">
+                            <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+                        </button>
+                        <a href="/Categories" class="btn btn-secondary">
+                            <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
+                        </a>
+                    </div>
+                }
+                else if (!String.IsNullOrEmpty(Action) && Action == "delete")
+                {
+                    <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
+                    <div class="confirmation">
+                        <button class="btn btn-danger" @onclick="async () => await DeleteCategoryAsync(Model)"
+                                                       @onclick:preventDefault @onclick:stopPropagation>
+                            <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
+                        </button>
+                        <a href="/Employees/" class="btn btn-secondary">
+                            <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </EditForm>
+</div>
+
+@code {
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    ///category ID
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    [SupplyParameterFromForm(FormName = "EditCategory")]
+    private Category Model { get; set; } = new();
+
+    internal bool IsReadOnly = false;
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+
+    private EditContext? editContext;
+    private string TitleClass = "d-none";
+    private ValidationMessageStore? messageStore;
+    public string ErrorMessage { get; set; } = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Model ??= new();
+        editContext = new(Model);
+        messageStore = new(editContext);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Debug.Assert(Action == "new" || !String.IsNullOrEmpty(Argument));
+        Category? category;
+
+        if (String.IsNullOrEmpty(Argument) || Action == "new")
+        {
+            category = new()
+            {
+                CategoryId = null,
+                CategoryName = "",
+                Description = ""
+            };
+
+        }
+        else
+        {
+            category = await dbsvc.GetEntityByIdAsync(Argument);
+        }
+        if (category == null)
+        {
+            this.ErrorMessage = $"category {Argument} was not found.";
+            return;
+        }
+        IsReadOnly = (Action == "view" || Action == "delete");
+
+        this.Model = category;
+        TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
+    }
+
+    public async Task HandleSubmit(EditContext editContext_1)
+    {
+        Category? currentItem = null;
+        string? backUrl = null;
+
+        messageStore?.Clear();
+        bool valid = this.editContext!.Validate();
+        if (!valid)
+        {
+            return;
+        }
+
+        try
+        {
+            Debug.Assert(Model != null);
+
+            if (this.Action == "new")
+            {
+                currentItem = await dbsvc.CreateEntity(Model);
+                backUrl = $"/Categories?new_id={currentItem.ItemKey}";
+            }
+            else
+            {
+                currentItem = await dbsvc.UpdateEntity(Model);
+                backUrl = "/Categories/";
+            }
+            MyNavigationManager.NavigateTo(backUrl!);
+        }
+        catch (DatabaseException ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.ItemKey} updating failed: {ex.Message}");
+            MyNavigationManager.NavigateTo($"/Categories?db_error={errorMessage}");
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.ItemKey} updating failed: {ex.Message}");
+            MyNavigationManager.NavigateTo($"/Categories?db_error={errorMessage}");
+        }
+    }
+    private async Task DeleteCategoryAsync(Category category)
+    {
+        try
+        {
+            Debug.Assert(Model != null);
+            Model.IsDeleted = 1;
+
+            await dbsvc.DeleteEntityByIdAsync(category);
+            MyNavigationManager.NavigateTo("/Categories/");
+        }
+        catch (DatabaseException ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.ItemKey} deleting failed: {ex.Message}") ;
+            MyNavigationManager.NavigateTo($"/Employees?db_error={errorMessage}");
+        }
+    }
+
+    public async Task FileUploaded(InputFileChangeEventArgs e)
+    {
+        Debug.Assert(Model != null && e.File != null);
+        Model.Picture = await dbsvc.BytesFromStream(e.File);
+    }
+
+}

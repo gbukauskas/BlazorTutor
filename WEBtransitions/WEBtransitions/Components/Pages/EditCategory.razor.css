@@ -1,0 +1,27 @@
+﻿::deep .wide-input-control {
+    width: 500px;
+}
+
+::deep .narrow-input-control {
+    width: 200px;
+}
+
+::deep form {
+    display: flex;
+    flex-direction: row;
+}
+
+div.form-content {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 512px;
+}
+
+    div.form-content > h2 {
+        text-align: left;
+        padding-left: 7em;
+    }
+
+form {
+    margin-top: 2ex;
+}

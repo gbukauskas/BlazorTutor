@@ -86,7 +86,7 @@ BEGIN
 		[FilterFieldName] [varchar](500) NULL,
 		[FilterFieldValue] [nvarchar](2000) NULL,
 		[FilterFieldMaxValue] [nvarchar](2000) NULL,
-		[FilterIsDateValue] [bit] NOT NULL,
+		[FilterIsDateValue] [tinyint] NOT NULL,
 		[PagerButtonCount] [tinyint] NULL,
 		[PagerRowCount] [int] NULL,
 		[PagerPageCount] [smallint] NULL,

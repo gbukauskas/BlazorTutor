@@ -200,8 +200,6 @@
     public DateTimeOffset LastModified { get; set; }
     public string ErrorMessage { get; set; } = "";
 
-    const int MAX_FILESIZE = 5000 * 1024; // 2 MB
-
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();

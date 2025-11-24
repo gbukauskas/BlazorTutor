@@ -38,6 +38,7 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
 });
 
 builder.Services
+    .AddScoped<CategorySvc>()
     .AddScoped<CustomerSvc>()
     .AddScoped<EmployeeSvc>()
     .AddScoped<RegionSvc>()
