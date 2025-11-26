@@ -21,9 +21,7 @@ fieldset > img {
     margin-bottom: 1ex;
 }
 */
-::deep fieldset > img > color-profile:hover {
-    cursor: pointer;
-}
+
 /*
 div.form-content {
     flex-grow: 1;

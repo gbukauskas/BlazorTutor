@@ -125,5 +125,20 @@ public partial class NorthwindContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
+    /// <summary>
+    /// Restored modified record (force reloading from the database). <see cref="https://stackoverflow.com/questions/74418979/best-approach-to-load-or-reload-entity-from-database-in-ef-core"/>
+    /// </summary>
+    /// <typeparam name="TEntity">Entity type</typeparam>
+    /// <param name="entityObject">Entity object</param>
+    /// <returns></returns>
+    public async Task ReloadIfModified<TEntity>(TEntity entityObject) where TEntity : class
+    {
+        var entry = Entry(entityObject);
+        if (entry.State == EntityState.Modified)
+        {
+            await entry.ReloadAsync();
+        }
+    }
+
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

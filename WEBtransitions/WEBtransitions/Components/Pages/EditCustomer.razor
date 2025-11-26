@@ -119,9 +119,9 @@
                 <button class="btn btn-primary" type="submit">
                     <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
                 </button>
-                <a href="/Customers/" class="btn btn-secondary">
-                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
-                </a>
+                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                </button>
             </div>
         }
         else if (!String.IsNullOrEmpty(Action) && Action == "delete")
@@ -132,9 +132,13 @@
                                                @onclick:preventDefault @onclick:stopPropagation>
                     <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
                 </button>
-                <a href="/Customers" class="btn btn-secondary">
+                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                </button>
+
+@*                 <a href="/Customers" class="btn btn-secondary">
                     <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
-                </a>
+                </a> *@
             </div>
         }
     </div>
@@ -325,6 +329,13 @@
         {
             editContext.OnValidationRequested -= HandleValidationRequested;
         }
+    }
+
+    protected async Task RestoreRecord()
+    {
+        Debug.Assert(Model != null);
+        await dbSVCustomer.Ctx.ReloadIfModified<Customer>(Model);
+        MyNavigationManager.NavigateTo($"/Customers/");
     }
 
     // https://blazor-university.com/forms/

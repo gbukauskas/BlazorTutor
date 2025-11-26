@@ -90,7 +90,7 @@ else
             <CascadingValue Name="PageState" Value="@currentState">
                 <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
                               PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
-                <a href="/EditEmployee/new" class="new-item-link" title="Insert new employee">New Category</a>
+                <a href="/EditCategory/new" class="new-item-link" title="Insert new employee">New Category</a>
                 <FilterControl T="Category" OnFilterChanged="FilterChangedHandler"></FilterControl>
             </CascadingValue>
         </CascadingValue>

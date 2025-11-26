@@ -103,7 +103,7 @@
                 <label class="left-column" for="postal-code">Postal code</label>
                 <InputText name="postal-code" @bind-Value="Model!.PostalCode" Disabled="@IsReadOnly" class="narrow-input-control"></InputText>
             </div>
-            <div class="form-group">
+            <div class="form-group">Images/close_2.png
                 <label class="left-column" for="country">Country</label>
                 <InputText name="country" @bind-Value="Model!.Country" Disabled="@IsReadOnly" class="wide-input-control"></InputText>
             </div>
@@ -114,7 +114,7 @@
             </div>
             <div class="form-group">
                 <label class="left-column" for="reports-to">Reports to</label>
-                <InputSelect name="reports-to" @bind-Value="Model!.ReportsToStr" style="padding: 5px 0px;" class="wide-input-control">
+                <InputSelect name="reports-to" @bind-Value="Model!.ReportsToStr" style="padding: 5px 0px;" class="wide-input-control" Disabled="@IsReadOnly">
                     @foreach (var item in allEmployees)
                     {
                         <option value="@item.ItemKey">@item.ItemValue</option>
@@ -142,9 +142,9 @@
                         <button class="btn btn-primary" type="submit">
                             <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
                         </button>
-                        <a href="/Employees" class="btn btn-secondary">
-                            <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
-                        </a>
+                        <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                            <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                        </button>
                     </div>
                 }
                 else if (!String.IsNullOrEmpty(Action) && Action == "delete")
@@ -155,9 +155,9 @@
                                                        @onclick:preventDefault @onclick:stopPropagation>
                             <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
                         </button>
-                        <a href="/Employees/" class="btn btn-secondary">
-                            <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
-                        </a>
+                        <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                            <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                        </button>
                     </div>
                 }
             </div>
@@ -310,6 +310,13 @@
     {
         Debug.Assert(Model != null && e.File != null);
         Model.Photo = await dbsvc.BytesFromStream(e.File);
+    }
+
+    protected async Task RestoreRecord()
+    {
+        Debug.Assert(Model != null);
+        await dbsvc.Ctx.ReloadIfModified<Employee>(Model);
+        MyNavigationManager.NavigateTo($"/Employees/");
     }
 
 }

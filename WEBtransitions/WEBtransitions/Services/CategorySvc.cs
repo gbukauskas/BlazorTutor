@@ -14,7 +14,7 @@ namespace WEBtransitions.Services
         const int MAX_FILESIZE = 5000 * 1024;
 
         private NorthwindContext? _ctx = null;
-        internal NorthwindContext Ctx
+        public NorthwindContext Ctx
         {
             get
             {
@@ -25,7 +25,7 @@ namespace WEBtransitions.Services
                 }
                 return _ctx!;
             }
-            set
+            internal set
             {
                 Debug.Assert(value != null);
                 _ctx = value;
@@ -77,7 +77,6 @@ namespace WEBtransitions.Services
             {
                 allRecords = [];
             }
-            Debug.Assert(allRecords != null && allRecords.Length > 0);
             if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Category>(allRecords, x => x.ItemKey == currentState.LastInsertedId))
             {
                 var newRecord = await this.Ctx.Categories.Where(x => x.ItemKey == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
