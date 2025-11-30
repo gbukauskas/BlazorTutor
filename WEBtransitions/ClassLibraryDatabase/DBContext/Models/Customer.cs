@@ -90,8 +90,8 @@ public partial class Customer
                 .ToTable("Customers")
                 .HasKey(e => e.CustomerId).HasName("PK_Customers");
             entity.HasIndex(e => e.City).IsUnique(false).HasDatabaseName("City");
-            entity.HasIndex(e => e.CompanyName).IsUnique(false).HasDatabaseName("CompanyName");
-            entity.HasIndex(e => e.PostalCode).IsUnique(false).HasDatabaseName("PostalCode");
+            entity.HasIndex(e => e.CompanyName).IsUnique(false).HasDatabaseName("IX_Cust_CompanyName");
+            entity.HasIndex(e => e.PostalCode).IsUnique(false).HasDatabaseName("IX_Cust_PostalCode");
             entity.HasIndex(e => e.Region).IsUnique(false).HasDatabaseName("Region");
 
             entity.Ignore(t => t.IgnoreConcurency);

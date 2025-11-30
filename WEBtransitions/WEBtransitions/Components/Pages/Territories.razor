@@ -1,0 +1,223 @@
+﻿@page "/Territories/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@using System.Globalization
+@using System.Diagnostics
+@using WEBtransitions.ClassLibraryDatabase.CustomPager
+@using WEBtransitions.Components.CrudLinks
+@using WEBtransitions.Services
+
+@inject TerritorySvc dbSVC
+@inject IConfiguration Configuration
+@inject NavigationManager NavManager
+@inject StateSvc StateManager
+@inject CookieService cookieService
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</code></item>
+        <item>Page size when <code>action == 'page'</code> </item>
+    </list>
+*@
+
+<PageTitle>Territories</PageTitle>
+
+@if (currentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table reportTable" name="list-of-territories">
+        <caption>Territories</caption>
+        <thead>
+            <tr>
+                <th name="region-id" data-sort="@SortParameter![0].Substring(0, 1)">
+                    <a href="/Territories/sort/@SortParameter[0]">ID</a>
+                </th>
+                <th name="territory-description" data-sort="@SortParameter![1].Substring(0, 1)">
+                    <a href="/Territories/sort/@SortParameter[1]">Description</a>
+                </th>
+                <th name="region-id" data-sort="@SortParameter![2].Substring(0, 1)">
+                    <a href="/Territories/sort/@SortParameter[2]">Region ID</a>
+                </th>
+                <th name="region-name" data-sort="@SortParameter![3].Substring(0, 1)">
+                    <a href="/Territories/sort/@SortParameter[3]">Region Name</a>
+                </th>
+                <th>Command</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var trt in currentPage.Items)
+            {
+                <tr @key=trt.TerritoryId class="@GetBoldClass(trt.TerritoryId)">
+                    <td>@trt.TerritoryId</td>
+                    <td>@trt.TerritoryDescription</td>
+                    <td>@trt.RegionId</td>
+                    <td>@trt.RegionDescription</td>
+                    <td>
+                        <CrudLinksControl Url="/EditTerritory" Id="@trt.TerritoryId" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    <div class="component-footer">
+        <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
+            <CascadingValue Name="PageState" Value="@currentState">
+                <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
+                              PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Territories/page" ErrorMessage="@ErrorMessage" />
+                <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
+                <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
+            </CascadingValue>
+        </CascadingValue>
+    </div>
+
+}
+
+@code {
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+    private static readonly string[] FieldNames = { "TerritoryID", "TerritoryDescription", "RegionID", "RegionDescription" };
+    public List<string>? SortParameter;
+
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name = "db_error")]
+    public string? DBerrorMessage { get; set; } = null;
+
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string LastInsertedId { get; set; } = "-1";
+
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+
+    private int defaultPageSize;
+    private int buttonCount;
+    private PgResponse<Territory>? currentPage = null;
+
+    private StateForComponent? currentState = null;
+    private AppStateKey? stateId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string? userId = cookieService.GetCookie("WebTransitions");
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Territories");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Territories");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Territories");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Territories");
+            stateData = await StateManager.CreateEntity(newState);
+        }
+        currentState = (StateForComponent)stateData;
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
+        {
+            currentState.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
+        }
+
+        SortParameter = new List<string>();
+        for (int i = 0; i < FieldNames.Length; i++)
+        {
+            SortParameter.Add($"n_{FieldNames[i]}");
+        }
+
+        ActiveCulture = new CultureInfo(activeCultureStr);
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Territories", PageNumber ?? 1);
+            }
+            else
+            {
+                throw new Exception($"Action '{Action}' is invalid.");
+            }
+        }
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
+        if (String.IsNullOrEmpty(Action))
+        {
+            this.Action = "page";
+        }
+
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        this.LastInsertedId = "-1";
+    }
+
+    private string GetBoldClass(string regionId)
+    {
+        if (String.IsNullOrEmpty(this.LastInsertedId) || this.LastInsertedId != regionId)
+        {
+            return "fw-normal";
+        }
+        else
+        {
+            return "fw-bold";
+        }
+    }
+
+    /// <summary>
+    /// The application executes this code after commiting the filter control.
+    /// </summary>
+    /// <param name="message"></param>
+    public async Task FilterChangedHandler(Tuple<string, string, string?, bool, bool> message)
+    {
+        Debug.Assert(this.currentState != null);
+        this.currentState.FilterState = message;
+        await this.StateManager.UpdateEntity((AppState)this.currentState, false);
+        NavManager.Refresh(true);
+    }
+}

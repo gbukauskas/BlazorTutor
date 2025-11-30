@@ -42,6 +42,7 @@ builder.Services
     .AddScoped<CustomerSvc>()
     .AddScoped<EmployeeSvc>()
     .AddScoped<RegionSvc>()
+    .AddScoped<TerritorySvc>()
     .AddScoped<IKeyGenerator, KeyGenerator>();
 
 builder.Services.AddSingleton<StateSvc, StateSvc>();

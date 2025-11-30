@@ -43,8 +43,8 @@ public partial class Supplier
             entity
                 .ToTable("Suppliers")
                 .HasKey(e => e.SupplierId).HasName("PK_Suppliers");
-            entity.HasIndex(e => e.CompanyName).IsUnique(false).HasDatabaseName("CompanyName");
-            entity.HasIndex(e => e.PostalCode).IsUnique(false).HasDatabaseName("PostalCode");
+            entity.HasIndex(e => e.CompanyName).IsUnique(false).HasDatabaseName("IX_Sup_CompanyName");
+            entity.HasIndex(e => e.PostalCode).IsUnique(false).HasDatabaseName("IX_Sup_PostalCode");
 
             entity.Property(e => e.SupplierId).HasColumnName("SupplierID").HasColumnType("INTEGER").ValueGeneratedOnAdd();
             entity.Property(e => e.CompanyName).IsRequired().HasColumnType("TEXT").HasMaxLength(40);

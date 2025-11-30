@@ -205,18 +205,4 @@ namespace WEBtransitions.ClassLibraryDatabase.DBContext
             });
         }
     }
-
-/*
-    [NotMapped]
-    public class EmployeePost: Employee
-    {
-        [Required]
-        public IBrowserFile? FormFile { get; set; }
-
-        public EmployeePost(): base()
-        {
-            this.FormFile = null;
-        }
-    }
-*/
 }

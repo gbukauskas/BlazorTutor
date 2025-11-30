@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System.Collections;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
 using WEBtransitions.ClassLibraryDatabase.DBContext;
 using static System.Net.Mime.MediaTypeNames;
@@ -83,10 +84,14 @@ namespace WEBtransitions.Services
 
         protected async Task<int> CountRecordsAsync(NorthwindContext ctx, string query, StateForComponent currentState)
         {
+            Regex rgx = new Regex(@"SELECT\s(?<select>.+)\sFROM");
+
             Debug.Assert(currentState != null && currentState.PagerState != null);
             try
             {
-                string countQuery = query.Replace("*", "COUNT(1) AS Value");
+                //string countQuery = query.Replace("*", "COUNT(1) AS Value");    //TODO: replace with regex
+
+                string countQuery = rgx.Replace(query, "SELECT COUNT(1) AS Value FROM");
                 currentState.PagerState.RowCount = await ctx.Database.SqlQueryRaw<int>(countQuery).FirstOrDefaultAsync();
 
                 int pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
