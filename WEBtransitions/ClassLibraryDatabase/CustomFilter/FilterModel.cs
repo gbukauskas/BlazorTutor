@@ -97,8 +97,8 @@ namespace WEBtransitions.ClassLibraryDatabase.CustomFilter
                 Name = fldInfo.Name,
                 Value = value,
                 MaxValue = maxValue,
-                IsDateValue = fldInfo.PropertyType == typeof(System.Nullable<System.DateOnly>),
-                IsIntegerValue = fldInfo.PropertyType == typeof(System.Nullable<System.Int32>),
+                IsDateValue = fldInfo.PropertyType == typeof(System.Nullable<System.DateOnly>) || fldInfo.PropertyType == typeof(System.DateOnly),
+                IsIntegerValue = fldInfo.PropertyType == typeof(System.Nullable<System.Int32>) || fldInfo.PropertyType == typeof(System.Int32),
                 IsSelected = isSelected,
                 IsDisabled = isDisabled
             };

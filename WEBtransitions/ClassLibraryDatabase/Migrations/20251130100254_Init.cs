@@ -212,7 +212,7 @@ namespace ClassLibraryDatabase.Migrations
                     TerritoryID = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     TerritoryDescription = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     RegionID = table.Column<int>(type: "INTEGER", nullable: false),
-                    //RegionDescription = table.Column<string>(type: "TEXT", nullable: true),
+                    // RegionDescription = table.Column<string>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<byte>(type: "INTEGER", nullable: false, defaultValue: (byte)0),
                     Version = table.Column<int>(type: "INTEGER", rowVersion: true, nullable: false, defaultValue: 0)
                 },

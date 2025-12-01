@@ -207,11 +207,11 @@ namespace WEBtransitions.Services
                 {
                     if (!String.IsNullOrEmpty(currentState.FilterState.Item2))
                     {
-                        bld.Append(String.Format("AND {0} >= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item2));
+                        bld.Append(String.Format("AND trt.{0} >= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item2));
                     }
                     if (!String.IsNullOrEmpty(currentState.FilterState.Item3))
                     {
-                        bld.Append(String.Format("AND {0} <= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item3));
+                        bld.Append(String.Format("AND trt.{0} <= '{1}' ", currentState.FilterState.Item1, currentState.FilterState.Item3));
                     }
                 }
                 else if (!String.IsNullOrEmpty(currentState.FilterState.Item2))
@@ -224,7 +224,8 @@ namespace WEBtransitions.Services
             {
                 Tuple<string?, string> sortDefinition = SetSort(currentState.SortState, false);
                 string sortSuffic = sortDefinition.Item1 == "a" ? "ASC" : "DESC";
-                bld.AppendLine($"ORDER BY {sortDefinition.Item2} {sortSuffic} ");
+                string sortPrefix = sortDefinition.Item2 == "RegionID" ? "trt." : "";
+                bld.AppendLine($"ORDER BY {sortPrefix}{sortDefinition.Item2} {sortSuffic} ");
             }
 
             return bld.ToString();

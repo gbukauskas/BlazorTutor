@@ -3,21 +3,26 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using WEBtransitions.ClassLibraryDatabase.CustomFilter;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
 public partial class Territory
 {
 #pragma warning disable CS8618
+    [AllowFiltering]
     public string TerritoryId { get; set; }
 
+    [AllowFiltering]
     public required string TerritoryDescription { get; set; }
 
+    [AllowFiltering]
     public int RegionId { get; set; }
 
     /// <summary>
     /// [dbo].[Region].[RegionDescription]
     /// </summary>
+    [AllowFiltering]
     public string? RegionDescription { get; set; }
 
     public byte IsDeleted { get; set; }

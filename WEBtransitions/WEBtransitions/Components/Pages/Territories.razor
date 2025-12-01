@@ -41,13 +41,13 @@ else
                     <a href="/Territories/sort/@SortParameter[0]">ID</a>
                 </th>
                 <th name="territory-description" data-sort="@SortParameter![1].Substring(0, 1)">
-                    <a href="/Territories/sort/@SortParameter[1]">Description</a>
+                    <a href="/Territories/sort/@SortParameter[1]">Teritory Description</a>
                 </th>
                 <th name="region-id" data-sort="@SortParameter![2].Substring(0, 1)">
                     <a href="/Territories/sort/@SortParameter[2]">Region ID</a>
                 </th>
                 <th name="region-name" data-sort="@SortParameter![3].Substring(0, 1)">
-                    <a href="/Territories/sort/@SortParameter[3]">Region Name</a>
+                    <a href="/Territories/sort/@SortParameter[3]">Region Description</a>
                 </th>
                 <th>Command</th>
             </tr>
@@ -74,7 +74,7 @@ else
                 <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
                               PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Territories/page" ErrorMessage="@ErrorMessage" />
                 <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
-                <FilterControl T="Customer" OnFilterChanged="FilterChangedHandler"></FilterControl>
+                <FilterControl T="Territory" OnFilterChanged="FilterChangedHandler"></FilterControl>
             </CascadingValue>
         </CascadingValue>
     </div>
