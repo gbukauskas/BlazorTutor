@@ -73,7 +73,7 @@ else
             <CascadingValue Name="PageState" Value="@currentState">
                 <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
                               PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Territories/page" ErrorMessage="@ErrorMessage" />
-                <a href="/EditCustomer/new" class="new-item-link" title="Insert new customer">New Customer</a>
+                <a href="/EditTerritory/new" class="new-item-link" title="Insert new territory">New Territory</a>
                 <FilterControl T="Territory" OnFilterChanged="FilterChangedHandler"></FilterControl>
             </CascadingValue>
         </CascadingValue>

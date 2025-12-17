@@ -48,6 +48,7 @@ namespace WEBtransitions.Services
                 _ctx.Dispose();
                 _ctx = null;
             }
+            GC.SuppressFinalize(this);
         }
 
         public async Task<bool> IsDublicateKey(string key)
@@ -91,7 +92,7 @@ namespace WEBtransitions.Services
                 var newCustomer = await this.Ctx.Customers.Where(x => x.CustomerId == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
                 if (newCustomer != null)
                 {
-                    allCustomers = allCustomers.Append(newCustomer).ToArray();
+                    allCustomers = [.. allCustomers, newCustomer];
                 }
             }
 
@@ -142,7 +143,7 @@ namespace WEBtransitions.Services
         internal string PrepareSQL(StateForComponent currentState)
         {
             Debug.Assert(currentState != null);
-            StringBuilder bld = new StringBuilder("SELECT * FROM Customers WHERE IsDeleted = 0 ");
+            StringBuilder bld = new("SELECT * FROM Customers WHERE IsDeleted = 0 ");
             if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item2))
             {
                 bld.AppendLine($"AND {currentState.FilterState.Item1} LIKE '%{currentState.FilterState.Item2}%' ");
@@ -223,7 +224,11 @@ namespace WEBtransitions.Services
                 }
                 else if (pageNumber == -1)
                 {
-                    return new PgResponse<Customer>(recordsCount, pageSize, 1, 1, collection.ToArray());
+                    return new PgResponse<Customer>(recordsCount,
+                                                    pageSize,
+                                                    1,
+                                                    1,
+                                                    items: [.. collection]);
                 }
                 else
                 {

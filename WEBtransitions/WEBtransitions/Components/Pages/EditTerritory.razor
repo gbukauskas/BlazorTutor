@@ -1,0 +1,317 @@
+﻿@page "/EditTerritory/{action}/{argument?}"
+
+@namespace WEBtransitions
+@using System.Diagnostics
+@using Microsoft.EntityFrameworkCore
+@using System.Web
+@using WEBtransitions.CustomErrors
+@using WEBtransitions.Services
+@using WEBtransitions.Services.Interfaces
+
+@implements IDisposable;
+
+@inject TerritorySvc _territorySvc
+@inject RegionSvc _regionSvc
+@inject NavigationManager MyNavigationManager
+@inject IKeyGenerator keyGenerator;
+
+@*
+  Parameter <code>action</code> defines type of the screen:
+    <list type="bullet">
+        <item><code>edit</code> - Edit territory</item>
+        <item><code>view</code> - View details of the territory</item>
+        <item><code>new</code> - create new territory</item>
+        <item><code>delete<code> - confirm delete operation</item>
+    </list>
+  Parameter <code>argument</code> contains id of the territory. Application creates new arbitrary string for the new territory.
+
+            https://www.codeproject.com/Articles/5300708/Building-a-DataList-Control-in-Blazor
+            https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist
+*@
+
+@if (Model != null)
+{
+    <h2>Territory @Model.TerritoryId - @Model.TerritoryDescription </h2>
+}
+else
+{
+    <h2>New territory</h2>
+}
+
+<EditForm EditContext="editContext" OnValidSubmit=@HandleValidSubmit FormName="EditTerritory">
+    <DataAnnotationsValidator />  
+    <ValidationSummary />
+
+    @if (Action == "new")
+    {
+        <div class="form-group">
+            <label class="left-column" for="territory-id">Territory ID</label>
+            <InputText name="territory-id" @bind-Value="Model!.TerritoryId" style="width: 7em;"></InputText>
+        </div>
+    }
+    <div class="form-group">
+        <label class="left-column" for="company-name">Territory Description</label>
+        <InputText name="territory-description" @bind-Value="Model!.TerritoryDescription" class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+    </div>
+    <div class="form-group">
+        <label class="left-column" for="region">Region</label>
+        <Autocomplete name="region" @bind-Value=@Model!.RegionDescription ClassInput="middle-input-control" action="@Action" RegionChanged="RegionChangedHanler">
+            @foreach (var item in allRegions)
+            {
+                <option value=@item.Item2></option>
+            }
+        </Autocomplete>
+        <span name="remember-region">
+            <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table" Disabled="@IsReadOnly"></InputCheckbox>
+            <label for="remember-region">Remember region</label>
+        </span>
+        <span name="invalid-region" class="@ClassForMessage()">Invalid region</span>
+    </div>
+
+    <div class="form-group">
+        @if (String.IsNullOrEmpty(Action) || Action == "view")
+        {
+            <a href="/Territories" class="btn btn-primary">
+                <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
+            </a>
+        }
+        else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+        {
+            <div class="confirmation">
+                <button class="btn btn-primary" type="submit">
+                    <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+                </button>
+                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                </button>
+            </div>
+        }
+        else if (!String.IsNullOrEmpty(Action) && Action == "delete")
+        {
+            <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
+            <div class="confirmation">
+                <button class="btn btn-danger" @onclick="async () => await DeleteTerritoryAsync(Model)"
+                        @onclick:preventDefault @onclick:stopPropagation>
+                    <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
+                </button>
+                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                </button>
+            </div>
+        }
+    </div>
+
+</EditForm>
+
+@code {
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    ///territory ID
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    [SupplyParameterFromForm(FormName = "EditTerritory")]
+    private Territory? Model { get; set; }
+
+    private ValidationMessageStore? messageStore;
+
+    public string ErrorMessage = "";
+
+    public required Tuple<string, string>[] allRegions;
+
+    private EditContext? editContext;
+    private string TitleClass = "d-none";
+
+    /// <summary>
+    /// "readonly" for the <code>view</code> operation. Empty string for the all other cases.
+    /// </summary>
+    internal bool IsReadOnly = false;
+
+    private enum ErrorMsgState
+    {
+        Visible, 
+        Hidden
+    }
+    private ErrorMsgState msgState = ErrorMsgState.Hidden;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Model ??= new();
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
+        //  [dbo].[Region].[RegionID] [int] NOT NULL
+        this.allRegions = await _regionSvc.GetAllEntities()
+                            .Select(x => new Tuple<string, string>(x.ItemKey, x.RegionDescription))
+                            .ToArrayAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Debug.Assert(Action == "new" || !String.IsNullOrEmpty(Argument));
+        Territory? territory;
+        if (String.IsNullOrEmpty(Argument) || Action == "new")
+        {
+            territory = new();
+            territory.TerritoryDescription = "New territory";
+            territory.TerritoryId = keyGenerator.GenerateKey(5, 4); // Key will be built from numbers only
+            if (this.allRegions.Length < 1)
+            {
+                territory.RegionId = 0;
+                territory.RegionDescription = "";
+            }
+            else
+            {
+                (string regionID, string regionDescription) = this.allRegions[0];
+                territory.RegionId = int.Parse(regionID);
+                territory.RegionDescription = regionDescription;
+            }
+        }
+        else
+        {
+            territory = await _territorySvc.GetEntityByIdAsync(Argument);
+        }
+        if (territory == null)
+        {
+            this.ErrorMessage = $"territory {Argument} was not found.";
+            return;
+        }
+        IsReadOnly = (Action == "view" || Action == "delete");
+
+        this.Model = territory;
+
+        TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
+    }
+
+    internal void RegionChangedHanler(string selectedRegion)
+    {
+        this.Model!.RegionDescription = selectedRegion;
+        Tuple<string, string>? selectedRgn = allRegions.Where(x => x.Item2 == selectedRegion).FirstOrDefault();
+        if (selectedRgn == null)
+        {
+            this.msgState = ErrorMsgState.Visible;
+            this.Model!.RegionId = 0;
+        }
+        else
+        {
+            this.msgState = ErrorMsgState.Hidden;
+            if (int.TryParse(selectedRgn.Item1, out int regionId))
+            {
+                this.Model!.RegionId = regionId;
+            }
+            else
+            {
+                throw new InvalidDataException($"Key {selectedRegion} is not integer.");    // Error in the database
+            }
+        }
+    }
+
+    private string ClassForMessage()
+    {
+        return this.Model!.RememberRegion || this.msgState == ErrorMsgState.Hidden
+                    ? "hidden"
+                    : "visible";
+    }
+
+    protected async Task RestoreRecord()
+    {
+        Debug.Assert(Model != null);
+        await _territorySvc.Ctx.ReloadIfModified<Territory>(Model);
+        MyNavigationManager.NavigateTo($"/Territories/");
+    }
+
+    private async Task DeleteTerritoryAsync(Territory territory)
+    {
+        try
+        {
+            Debug.Assert(Model != null);
+            Model.IsDeleted = 1;
+
+            await _territorySvc.DeleteEntityByIdAsync(territory);
+            MyNavigationManager.NavigateTo("/Territories/");
+        }
+        catch (DatabaseException ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.TerritoryId} deleting failed: {ex.Message}");
+            MyNavigationManager.NavigateTo($"/Territories?db_error={errorMessage}");
+        }
+    }
+
+    public void Dispose()
+    {
+        if (editContext != null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+
+        if (Action == "new" && !String.IsNullOrEmpty(Model!.TerritoryId))
+        {
+            var task = Task.Run(async () => await _territorySvc.IsDublicateKey(Model!.TerritoryId));
+            if (task.Result)
+            {
+                messageStore?.Add(() => Model.TerritoryId, $"Key {Model.TerritoryId} is already written.");
+                editContext?.NotifyValidationStateChanged();
+            }
+        }
+        if (String.IsNullOrEmpty(Model!.RegionDescription))
+        {
+            messageStore?.Add(() => Model.TerritoryId, "Region description is not defined");
+            editContext?.NotifyValidationStateChanged();
+        }
+    }
+
+    public async Task HandleValidSubmit()
+    {
+        Debug.Assert(Model != null);
+
+        Territory? aTerritory = null;
+        string? backUrl = null;
+
+        try
+        {
+            Debug.Assert(Model != null);
+            if (Model.RememberRegion && !String.IsNullOrEmpty(Model.RegionDescription))
+            {
+                Region rgn = await _regionSvc.CreateEntity(Model.RegionDescription, Model.RegionId);
+                if (rgn.RegionId.HasValue && Model.RegionId != rgn.RegionId.Value)
+                {
+                    Model.RegionId = rgn.RegionId.Value;
+                    Model.RegionDescription = rgn.RegionDescription;
+                    this.allRegions = [.. this.allRegions, new Tuple<string, string>(rgn.ItemKey, rgn.RegionDescription)];
+                }
+            }
+
+            if (this.Action == "new")
+            {
+                aTerritory = await _territorySvc.CreateEntity(Model);
+                backUrl = $"/Territories?new_id={aTerritory.TerritoryId}";
+            }
+            else
+            {
+                aTerritory = await _territorySvc.UpdateEntity(Model);
+                backUrl = "/Territories";
+            }
+            MyNavigationManager.NavigateTo(backUrl!);
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.TerritoryId} updating failed: {ex.Message}");
+            MyNavigationManager.NavigateTo($"/Territories?db_error={errorMessage}");
+        }
+    }
+
+}

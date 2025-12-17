@@ -37,6 +37,7 @@ namespace WEBtransitions.Services
                 _ctx.Dispose();
                 _ctx = null;
             }
+            GC.SuppressFinalize(this);
         }
 
         private IDbContextFactory<NorthwindContext> factory;
@@ -75,7 +76,7 @@ namespace WEBtransitions.Services
             Debug.Assert(entity != null && !String.IsNullOrEmpty(entity.TerritoryId));
             try
             {
-                Territory? dbTerritory = await this.Ctx.Territories.Where(x => x.TerritoryId == entity.TerritoryId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                Territory? dbTerritory = await this.GetEntityByIdAsync(entity.TerritoryId);
                 if (dbTerritory != null)
                 {
                     dbTerritory.IsDeleted = 1;
@@ -96,7 +97,10 @@ namespace WEBtransitions.Services
 
         public async Task<Territory?> GetEntityByIdAsync(string id)
         {
-            return await this.Ctx.Territories.Where(x => x.TerritoryId == id && x.IsDeleted == 0).FirstOrDefaultAsync();
+            string sql = this.PrepareSQL(null);
+            return await this.Ctx.Territories.FromSqlRaw<Territory>(sql)
+                            .Where(t => t.TerritoryId == id)
+                            .FirstOrDefaultAsync();
         }
 
         public async Task<Territory> UpdateEntity(Territory entity, bool ignoreConcurrencyError = false)
@@ -159,10 +163,10 @@ namespace WEBtransitions.Services
 
                 if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Territory>(allRecords, x => x.TerritoryId == currentState.LastInsertedId))
                 {
-                    var newRecord = await this.Ctx.Territories.Where(x => x.TerritoryId == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                    var newRecord = await this.GetEntityByIdAsync(currentState.LastInsertedId);
                     if (newRecord != null)
                     {
-                        allRecords = allRecords.Append(newRecord).ToArray();
+                        allRecords = [.. allRecords, newRecord];
                     }
                 }
                 currentPage = new PgResponse<Territory>()
@@ -192,15 +196,18 @@ namespace WEBtransitions.Services
         /// </summary>
         /// <param name="currentState">Current state</param>
         /// <returns>SQL query without paging</returns>
-        internal string PrepareSQL(StateForComponent currentState)
+        internal string PrepareSQL(StateForComponent? currentState)
         {
             const string sql = "SELECT trt.*, rgn.RegionDescription AS RegionDescription " +
                                "FROM Territories trt " +
                                "LEFT OUTER JOIN Regions rgn ON trt.RegionID = rgn.RegionID " +
                                "WHERE trt.IsDeleted = 0 ";
-            Debug.Assert(currentState != null);
-            StringBuilder bld = new StringBuilder(sql);
-            
+            if (currentState == null) 
+            {
+                return sql;
+            }
+
+            StringBuilder bld = new(sql);
             if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item1))
             {
                 if (currentState.FilterState.Item4 || currentState.FilterState.Item5)     // Date or numeric value?
@@ -230,10 +237,23 @@ namespace WEBtransitions.Services
 
             return bld.ToString();
         }
+        public async Task<bool> IsDublicateKey(string key)
+        {
+            try
+            {
+                int? recCount = await this.Ctx.Territories.Where(x => x.TerritoryId == key && x.IsDeleted == 0).CountAsync();
+                return recCount > 0;
+            }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+                return false;
+            }
+        }
 
         IQueryable<Territory> IDatabaseSvc<Territory, string>.GetAllEntities()
         {
-            throw new NotImplementedException();
+            return this.Ctx.Territories.Where(x => x.IsDeleted == 0);
         }
     }
 }

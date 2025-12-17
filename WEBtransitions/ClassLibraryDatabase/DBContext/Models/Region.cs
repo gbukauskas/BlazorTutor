@@ -1,12 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WEBtransitions.ClassLibraryDatabase.DBContext;
 
 public partial class Region
 {
     public int? RegionId { get; set; }
+
+    [NotMapped]
+    public string ItemKey
+    {
+
+        get
+        {
+            return RegionId.HasValue ? $"{RegionId.Value:D6}" : String.Empty;
+        }
+    }
 
     public required string RegionDescription { get; set; }
 
@@ -15,7 +26,7 @@ public partial class Region
     public int Version { get; set; }
     public bool IgnoreConcurency { get; set; } = false;
 
-    public virtual ICollection<Territory> Territories { get; set; } = new List<Territory>();
+    public virtual ICollection<Territory> Territories { get; set; } = [];
 
     internal static void Configure(ModelBuilder modelBuilder)
     {

@@ -39,6 +39,7 @@ namespace WEBtransitions.Services
                 _ctx.Dispose();
                 _ctx = null;
             }
+            GC.SuppressFinalize(this);
         }
 
         private IDbContextFactory<NorthwindContext> factory;
@@ -82,7 +83,7 @@ namespace WEBtransitions.Services
                 var newRecord = await this.Ctx.Categories.Where(x => x.ItemKey == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
                 if (newRecord != null)
                 {
-                    allRecords = allRecords.Append(newRecord).ToArray();
+                    allRecords = [.. allRecords, newRecord];
                 }
             }
 
@@ -110,7 +111,7 @@ namespace WEBtransitions.Services
         internal string PrepareSQL(StateForComponent currentState)
         {
             Debug.Assert(currentState != null);
-            StringBuilder bld = new StringBuilder("select * from Categories  WHERE IsDeleted = 0 ");
+            StringBuilder bld = new ("select * from Categories  WHERE IsDeleted = 0 ");
             if (currentState.FilterState != null && !String.IsNullOrEmpty(currentState.FilterState.Item1))
             {
                 if (currentState.FilterState.Item4 || currentState.FilterState.Item5)     // Date or numeric value?

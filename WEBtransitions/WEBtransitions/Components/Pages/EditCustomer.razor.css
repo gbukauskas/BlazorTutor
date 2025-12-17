@@ -54,20 +54,24 @@ div.confirmation > button {
     flex: none;
 }
 
-/*span.error-message {
-    margin-left: 2em;
-}
-*/
-span[name="remember-region"] {
-    display: inline-block;
-    margin-left: 1em;
-}
-
 ::deep .wide-input-control {
     width: 500px;
+}
+
+::deep .middle-input-control {
+    width: 300px;
 }
 
 ::deep .narrow-input-control {
     width: 200px;
 }
 
+span[name="invalid-region"].visible {
+    display: inline-block;
+    color: red;
+    margin-left: 1em;
+}
+
+span[name="invalid-region"].hidden {
+    display: none;
+}

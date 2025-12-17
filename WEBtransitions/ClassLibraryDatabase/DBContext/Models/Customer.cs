@@ -45,6 +45,8 @@ public partial class Customer
     [AllowFiltering]
     public string? City { get; set; }
 
+    public int RegionId { get; set; }
+
     [MaxLength(15, ErrorMessage = "Region name must not exceed 15 characters.")]
     [AllowFiltering]
     public string? Region { get; set; }
@@ -96,6 +98,7 @@ public partial class Customer
 
             entity.Ignore(t => t.IgnoreConcurency);
             entity.Ignore(t => t.RememberRegion);
+            entity.Ignore(t => t.RegionId);
 
             entity.Property(e => e.CustomerId).HasColumnName("CustomerID").IsRequired().HasColumnType("TEXT").HasMaxLength(5);
             entity.Property(e => e.CompanyName).IsRequired().HasColumnType("TEXT").HasMaxLength(40);

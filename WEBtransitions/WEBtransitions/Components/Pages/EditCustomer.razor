@@ -71,15 +71,16 @@
     </div>
     <div class="form-group">
         <label class="left-column" for="region">Region</label>
-        <Autocomplete name="region" @bind-Value=@Model!.Region ClassInput="narrow-input-control" action="@Action" RegionChanged="RegionChangedHanler">
+        <Autocomplete name="region" @bind-Value=@Model!.Region ClassInput="middle-input-control" action="@Action" RegionChanged="RegionChangedHanler">
             @foreach (var item in allRegions)
             {
-                <option value=@item />
+                <option value=@item.Item2 />
             }
         </Autocomplete>
         <span name="remember-region">
             <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table" Disabled="@IsReadOnly"></InputCheckbox>
             <label for="remember-region">Remember region</label>
+            <span name="invalid-region" class="@ClassForMessage()">Invalid region</span>
         </span>
     </div>
     <div class="form-group">
@@ -169,7 +170,7 @@
 
     public string ErrorMessage = "";
 
-    public required string[] allRegions;
+    public required Tuple<string, string>[] allRegions;
 
     private EditContext? editContext;
     private string TitleClass = "d-none";
@@ -187,6 +188,12 @@
             }
         }
     }
+    private enum ErrorMsgState
+    {
+        Visible,
+        Hidden
+    }
+    private ErrorMsgState msgState = ErrorMsgState.Hidden;
 
     /// <summary>
     /// "readonly" for the <code>view</code> operation. Empty string for the all other cases.
@@ -205,13 +212,9 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        Model ??= new();
-        editContext = new(Model);
-        editContext.OnValidationRequested += HandleValidationRequested;
-        messageStore = new(editContext);
-
-        this.allRegions = await _regionSvc.GetAllEntities().Select(x => x.RegionDescription).ToArrayAsync();
+        this.allRegions = await _regionSvc.GetAllEntities()
+                            .Select(x => new Tuple<string, string>(x.ItemKey, x.RegionDescription))
+                            .ToArrayAsync();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -233,9 +236,15 @@
             this.ErrorMessage = $"Customer {Argument} was not found.";
             return;
         }
+        //Model ??= new();
+        this.Model = customer;
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
         IsReadOnly = (Action == "view" || Action == "delete");
 
-        this.Model = customer;
+        //        this.Model = customer;
 
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
@@ -318,9 +327,27 @@
         }
     }
 
-    internal void RegionChangedHanler(string newRegion)
+    internal void RegionChangedHanler(string selectedRegion)
     {
-        this.Model!.Region = newRegion;
+        this.Model!.Region = selectedRegion;
+        Tuple<string, string>? selectedRgn = allRegions.Where(x => x.Item2 == selectedRegion).FirstOrDefault();
+        if (selectedRgn == null)
+        {
+            this.msgState = ErrorMsgState.Visible;
+            this.Model!.RegionId = 0;
+        }
+        else
+        {
+            this.msgState = ErrorMsgState.Hidden;
+            if (int.TryParse(selectedRgn.Item1, out int regionId))
+            {
+                this.Model!.RegionId = regionId;
+            }
+            else
+            {
+                throw new InvalidDataException($"Key {selectedRegion} is not integer.");    // Error in the database
+            }
+        }
     }
 
     public void Dispose()
@@ -329,6 +356,12 @@
         {
             editContext.OnValidationRequested -= HandleValidationRequested;
         }
+    }
+    private string ClassForMessage()
+    {
+        return this.Model!.RememberRegion || this.msgState == ErrorMsgState.Hidden
+                    ? "hidden"
+                    : "visible";
     }
 
     protected async Task RestoreRecord()

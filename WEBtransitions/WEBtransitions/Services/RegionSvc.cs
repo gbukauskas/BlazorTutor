@@ -70,11 +70,14 @@ namespace WEBtransitions.Services
                 throw new DatabaseException("An error occurred while saving the entity changes.", ex);
             }
         }
-        public async Task<Region> CreateEntity(string name)
+        public async Task<Region> CreateEntity(string name, int regionID = 0)
         {
             var region = new Region() 
             { 
-                RegionDescription = name
+                RegionDescription = name,
+                RegionId = regionID > 0 ? regionID : null,
+                IsDeleted = 0,
+                Version = 0
             };
             var rzlt = await CreateEntity(region);
             return rzlt;

@@ -10,17 +10,37 @@ namespace WEBtransitions.Services
     {
         private string Characters = string.Empty;
 
+        /// <summary>
+        /// Generates random string
+        /// </summary>
+        /// <param name="keyLength">Length of the string</param>
+        /// <param name="flags">One byte containing 3 bits: <code>0000 0xyz</code></param>
+        /// <type="bullet">
+        ///     <item>
+        ///         <term><code>x == 1></code></term>
+        ///         <description>The string contains numbers</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><code>y == 1></code></term>
+        ///         <description>The string contains lower-case characters</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><code>z == 1></code></term>
+        ///         <description>The string contains upper-case characters</description>
+        ///     </item>
+        /// </type>
+        /// <returns></returns>
         public string GenerateKey(int keyLength, byte flags)
         {
             Characters = GenerateTemplate(flags);
             var builder = new StringBuilder();
 
             DateTime currentDate = DateTime.Now;
-            DateTime centuryBegin = new DateTime(2001, 1, 1);
+            DateTime centuryBegin = new(2001, 1, 1);
             long elapsedTicks = currentDate.Ticks - centuryBegin.Ticks;
             int seed = elapsedTicks.GetHashCode();
 
-            Random rand = new Random(seed);
+            Random rand = new(seed);
             while (builder.Length < keyLength)
             {
                 int i = rand.Next(1, Characters.Length) - 1;

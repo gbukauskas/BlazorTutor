@@ -84,7 +84,7 @@ namespace WEBtransitions.Services
 
         protected async Task<int> CountRecordsAsync(NorthwindContext ctx, string query, StateForComponent currentState)
         {
-            Regex rgx = new Regex(@"SELECT\s(?<select>.+)\sFROM");
+            Regex rgx = new (@"SELECT\s(?<select>.+)\sFROM", RegexOptions.IgnoreCase);
 
             Debug.Assert(currentState != null && currentState.PagerState != null);
             try
@@ -168,45 +168,15 @@ namespace WEBtransitions.Services
             if (PhotoFile != null && PhotoFile.Size > 0)
             {
                 var fileStream = PhotoFile.OpenReadStream(MAX_FILESIZE);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    await fileStream.CopyToAsync(ms);
-                    return ms.ToArray();
-                }
+                using MemoryStream ms = new();
+                await fileStream.CopyToAsync(ms);
+                return ms.ToArray();
             }
             else
             {
                 return null;
             }
         }
-
-
-        /*
-                public string GetImageURL(byte[] img)
-                {
-                    var b64String = Convert.ToBase64String(img);
-                    return $"data:image/png;base64{b64String}";
-
-
-            https://www.telerik.com/forums/display-image-stored-in-sql-db     
-            https://stackoverflow.com/questions/72114518/show-an-image-stream-to-client-in-blazor-server-without-javascript
-
-                    Image image;
-                    using (MemoryStream ms = new MemoryStream(img))
-                    {
-                        ms.Position = 0;
-                        image = Image.FromStream(ms);
-                    }
-                    Image thumb = image.GetThumbnailImage(64, 64, () => false, IntPtr.Zero);
-                    ImageConverter ic = new ImageConverter();
-                    byte[] thumbBytes = (byte[])ic.ConvertTo(thumb, typeof(byte[]));
-
-                    string img64 = Convert.ToBase64String(thumbBytes);
-                    string urlData = string.Format("data:image/jpg;base64, {0}", img64);
-                    return urlData;
-
-                }
-        */
     }
 }
 

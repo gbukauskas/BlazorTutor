@@ -79,15 +79,19 @@ label.left-column {
 div.form-group {
     margin-bottom: 5px;
 }
-*/
 span[name="remember-region"] {
     display: inline-block;
     margin-left: 1em;
 }
-
+*/
 ::deep .wide-input-control {
     width: 500px;
 }
+
+::deep .middle-input-control {
+    width: 300px;
+}
+
 ::deep .narrow-input-control {
     width: 200px;
 }

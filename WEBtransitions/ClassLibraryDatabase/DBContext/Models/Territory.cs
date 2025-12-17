@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +15,7 @@ public partial class Territory
     public string TerritoryId { get; set; }
 
     [AllowFiltering]
-    public required string TerritoryDescription { get; set; }
+    public string? TerritoryDescription { get; set; }
 
     [AllowFiltering]
     public int RegionId { get; set; }
@@ -30,6 +31,8 @@ public partial class Territory
     public int Version { get; set; }
 
     public virtual Region Region { get; set; } = null!;
+    public bool RememberRegion { get; set; } = false;
+
 #pragma warning restore CS8618
     /// <summary>
     /// M-M relation to Employee object
@@ -45,11 +48,15 @@ public partial class Territory
                 .HasKey(e => e.TerritoryId).HasName("PK_Territories");
 
             entity.Ignore(t => t.IgnoreConcurency);
-
+            entity.Ignore(t => t.RememberRegion);
 
             entity.Property(e => e.TerritoryId).HasColumnName("TerritoryID").HasColumnType("TEXT").HasMaxLength(20);
             entity.Property(e => e.TerritoryDescription).HasColumnType("TEXT").HasMaxLength(50);
             entity.Property(e => e.RegionId).HasColumnName("RegionID").HasColumnType("INTEGER");
+
+            var prop = entity.Property(e => e.RegionDescription).Metadata;
+            prop.SetBeforeSaveBehavior(PropertySaveBehavior.Ignore); // Ignore on insert
+            prop.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);  // Ignore on update
 
             entity.Property(e => e.IsDeleted).HasColumnType("INTEGER").HasDefaultValue(0);
             entity.Property(e => e.Version).HasColumnType("INTEGER").HasDefaultValue(0).IsRowVersion();

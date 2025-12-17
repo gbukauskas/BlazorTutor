@@ -1,0 +1,33 @@
+﻿h2 {
+    text-align: left;
+    padding-left: 7em;
+}
+
+form {
+    margin-top: 2ex;
+}
+
+::deep .wide-input-control {
+    width: 500px;
+}
+
+::deep .narrow-input-control {
+    width: 200px;
+}
+
+::deep .middle-input-control {
+    width: 300px;
+}
+
+::deep .narrow-input-control {
+    width: 200px;
+}
+
+span[name="invalid-region"].visible {
+    display: inline-block;
+    color: red;
+    margin-left: 1em;
+}
+span[name="invalid-region"].hidden {
+    display: none;
+}
