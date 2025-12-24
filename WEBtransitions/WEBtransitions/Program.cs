@@ -51,7 +51,9 @@ builder.Services.AddSingleton<StateSvc, StateSvc>();
 //builder.Services.AddScoped<IStateData, StateData>();
 
 const string UserID = "{69FB454F-B49B-4876-A0CD-AE727DF941C1}"; // For DEMO only. Real application must put here value from authentication.
+string ignoreConcurrency = builder.Configuration.GetValue<string?>("AppSettings:IgnoreConcurrency") ?? "hidden";
 builder.Services.AddCascadingValue("StateKey", sp => new AppStateKey("WEBtransitions", UserID));
+builder.Services.AddCascadingValue("IgnoreConcurrency", sp => ignoreConcurrency);
 
 int cookieExpires = builder.Configuration.GetValue<int?>("AppSettings:CookieExpires") ?? 1;
 builder.Services.AddCascadingValue("CookieDuration", sp => cookieExpires);

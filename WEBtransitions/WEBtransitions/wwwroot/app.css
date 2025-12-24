@@ -197,6 +197,10 @@ div.confirmation > button {
     flex: none;
 }
 
+div.form-group.hidden {
+    display: none;
+}
+
 span[name="remember-region"] {
     display: inline-block;
     margin-left: 1em;

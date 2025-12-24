@@ -125,6 +125,13 @@
                 <label class="left-column" for="notes" style="vertical-align: top;">Notes</label>
                 <InputTextArea name="notes" @bind-Value="Model!.Notes" style="overflow-y: auto;" Disabled="@IsReadOnly" Rows="5" class="wide-input-control"></InputTextArea>
             </div>
+            @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
+            {
+                <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+                    <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+                    <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+                </div>
+            }
 
             <!-- https://docs.blazorbootstrap.com/components/dropdown -->
             <!-- https://stackoverflow.com/questions/77801550/how-to-upload-a-file-in-blazor-ssr-net-8 ?? -->
@@ -199,6 +206,9 @@
     public string FileType { get; set; } = "";
     public DateTimeOffset LastModified { get; set; }
     public string ErrorMessage { get; set; } = "";
+
+    [CascadingParameter(Name = "IgnoreConcurrency")]
+    public string ConcurrencyOpt { get; set; } = "hidden";
 
     protected override async Task OnInitializedAsync()
     {

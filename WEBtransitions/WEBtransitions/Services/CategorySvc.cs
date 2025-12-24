@@ -56,51 +56,63 @@ namespace WEBtransitions.Services
         public async Task<PgResponse<Category>> GetCurrentPageAsync(StateForComponent currentState)
         {
             Debug.Assert(currentState != null && currentState.PagerState != null);
-
-            PgResponse<Category> currentPage;
-            string query = this.PrepareSQL(currentState);
-            int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
-            if (totalRecords < currentState.PagerState.PageSize * (currentState.PagerState.PageNumber - 1))
+            try
             {
-                currentState.PagerState.PageNumber = 1;
-            }
-
-            Category[] allRecords;
-
-            if (totalRecords > 0)
-            {
-                allRecords = await this.Ctx.Categories.FromSqlRaw(query)
-                                        .Skip((currentState.PagerState.PageNumber - 1) * currentState.PagerState.PageSize)
-                                        .Take(currentState.PagerState.PageSize)
-                                        .ToArrayAsync();
-            }
-            else
-            {
-                allRecords = [];
-            }
-            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Category>(allRecords, x => x.ItemKey == currentState.LastInsertedId))
-            {
-                var newRecord = await this.Ctx.Categories.Where(x => x.ItemKey == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
-                if (newRecord != null)
+                PgResponse<Category> currentPage;
+                string query = this.PrepareSQL(currentState);
+                int totalRecords = await CountRecordsAsync(this.Ctx, query, currentState);
+                if (totalRecords < currentState.PagerState.PageSize * (currentState.PagerState.PageNumber - 1))
                 {
-                    allRecords = [.. allRecords, newRecord];
+                    currentState.PagerState.PageNumber = 1;
                 }
-            }
 
-            currentPage = new PgResponse<Category>()
-            {
-                TotalRecords = currentState.PagerState.RowCount,
-                TotalPages = currentState.PagerState.PageCount,
-                PageSize = currentState.PagerState.PageSize,
-                PageNumber = currentState.PagerState.PageNumber,
-                Items = allRecords
-            };
-            if (currentPage.PageNumber > currentPage.TotalPages)
-            {
-                currentPage.PageNumber = 1;
-            }
+                Category[] allRecords;
 
-            return currentPage;
+                if (totalRecords > 0)
+                {
+                    allRecords = await this.Ctx.Categories.FromSqlRaw(query)
+                                            .Skip((currentState.PagerState.PageNumber - 1) * currentState.PagerState.PageSize)
+                                            .Take(currentState.PagerState.PageSize)
+                                            .ToArrayAsync();
+                }
+                else
+                {
+                    allRecords = [];
+                }
+                if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Category>(allRecords, x => x.ItemKey == currentState.LastInsertedId))
+                {
+                    int newRecordId;
+                    if (!int.TryParse(currentState.LastInsertedId, out newRecordId))
+                    {
+                        newRecordId = -1;
+                    }
+                    var newRecord = await this.Ctx.Categories.Where(x => x.CategoryId == newRecordId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                    if (newRecord != null)
+                    {
+                        allRecords = [.. allRecords, newRecord];
+                    }
+                }
+
+                currentPage = new PgResponse<Category>()
+                {
+                    TotalRecords = currentState.PagerState.RowCount,
+                    TotalPages = currentState.PagerState.PageCount,
+                    PageSize = currentState.PagerState.PageSize,
+                    PageNumber = currentState.PagerState.PageNumber,
+                    Items = allRecords
+                };
+                if (currentPage.PageNumber > currentPage.TotalPages)
+                {
+                    currentPage.PageNumber = 1;
+                }
+
+                return currentPage;
+            }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+                throw;
+            }
         }
 
         /// <summary>
@@ -148,11 +160,21 @@ namespace WEBtransitions.Services
 
         public async Task<Category> CreateEntity(Category entity)
         {
-            Debug.Assert(entity != null && !entity.CategoryId.HasValue);
+            Debug.Assert(entity != null);
             try
             {
-                Ctx.Add(entity);
-                await Ctx.SaveChangesAsync();
+                if (entity.CategoryId.HasValue)
+                {
+                    if (entity.IgnoreConcurency)    // Restore deleted record
+                    {
+                        entity = await this.UpdateEntity(entity, true);
+                    }
+                }
+                else
+                {
+                    Ctx.Add(entity);    // Add new record
+                    await Ctx.SaveChangesAsync();
+                }
                 return entity;
             }
             catch (DbUpdateException ex)
@@ -172,6 +194,8 @@ namespace WEBtransitions.Services
                     category.CategoryName = entity.CategoryName;
                     category.Description = entity.Description;
                     category.Picture = entity.Picture;
+                    category.IsDeleted = 0;
+                    category.Version = ignoreConcurrencyError ? -1 : entity.Version;
 
                     int status = this.Ctx.SaveChanges();
                     if (status < 1)
@@ -230,6 +254,19 @@ namespace WEBtransitions.Services
         public PgResponse<Category> GetPage(IEnumerable<Category> collection, int pageSize, int pageNumber)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///     The function verifies a state of the category.
+        /// </summary>
+        /// <param name="categoryName"></param>
+        /// <returns>
+        ///     <code>true</code> - the category is written to the database
+        /// </returns>
+        public async Task<bool> IsDublicateName(string categoryName)
+        {
+            Category? dbCategory = await this.Ctx.Categories.Where(x => x.CategoryName == categoryName && x.IsDeleted == 0).FirstOrDefaultAsync();
+            return dbCategory != null;
         }
     }
 }

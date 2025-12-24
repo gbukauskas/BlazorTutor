@@ -32,123 +32,121 @@
             https://www.codeproject.com/Articles/5300708/Building-a-DataList-Control-in-Blazor
             https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/datalist
 *@
-
-@if (Model != null)
-{
-    <h2>@Model.CustomerId - @Model.CompanyName </h2>
-}
-
-<EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditCustomer">
-    <DataAnnotationsValidator />  
-    <ValidationSummary />
-
-    @if (Action == "new")
+<div class="form-content">
+    @if (Model != null)
     {
+        <h2>@Model.CustomerId - @Model.CompanyName </h2>
+    }
+
+    <EditForm EditContext="editContext" OnSubmit=@HandleSubmit FormName="EditCustomer">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        @if (Action == "new")
+        {
+            <div class="form-group">
+                <label class="left-column" for="customer-id">Customer ID</label>
+                <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 7em;"></InputText>
+            </div>
+        }
         <div class="form-group">
-            <label class="left-column" for="customer-id">Customer ID</label>
-            <InputText name="customer-id" @bind-Value="Model!.CustomerId" style="width: 7em;"></InputText>
+            <label class="left-column" for="company-name">Company name</label>
+            <InputText name="company-name" @bind-Value="Model!.CompanyName" class="wide-input-control" Disabled="@IsReadOnly"></InputText>
         </div>
-    }
-    <div class="form-group">
-        <label class="left-column" for="company-name">Company name</label>
-        <InputText name="company-name" @bind-Value="Model!.CompanyName" class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="contact-name">Contact name</label>
-        <InputText name="contact-name" @bind-Value=Model!.ContactName class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="contact-title">Contact title</label>
-        <InputText name="contact-title" @bind-Value=Model!.ContactTitle class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="address">Address</label>
-        <InputText name="address" @bind-Value=Model!.Address class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="city">City</label>
-        <InputText name="city" @bind-Value=Model!.City class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="region">Region</label>
-        <Autocomplete name="region" @bind-Value=@Model!.Region ClassInput="middle-input-control" action="@Action" RegionChanged="RegionChangedHanler">
-            @foreach (var item in allRegions)
+        <div class="form-group">
+            <label class="left-column" for="contact-name">Contact name</label>
+            <InputText name="contact-name" @bind-Value=Model!.ContactName class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="contact-title">Contact title</label>
+            <InputText name="contact-title" @bind-Value=Model!.ContactTitle class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="address">Address</label>
+            <InputText name="address" @bind-Value=Model!.Address class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="city">City</label>
+            <InputText name="city" @bind-Value=Model!.City class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="region">Region</label>
+            <Autocomplete name="region" @bind-Value=@Model!.Region ClassInput="middle-input-control" action="@Action" RegionChanged="RegionChangedHanler">
+                @foreach (var item in allRegions)
+                {
+                    <option value=@item.Item2 />
+                }
+            </Autocomplete>
+            <span name="remember-region">
+                <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table" Disabled="@IsReadOnly"></InputCheckbox>
+                <label for="remember-region">Remember region</label>
+                <span name="invalid-region" class="@ClassForMessage()">Invalid region</span>
+            </span>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="postal-code">Postal code</label>
+            <InputText name="postal-code" @bind-Value=Model!.PostalCode class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="country">Country</label>
+            <InputText name="country" @bind-Value=Model!.Country class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="phone">Phone number</label>
+            <InputText name="phone" @bind-Value=Model!.Phone class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        <div class="form-group">
+            <label class="left-column" for="fax">Fax number</label>
+            <InputText name="fax" @bind-Value=Model!.Fax class="wide-input-control" Disabled="@IsReadOnly"></InputText>
+        </div>
+        @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
+        {
+            <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+                <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+                <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+            </div>
+        }
+
+        <div class="form-group">
+            @if (String.IsNullOrEmpty(Action) || Action == "view")
             {
-                <option value=@item.Item2 />
+                <a href="/Customers" class="btn btn-primary">
+                    <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
+                </a>
             }
-        </Autocomplete>
-        <span name="remember-region">
-            <InputCheckbox @bind-Value=Model!.RememberRegion style="width: 15px;" title="Save the name in the 'Region' table" Disabled="@IsReadOnly"></InputCheckbox>
-            <label for="remember-region">Remember region</label>
-            <span name="invalid-region" class="@ClassForMessage()">Invalid region</span>
-        </span>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="postal-code">Postal code</label>
-        <InputText name="postal-code" @bind-Value=Model!.PostalCode class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="country">Country</label>
-        <InputText name="country" @bind-Value=Model!.Country class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="phone">Phone number</label>
-        <InputText name="phone" @bind-Value=Model!.Phone class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    <div class="form-group">
-        <label class="left-column" for="fax">Fax number</label>
-        <InputText name="fax" @bind-Value=Model!.Fax class="wide-input-control" Disabled="@IsReadOnly"></InputText>
-    </div>
-    @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
-    {
-        <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
-            <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
-            <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+            else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
+            {
+                <div class="confirmation">
+                    <button class="btn btn-primary" type="submit">
+                        <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
+                    </button>
+                    <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                        <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                    </button>
+                </div>
+            }
+            else if (!String.IsNullOrEmpty(Action) && Action == "delete")
+            {
+                <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
+                <div class="confirmation">
+                    <button class="btn btn-danger" @onclick="async () => await DeleteCustomerAsync(Model)"
+                            @onclick:preventDefault @onclick:stopPropagation>
+                        <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
+                    </button>
+                    <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
+                        <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
+                    </button>
+
+                </div>
+            }
         </div>
+    </EditForm>
+
+    @if (!String.IsNullOrEmpty(ErrorMessage))
+    {
+        <p class="@TitleClass text-danger">@ErrorMessage</p>
     }
+</div>
 
-    <div class="form-group">
-        @if (String.IsNullOrEmpty(Action) || Action == "view")
-        {
-            <a href="/Customers" class="btn btn-primary">
-                <img src="Images/close_2.png" width="16" height="16" title="Close window" />Close
-            </a>
-        }
-        else if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "new"))
-        {
-            <div class="confirmation">
-                <button class="btn btn-primary" type="submit">
-                    <img src="Images/saveIcon.png" width="16" height="16" title="Update database" />Save
-                </button>
-                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
-                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
-                </button>
-            </div>
-        }
-        else if (!String.IsNullOrEmpty(Action) && Action == "delete")
-        {
-            <p class="@TitleClass text-danger">This record will be removed. Are you sure?</p>
-            <div class="confirmation">
-                <button class="btn btn-danger" @onclick="async () => await DeleteCustomerAsync(Model)"
-                                               @onclick:preventDefault @onclick:stopPropagation>
-                    <img src="Images/check.png" width="16" height="16" title="Update database" />Yes, delete
-                </button>
-                <button class="btn btn-secondary" type="button" @onclick="async () => await RestoreRecord()">
-                    <img src="Images/close_2.png" width="16" height="16" title="Update database" />No, cancel
-                </button>
-
-@*                 <a href="/Customers" class="btn btn-secondary">
-                    <img src="Images/close_2.png" width="16" height="16" title="Cancel the operation" />No, cancel
-                </a> *@
-            </div>
-        }
-    </div>
-</EditForm>
-
-@if (!String.IsNullOrEmpty(ErrorMessage))
-{
-    <p class="@TitleClass text-danger">@ErrorMessage</p>
-}
 
 @code {
     /// <summary>
@@ -200,8 +198,8 @@
     /// </summary>
     internal bool IsReadOnly = false;
 
-    //    internal bool IgnoreConcurency { get; set; } = false;
-    internal string ConcurrencyOpt = "visible";
+    [CascadingParameter(Name = "IgnoreConcurrency")]
+    public string ConcurrencyOpt { get; set; } = "hidden";
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
@@ -243,9 +241,6 @@
         messageStore = new(editContext);
 
         IsReadOnly = (Action == "view" || Action == "delete");
-
-        //        this.Model = customer;
-
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 

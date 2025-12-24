@@ -18,7 +18,7 @@ public partial class Category
 
         get
         {
-            return CategoryId.HasValue ? $"{CategoryId.Value:D6}" : String.Empty;
+            return CategoryId.HasValue ? $"{CategoryId.Value:D6}" : "-1";
         }
     }
 

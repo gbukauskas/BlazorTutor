@@ -89,8 +89,8 @@ else
         <CascadingValue Name="ActiveCulture" Value="@ActiveCulture">
             <CascadingValue Name="PageState" Value="@currentState">
                 <PagerControl MaxButtons=@buttonCount PageCount=@currentPage.TotalPages TotalRecords=@currentPage.TotalRecords.ToString()
-                              PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Employees/page" ErrorMessage="@ErrorMessage" />
-                <a href="/EditCategory/new" class="new-item-link" title="Insert new employee">New Category</a>
+                              PageNumber=@currentPage.PageNumber PageSize="@currentPage.PageSize" BaseUrl="Categories/page" ErrorMessage="@ErrorMessage" />
+                <a href="/EditCategory/new" class="new-item-link" title="Insert new category">New Category</a>
                 <FilterControl T="Category" OnFilterChanged="FilterChangedHandler"></FilterControl>
             </CascadingValue>
         </CascadingValue>

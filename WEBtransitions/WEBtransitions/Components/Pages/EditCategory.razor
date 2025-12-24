@@ -36,8 +36,11 @@
 
             <div class="form-group">
                 <label class="left-column" for="description" style="vertical-align: top;">Description</label>
-                @* <InputText name="description" @bind-Value="Model!.Description" Disabled="@IsReadOnly" class="wide-input-control"></InputText> *@
                 <InputTextArea name="description" @bind-Value="Model!.Description" style="overflow-y: auto;" Disabled="@IsReadOnly" Rows="5" class="wide-input-control"></InputTextArea>
+            </div>
+            <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+                <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+                <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
             </div>
 
             <div class="form-group">
@@ -94,6 +97,10 @@
     private Category Model { get; set; } = new();
 
     internal bool IsReadOnly = false;
+
+    [CascadingParameter(Name = "IgnoreConcurrency")]
+    public string ConcurrencyOpt { get; set; } = "hidden";
+
     private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
 
     private EditContext? editContext;
@@ -101,13 +108,13 @@
     private ValidationMessageStore? messageStore;
     public string ErrorMessage { get; set; } = "";
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        Model ??= new();
-        editContext = new(Model);
-        messageStore = new(editContext);
-    }
+    // protected override void OnInitialized()
+    // {
+    //     base.OnInitialized();
+    //     Model ??= new();
+    //     editContext = new(Model);
+    //     messageStore = new(editContext);
+    // }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -133,9 +140,12 @@
             this.ErrorMessage = $"category {Argument} was not found.";
             return;
         }
-        IsReadOnly = (Action == "view" || Action == "delete");
-
         this.Model = category;
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
+        IsReadOnly = (Action == "view" || Action == "delete");
         TitleClass = (!String.IsNullOrEmpty(Action) && Action == "delete") ? "d-inline-block" : "d-none";
     }
 
@@ -144,7 +154,7 @@
         Category? currentItem = null;
         string? backUrl = null;
 
-        messageStore?.Clear();
+        //        messageStore?.Clear();
         bool valid = this.editContext!.Validate();
         if (!valid)
         {
@@ -192,6 +202,59 @@
         {
             string errorMessage = HttpUtility.UrlEncode($"Key:{Model!.ItemKey} deleting failed: {ex.Message}") ;
             MyNavigationManager.NavigateTo($"/Employees?db_error={errorMessage}");
+        }
+    }
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+        bool hasError = false;
+        Debug.Assert(Model != null);
+
+        if (Action == "new")
+        {
+            if (String.IsNullOrEmpty(Model.CategoryName))
+            {
+                hasError = true;
+                messageStore?.Add(
+                    fieldIdentifier: new FieldIdentifier(Model, nameof(Model.CategoryName)),
+                    message: "Category name must be defined."
+                );
+            }
+            else
+            {
+                var task = Task.Run(async () => await dbsvc.IsDublicateName(Model.CategoryName));
+                if (task.Result)    // true - the category was found
+                {
+                    hasError = true;
+                    messageStore?.Add(() => Model.CategoryName, $"Key {Model.CategoryName} is already written.");
+                }
+            }
+        } 
+        else              // Action == "edit" || Action == "view" || Action == "delete"
+        {
+            if (!Model.CategoryId.HasValue || Model.CategoryId.Value < 1)
+            {
+                hasError = true;
+                messageStore?.Add(
+                    fieldIdentifier: new FieldIdentifier(Model, nameof(Model.CategoryId)),
+                    message: "Category ID must be defined and positive."
+                );
+            }
+            else
+            {
+                var task_1 = Task.Run(async () => await dbsvc.GetEntityByIdAsync(Model.ItemKey));
+                if (task_1.Result == null)
+                {
+                    hasError = true;
+                    messageStore?.Add(() => Model.CategoryId, $"Key {Model.CategoryId} was not found.");
+                }
+            }
+        }
+
+        if (hasError)
+        {
+            editContext?.NotifyValidationStateChanged();
         }
     }
 
