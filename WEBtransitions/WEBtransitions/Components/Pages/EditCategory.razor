@@ -38,10 +38,13 @@
                 <label class="left-column" for="description" style="vertical-align: top;">Description</label>
                 <InputTextArea name="description" @bind-Value="Model!.Description" style="overflow-y: auto;" Disabled="@IsReadOnly" Rows="5" class="wide-input-control"></InputTextArea>
             </div>
-            <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
-                <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
-                <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
-            </div>
+            @if (!String.IsNullOrEmpty(Action) && (Action == "edit" || Action == "delete"))
+            {
+                <div class="form-group @ConcurrencyOpt" name="concurrency-opt">
+                    <label class="left-column" for="ignore-concurency">Ignore concurrency</label>
+                    <InputCheckbox name="ignore-concurency" @bind-Value=Model!.IgnoreConcurency style="width: 15px;"></InputCheckbox>
+                </div>
+            }
 
             <div class="form-group">
                 @if (String.IsNullOrEmpty(Action) || Action == "view")

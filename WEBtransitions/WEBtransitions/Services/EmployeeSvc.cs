@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Text;
 using WEBtransitions.ClassLibraryDatabase.CustomPager;
@@ -173,25 +172,30 @@ namespace WEBtransitions.Services
                 currentState.PagerState.PageNumber = 1;
             }
 
-            Employee[] allCustomers;
+            Employee[] allEmployees;
 
             if (totalRecords > 0)
             {
-                allCustomers = await this.Ctx.Employees.FromSqlRaw(query)
+                allEmployees = await this.Ctx.Employees.FromSqlRaw(query)
                                         .Skip((currentState.PagerState.PageNumber - 1) * currentState.PagerState.PageSize)
                                         .Take(currentState.PagerState.PageSize)
                                         .ToArrayAsync();
             }
             else
             {
-                allCustomers = [];
+                allEmployees = [];
             }
-            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Employee>(allCustomers, x => x.ItemKey == currentState.LastInsertedId))
+            if (!String.IsNullOrEmpty(currentState.LastInsertedId) && !Array.Exists<Employee>(allEmployees, x => x.ItemKey == currentState.LastInsertedId))
             {
-                var newCustomer = await this.Ctx.Employees.Where(x => x.ItemKey == currentState.LastInsertedId && x.IsDeleted == 0).FirstOrDefaultAsync();
-                if (newCustomer != null)
+                int newRecordId;
+                if (!int.TryParse(currentState.LastInsertedId, out newRecordId))
                 {
-                    allCustomers = allCustomers.Append(newCustomer).ToArray();
+                    newRecordId = -1;
+                }
+                var newEmployee = await this.Ctx.Employees.Where(x => x.EmployeeId == newRecordId && x.IsDeleted == 0).FirstOrDefaultAsync();
+                if (newEmployee != null)
+                {
+                    allEmployees = [.. allEmployees, newEmployee];
                 }
             }
 
@@ -201,7 +205,7 @@ namespace WEBtransitions.Services
                 TotalPages = currentState.PagerState.PageCount,
                 PageSize = currentState.PagerState.PageSize,
                 PageNumber = currentState.PagerState.PageNumber,
-                Items = allCustomers
+                Items = allEmployees
             };
             if (currentPage.PageNumber > currentPage.TotalPages)
             {
