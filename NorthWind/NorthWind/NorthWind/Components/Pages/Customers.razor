@@ -1,0 +1,46 @@
+﻿@page "/Customers/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</code></item>
+        <item>Page size when <code>action == 'page'</code> </item>
+    </list>
+*@
+
+<h3>Customers</h3>
+
+@code {
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+}

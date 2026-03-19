@@ -1,0 +1,182 @@
+﻿@page "/Territories/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@using System.Diagnostics
+@using System.Globalization
+
+@using ClassLibraryDatabase.CustomPager
+@using ClassLibraryDatabase.DB_Context.Models
+@using NorthWind.Components.Shared
+@using NorthWind.Services
+
+@*
+  Parameter action defines type of parameters:
+    <list type="bullet">
+        <item><code>sort</code> - sort parameters</item>
+        <item><code>page</code> - parameters for pager</item>
+        <item><code>none<code> - start page, no parameters</item>
+    </list>
+  Parameter argument contains:
+    <list type="bullet">
+        <item>Sort definition when <code>action == 'sort'</code></item>
+        <item>Page size when <code>action == 'page'</code> </item>
+    </list>
+*@
+
+@inject StateSvc StateManager
+@inject CookieService cookieService
+@inject IConfiguration Configuration
+@inject NavigationManager NavManager
+
+@inject TerritorySvc dbSVC
+
+<PageTitle>Territories</PageTitle>
+
+
+@if (currentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <CascadingValue Value="@currentState" Name="StateForComponent">
+        <OverviewPage Items=@currentPage.Items TItem="TerritoryWithRegion">
+            <TableCaption>Territories</TableCaption>
+            <TableHeader>
+                <th>@FieldNames[0]</th>
+                <th>@FieldNames[1]</th>
+                <th>@FieldNames[2]</th>
+                <th>@FieldNames[3]</th>
+                <th>@CommandTitle</th>
+            </TableHeader>
+            <RowTemplate Context="forecast">
+                <td>@forecast.TerritoryId</td>
+                <td>@forecast.TerritoryDescription</td>
+                <td>@forecast.RegionId</td>
+                <td>@forecast.RegionDescription</td>
+                <td>
+                    <CrudLinksControl Url="/EditCustomer" Id="@forecast.TerritoryId" />
+                </td>
+            </RowTemplate>
+        </OverviewPage>
+    </CascadingValue>
+}
+
+@code {
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+    private static readonly string[] FieldNames = { "TerritoryID", "TerritoryDescription", "RegionID", "RegionDescription" };
+    public List<string>? SortParameter;
+
+    /// <summary>
+    /// Action in the current page: read comments at beginnig of the file
+    /// </summary>
+    [Parameter]
+    public string? Action { get; set; } = null;
+
+    /// <summary>
+    /// Page size or Sort definition
+    /// </summary>
+    [Parameter]
+    public string? Argument { get; set; } = null;
+
+    /// <summary>
+    /// Current page
+    /// </summary>
+    [Parameter]
+    public int? PageNumber { get; set; } = null;
+
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    [Parameter]
+    public string ErrorMessage { get; set; } = "";
+
+    [SupplyParameterFromQuery(Name = "db_error")]
+    public string? DBerrorMessage { get; set; } = null;
+
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string LastInsertedId { get; set; } = "-1";
+
+    /// <summary>
+    /// This property has no BaseUrl
+    /// </summary>
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+
+    private int defaultPageSize;
+    private int buttonCount;
+
+    // [PersistentState]
+    public PgResponse<TerritoryWithRegion>? currentPage { get; set; } = null;
+
+    private StateForComponent? currentState = null;
+    private AppStateKey? stateId;
+
+    public const string CommandTitle = "Command";
+
+    protected override async Task OnInitializedAsync()
+    {
+        string? userId = cookieService.GetCookie("WebTransitions");
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Territories");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Territories");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Territories");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Territories");
+            stateData = await StateManager.CreateEntity(newState);
+        }
+        currentState = (StateForComponent)stateData;
+        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
+        {
+            currentState.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
+        }
+
+        SortParameter = new List<string>();
+        for (int i = 0; i < FieldNames.Length; i++)
+        {
+            SortParameter.Add($"n_{FieldNames[i]}");
+        }
+
+        ActiveCulture = new CultureInfo(activeCultureStr);
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Territories", PageNumber ?? 1);
+            }
+            else
+            {
+                throw new Exception($"Action '{Action}' is invalid.");
+            }
+        }
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
+        if (String.IsNullOrEmpty(Action))
+        {
+            this.Action = "page";
+        }
+
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+    }
+
+}

@@ -1,0 +1,50 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">NorthWind</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="weather">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <details name="classificators" class="nav-item">
+                <summary>Classificators</summary>
+                <NavLink class="nav-link" href="Employees">
+                    <span class="bi bi-northwind-employees" aria-hidden="true"></span> Employees
+                </NavLink>
+                <NavLink class="nav-link" href="Customers">
+                    <span class="bi bi-northwind-customers" aria-hidden="true"></span> Customers
+                </NavLink>
+                <NavLink class="nav-link" href="Categories">
+                    <span class="bi bi-northwind-categories" aria-hidden="true"></span> Categories
+                </NavLink>
+                <NavLink class="nav-link" href="Territories">
+                    <span class="bi bi-northwind-Territories" aria-hidden="true"></span> Territories
+                </NavLink>
+            </details>
+        </div>
+
+
+    </nav>
+</div>
+

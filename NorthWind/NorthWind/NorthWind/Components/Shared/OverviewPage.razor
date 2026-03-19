@@ -1,0 +1,41 @@
+﻿@typeparam TItem
+
+<div class="pg-layout">
+    <div class="pg-content">
+        <h2>@TableCaption</h2>
+        <table class="table">
+            <thead>
+                <tr>@TableHeader</tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>@RowTemplate(item)</tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pg-footer">
+        <div class="pg-pager">
+            <PagerControl />
+        </div>
+        <div class="pg-filter">
+            <FilterControl />
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment TableCaption { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment TableHeader { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public RenderFragment<TItem> RowTemplate { get; set; } = null!;
+
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = null!;
+
+}

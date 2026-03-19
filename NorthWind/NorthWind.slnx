@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="ClassLibraryDatabase/ClassLibraryDatabase.csproj" Id="cc48087a-656e-408a-8dcf-c67fd048e4ca" />
+  <Project Path="NorthWind/NorthWind.Client/NorthWind.Client.csproj" />
+  <Project Path="NorthWind/NorthWind/NorthWind.csproj" />
+</Solution>
