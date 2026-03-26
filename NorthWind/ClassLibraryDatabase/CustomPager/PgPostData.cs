@@ -5,20 +5,14 @@ using System.Text;
 
 namespace ClassLibraryDatabase.CustomPager
 {
-    public class PgPostData : ICloneable
+    public record class PgPostData(int MaxButtons = 10)
     {
-        /// <summary>
-        /// 10 is default value. <see cref="StateData.defaultPageSize"/>
-        /// </summary>
-        public int MaxButtons { get; set; } //+
-        /// <summary>
-        /// Constructor sets value to 0. Real value will occur after reading dbo.Customers table
-        /// </summary>
         public int RowCount { get; set; }   //+
         /// <summary>
         /// Constructor sets value to 0. Real value will occur after reading dbo.Customers table
         /// </summary>
         public int PageCount { get; set; }  //+
+
         /// <summary>
         /// Constructor sets value to 1. The User will set real value
         /// </summary>
@@ -28,41 +22,26 @@ namespace ClassLibraryDatabase.CustomPager
         [RegularExpression(@"^\d+$", ErrorMessage = "PageNumberStr number contains invalid characters.")]
         public string PageNumberStr
         {
-            get; set;
-            //get
-            //{
-            //    return this.PageNumber.ToString();
-            //}
-            //set
-            //{
-            //    int tmpValue = 0;
-            //    this.PageNumber = string.IsNullOrEmpty(value) || !int.TryParse(value, out tmpValue)
-            //        ? 1
-            //        : tmpValue;
-            //}
+            get
+            {
+                return this.PageNumber .ToString();
+            }
+            set
+            {
+                int tmpvalue = 0;
+                this.PageNumber = string.IsNullOrEmpty(value) || !int.TryParse(value, out tmpvalue)
+                    ? 1
+                    : tmpvalue;
+            }
         }
         /// <summary>
         /// 9 is default value
         /// </summary>
-        public int PageSize { get; set; } = 0;  //+
+        public int PageSize { get; set; }  //+
+
         /// <summary>
         /// Every component writes here the name.
         /// </summary>
         public string? BaseUrl { get; set; }    //+
-
-        public PgPostData(int maxButtons = 0, int rowCount = 0, int pageCount = 0, int pageNumber = 0, int pageSize = 0, string? baseUrl = "")
-        {
-            MaxButtons = maxButtons;
-            RowCount = rowCount;
-            PageCount = pageCount;
-            PageNumber = pageNumber;
-            PageSize = pageSize;
-            BaseUrl = baseUrl;
-        }
-
-        public object Clone()
-        {
-            return new PgPostData(this.MaxButtons, this.RowCount, this.PageCount, this.PageNumber, this.PageSize, this.BaseUrl);
-        }
     }
 }

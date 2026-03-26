@@ -59,13 +59,6 @@
     [Parameter]
     public int PageSize { get; set; } = 15;
 
-    // /// <summary>
-    // /// Base address. Mandatory parameter. Leading and trailng slashes are optional.
-    // /// <code>showcustomers</code>, <code>/showcustomers</code>, <code>showcustomers/</code>, <code>/showcustomers/</code> are identical addresses
-    // /// </summary>
-    // [Parameter]
-    // public string BaseUrl { get; set; } = "";
-
     /// <summary>
     /// URL encoded error message
     /// </summary>
@@ -86,22 +79,8 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        // if (String.IsNullOrEmpty(BaseUrl))
-        // {
-        //     throw new ArgumentException("Base URL is empty");
-        // }
 
-
-        Model ??= (PgPostData)currentState!.PagerState!.Clone();
-        // Model.MaxButtons = this.MaxButtons;
-
-        // int rowCount;
-        // Model.RowCount = int.TryParse(this.TotalRecords, out rowCount) ? rowCount : 0;
-
-        // Model.PageCount = this.PageCount;
-        // Model.PageNumber = this.PageNumber;
-        // Model.PageSize = this.PageSize;
-        // Model.BaseUrl = this.BaseUrl;
+        Model ??= currentState.PagerState;
 
         PrintableButtons = PrepareButtonList();
         InsertPrevButtons();
@@ -141,7 +120,7 @@
                 pgIndex = page.Id;                              // Go to page defined in the Id propery
                 break;
         }
-        
+
         var rzlt = new StringBuilder($"/{Model.BaseUrl}/{PageSize}/{pgIndex}/");
         return rzlt.ToString();
     }
@@ -220,7 +199,7 @@
             {
                 newPrintableButtons = newPrintableButtons.Skip(1).Take(PrintableButtons.Count - 1).ToList();
             }
-            var item = new PgData(i, i == Model.PageNumber, i == Model.PageNumber); // Append next button
+            var item = new PgData(i, i.ToString()); // Append next button
             newPrintableButtons.Add(item);
             if (item.IsSelected)
             {
@@ -239,11 +218,17 @@
     /// </summary>
     private void InsertPrevButtons()
     {
-        var item = new PgData(PageNumber - 1, false, PageNumber < 2);
-        item.PageIndex = "l";
+        var item = new PgData(Math.Max(PrintableButtons[0].Id - 1, 1), "l")
+            {
+                IsSelected = false,
+                IsDisabled = PrintableButtons[0].PageIndex == "1"
+            };
         PrintableButtons.Insert(0, item);
-        item = new PgData(1, false, PageNumber < 2);
-        item.PageIndex = "L";
+        item = new PgData(1, "L")
+            {
+                IsSelected = false,
+                IsDisabled = PrintableButtons[1].PageIndex == "1"
+            };
         PrintableButtons.Insert(0, item);
     }
 
@@ -252,11 +237,18 @@
     /// </summary>
     private void AppendTrailButtons()
     {
-        var item = new PgData(PageNumber + 1, false, PageNumber >= PageCount);
-        item.PageIndex = "r";
+        int lastItem = PrintableButtons[PrintableButtons.Count - 1].Id;
+        var item = new PgData(Math.Min(lastItem + 1, PageCount), "r")
+        {
+            IsSelected = false,
+            IsDisabled = lastItem >= PageCount
+        };
         PrintableButtons.Add(item);
-        item = new PgData(PageCount, false, PageNumber >= PageCount);
-        item.PageIndex = "R";
+        item = new PgData(PageCount, "R") 
+        {
+            IsSelected = false,
+            IsDisabled = lastItem >= PageCount
+        };
         PrintableButtons.Add(item);
     }
 

@@ -17,14 +17,13 @@ a.selected-label {
     color: red;
 }
 
-a.selected-label:hover {
-    cursor: unset;
-}
-
 a.custom-link[disabled] {
     text-decoration: none;
     cursor: unset;
     opacity: 0.5;
+}
+a.selected-label:hover, a.custom-link[disabled]:hover {
+    cursor: unset;
 }
 
 span.set-info {

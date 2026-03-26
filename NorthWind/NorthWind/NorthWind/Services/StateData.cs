@@ -6,13 +6,21 @@ using System.Diagnostics;
 
 namespace NorthWind.Services
 {
-    public class StateForComponent(string appName, string userId, string componentName, int buttonCount = 10, int pageSize = 9) : ICloneable
+    public record class StateForComponent(string AppName, string UserId, string ComponentName, int buttonCount = 10, int pageSize = 9) // : ICloneable
     {
-        public string AppName { get; set; } = appName;
-        public string UserId { get; set; } = userId;
-        public string ComponentName { get; set; } = componentName;
+        //public string AppName { get; set; } = appName;
+        //public string UserId { get; set; } = userId;
+        //public string ComponentName { get; set; } = componentName;
         public string? SortState { get; set; } = string.Empty;
-        public PgPostData? PagerState { get; set; } = new PgPostData(buttonCount, 0, 0, 1, pageSize, componentName);
+        //public PgPostData? PagerState { get; set; } = new PgPostData(buttonCount, 0, 0, 1, pageSize, ComponentName);
+        public PgPostData? PagerState { get; set; } = new PgPostData(buttonCount)
+        {
+            RowCount = 0,
+            PageCount = 0,
+            PageNumber = 1,
+            PageSize = pageSize,
+            BaseUrl = ComponentName
+        };
 
         /// <summary>
         /// name of the field, Value, true for date values
@@ -20,35 +28,6 @@ namespace NorthWind.Services
         public Tuple<string, string, string?, bool, bool> FilterState { get; set; } = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
 
         public string LastInsertedId { get; set; } = "";
-
-        /*
-                public StateForComponent(string appName, string userId, string componentName, int buttonCount = 10, int pageSize = 9) 
-                {
-                    this.AppName = appName;
-                    this.UserId = userId;
-                    this.ComponentName = componentName;
-                    this.SortState = string.Empty;
-                    this.PagerState = new PgPostData(buttonCount, 0, 0, 1, pageSize, "Customers"); // rowCount, pageCount, pageNumber will get real values after reading the database
-                    this.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
-                    this.LastInsertedId = "";
-                }
-        */
-        public object Clone()
-        {
-            Debug.Assert(this.ComponentName != null);
-            var rzlt = new StateForComponent(this.AppName, this.UserId, this.ComponentName)
-            {
-                SortState = this.SortState,
-                FilterState = this.FilterState,
-                LastInsertedId = this.LastInsertedId
-            };
-            if (this.PagerState != null)
-            {
-                rzlt.PagerState = (PgPostData)this.PagerState.Clone();
-            }
-
-            return rzlt;
-        }
 
         /// <summary>
         /// Set values in the <code>this.currentState.PagerState</code>
@@ -98,24 +77,25 @@ namespace NorthWind.Services
 
         public static explicit operator StateForComponent(AppState dbState)
         {
-            return new StateForComponent(dbState.AppName, dbState.UserId, dbState.ComponentName,
+            var rzlt = new StateForComponent(dbState.AppName, dbState.UserId, dbState.ComponentName,
                                          dbState.PagerButtonCount ?? 5,
-                                         dbState.PagerPageSize ?? 15)
+                                         dbState.PagerPageSize ?? 15);
+            rzlt.PagerState = new PgPostData(dbState.PagerButtonCount ?? 5)
             {
-                UserId = dbState.UserId,
-                SortState = dbState.SortState,
-                PagerState = new PgPostData(dbState.PagerButtonCount ?? 5,
-                                            dbState.PagerRowCount ?? 0, dbState.PagerPageCount ?? 0,
-                                            dbState.PagerPageNumber ?? 1, dbState.PagerPageSize ?? 15,
-                                            dbState.PagerBaseUrl),
-                FilterState = new Tuple<string, string, string?, bool, bool>(
+                RowCount = dbState.PagerRowCount ?? 0,
+                PageCount = dbState.PagerPageCount ?? 0,
+                PageNumber = dbState.PagerPageNumber ?? 0,
+                PageSize = dbState.PagerPageSize ?? 15,
+                BaseUrl = dbState.PagerBaseUrl
+            };
+            rzlt.FilterState = new Tuple<string, string, string?, bool, bool>(
                                             dbState.FilterFieldName ?? "",
                                             dbState.FilterFieldValue ?? "",
                                             dbState.FilterFieldMaxValue ?? "",
                                             dbState.FilterIsDateValue == 1,
-                                            dbState.FilterIsDateValue == 2),
-                LastInsertedId = ""
-            };
+                                            dbState.FilterIsDateValue == 2);
+            rzlt.LastInsertedId = "";
+            return rzlt;
         }
         public static explicit operator AppState(StateForComponent currentState)
         {

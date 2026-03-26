@@ -7,11 +7,12 @@ namespace ClassLibraryDatabase.CustomPager
     /// <summary>
     /// Data for printable button
     /// </summary>
-    public class PgData
+    public record class PgData(int Id, string PageIndex)
     {
-        public int Id { get; set; }
+        //        public int Id { get; set; }
 
         /// <summary>
+        ///    <code>string PageIndex</code> is one of listed below values:
         ///     <list type="number">
         ///         <item>
         ///             <term>L</term>
@@ -35,17 +36,17 @@ namespace ClassLibraryDatabase.CustomPager
         ///         </item>
         ///     </list>
         /// </summary>
-        public string PageIndex { get; set; }
+        //        public string PageIndex { get; set; }
 
-        public bool IsSelected { get; set; }
-        public bool IsDisabled { get; set; }
+        public bool IsSelected { get; set; } = false;
+        public bool IsDisabled { get; set; } = false;
 
-        public PgData(int pgIndex, bool isSelected = false, bool isDisabled = false)
-        {
-            Id = pgIndex;
-            PageIndex = pgIndex.ToString();
-            IsSelected = isSelected;
-            IsDisabled = isDisabled;
-        }
+        //public PgData(int pgIndex, bool isSelected = false, bool isDisabled = false)
+        //{
+        //    Id = pgIndex;
+        //    PageIndex = pgIndex.ToString();
+        //    IsSelected = isSelected;
+        //    IsDisabled = isDisabled;
+        //}
     }
 }

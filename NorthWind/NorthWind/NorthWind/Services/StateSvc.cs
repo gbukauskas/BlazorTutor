@@ -4,11 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using NorthWind.CustomErrors;
 using NorthWind.Services.Interfaces;
 using System.Diagnostics;
+using System.Reactive.Subjects;
 
 namespace NorthWind.Services
 {
     public class StateSvc : CommonSvc, IDatabaseSvc<AppState, AppStateKey>, IDisposable
     {
+        public Subject<StateForComponent> StateSubject = new();
+        public readonly object _lock = new();
+
         private NorthwindContext? _ctx = null;
 
         public NorthwindContext Ctx
@@ -40,6 +44,7 @@ namespace NorthWind.Services
 
         public void Dispose()
         {
+            StateSubject.Dispose();
             if (_ctx != null)
             {
                 _ctx.Dispose();

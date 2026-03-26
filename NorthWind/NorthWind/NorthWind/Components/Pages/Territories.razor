@@ -1,4 +1,6 @@
 ﻿@page "/Territories/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@implements IDisposable
+
 @using System.Diagnostics
 @using System.Globalization
 
@@ -113,6 +115,8 @@ else
 
     public const string CommandTitle = "Command";
 
+    internal IDisposable? theSubscribtion = null;
+
     protected override async Task OnInitializedAsync()
     {
         string? userId = cookieService.GetCookie("WebTransitions");
@@ -129,11 +133,9 @@ else
             AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Territories");
             stateData = await StateManager.CreateEntity(newState);
         }
+
         currentState = (StateForComponent)stateData;
-        if (String.IsNullOrEmpty(currentState.FilterState.Item2) && String.IsNullOrEmpty(currentState.FilterState.Item3))
-        {
-            currentState.FilterState = new Tuple<string, string, string?, bool, bool>("", "", "", false, false);
-        }
+        theSubscribtion = StateManager.StateSubject.Subscribe<StateForComponent>(value => UpdateComponent(value));
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
@@ -145,6 +147,8 @@ else
 
         await base.OnInitializedAsync();
     }
+
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -179,4 +183,18 @@ else
         currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
     }
 
+    public async Task UpdateComponent(StateForComponent newSatate)
+    {
+        this.currentState = newSatate;
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (theSubscribtion != null)
+        {
+            theSubscribtion.Dispose();
+        }
+    }
 }

@@ -90,11 +90,18 @@ namespace NorthWind.Services
 
                 string countQuery = rgx.Replace(query, "SELECT COUNT(1) AS Value FROM");
                 currentState.PagerState.RowCount = await ctx.Database.SqlQueryRaw<int>(countQuery).FirstOrDefaultAsync();
-
-                int pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
-                if (currentState.PagerState.RowCount % currentState.PagerState.PageSize > 0)
+                int pgCount;
+                if (currentState.PagerState.PageSize < 1)
                 {
-                    pgCount += 1;
+                    pgCount = 1;
+                }
+                else
+                {
+                    pgCount = currentState.PagerState.RowCount / currentState.PagerState.PageSize;
+                    if (currentState.PagerState.RowCount % currentState.PagerState.PageSize > 0)
+                    {
+                        pgCount += 1;
+                    }
                 }
                 currentState.PagerState.PageCount = pgCount;
                 return currentState.PagerState.RowCount;

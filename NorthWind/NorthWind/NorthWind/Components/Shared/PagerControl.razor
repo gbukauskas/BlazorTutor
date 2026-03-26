@@ -3,19 +3,22 @@
 @using System.Text
 @using System.Diagnostics
 
+@inject StateSvc StateManager
+
 <div class="pager" name="customer-pager">
     @foreach (var link in PrintableButtons)
     {
-@* 
-        <a class="custom-link @GetClassName(link)" href="@GenerateURL(link)" title="@GetTitle(link)" disabled=@link.IsDisabled>
+
+        <a class="custom-link @GetClassName(link)" href="#" title="@GetTitle(link)" disabled="@link.IsDisabled"
+               @onclick='(() => NavigateLink(link.PageIndex, link.IsDisabled))' @onclick:preventDefault="true" @onclick:stopPropagation="true">
             @GenerateLabel(link)
         </a> 
- *@
-        <a class="custom-link @GetClassName(link)" href="#" title="@GetTitle(link)" disabled=@link.IsDisabled 
-               @onclick='(() => NavigateLink(link.PageIndex))' @onclick:preventDefault="true" @onclick:stopPropagation="true">
+   
+@*         <button class="custom-link @GetClassName(link)" href="#" title="@GetTitle(link)" @GetDisabled(link)
+                @onclick='(() => NavigateLink(link.PageIndex))' @onclick:preventDefault="true" @onclick:stopPropagation="true">
             @GenerateLabel(link)
-        </a>
-    }
+        </button>
+ *@    }
     <span class="set-info">@Model!.RowCount rec. in @Model!.PageCount pages.</span>
 
     @* <form method="GET" action="/@Model!.BaseUrl/@Model!.PageSize/" @formname="PagerNavigate" class="form-inline" name="pager-input"> *@
@@ -68,13 +71,6 @@
     [Parameter]
     public int PageSize { get; set; } = 15;
 
-    // /// <summary>
-    // /// Base address. Mandatory parameter. Leading and trailng slashes are optional.
-    // /// <code>showcustomers</code>, <code>/showcustomers</code>, <code>showcustomers/</code>, <code>/showcustomers/</code> are identical addresses
-    // /// </summary>
-    // [Parameter]
-    // public string BaseUrl { get; set; } = "";
-
     /// <summary>
     /// URL encoded error message
     /// </summary>
@@ -90,35 +86,31 @@
     {
         base.OnParametersSet();
 
-        Model ??= (PgPostData)currentState!.PagerState!.Clone();
+        Model ??= currentState!.PagerState;
+        Debug.Assert(Model != null);
+
         if (String.IsNullOrEmpty(Model.PageNumberStr))
         {
-            Model!.PageNumberStr =  Model == null ? "1" : Model.PageNumber.ToString();
+            Model.PageNumberStr =  Model == null ? "1" : Model.PageNumber.ToString();
         }
-        // if (String.IsNullOrEmpty(BaseUrl))
-        // {
-        //     throw new ArgumentException("Base URL is empty");
-        // }
-
-
-        // Model.MaxButtons = this.MaxButtons;
-
-        // int rowCount;
-        // Model.RowCount = int.TryParse(this.TotalRecords, out rowCount) ? rowCount : 0;
-
-        // Model.PageCount = this.PageCount;
-        // Model.PageNumber = this.PageNumber;
-        // Model.PageSize = this.PageSize;
-        // Model.BaseUrl = this.BaseUrl;
-
         PrintableButtons = PrepareButtonList();
         InsertPrevButtons();
         AppendTrailButtons();
+        EnableDisableLinks();
     }
 
     private string GetClassName(PgData page)
     {
-        return (page.IsSelected) ? "selected-label" : "common-label";
+        StringBuilder rzlt = new();
+        if (page.IsSelected)
+        {
+            rzlt.Append("selected-label");
+        }
+        // if (page.IsDisabled)
+        // {
+        //     rzlt.Append(" disabled-link");
+        // }
+        return rzlt.ToString();
     }
 
     /// <summary>
@@ -127,32 +119,32 @@
     /// <param name="page">Data for the current page.</param>
     /// <see cref="PgData" />
     /// <returns>URL</returns>
-    private string GenerateURL(PgData page)
-    {
-        Debug.Assert(Model != null);
-        int pgIndex;
-        switch (page.PageIndex)
-        {
-            case "L":
-                pgIndex = 1;                                    // First page
-                break;
-            case "l":
-                pgIndex = Math.Max(PageNumber - 1, 1);          // Previous page
-                break;
-            case "r":
-                pgIndex = Math.Min(PageNumber + 1, PageCount);  // Next page
-                break;
-            case "R":
-                pgIndex = PageCount;                            // Last page
-                break;
-            default:
-                pgIndex = page.Id;                              // Go to page defined in the Id propery
-                break;
-        }
+    // private string GenerateURL(PgData page)
+    // {
+    //     Debug.Assert(Model != null);
+    //     int pgIndex;
+    //     switch (page.PageIndex)
+    //     {
+    //         case "L":
+    //             pgIndex = 1;                                    // First page
+    //             break;
+    //         case "l":
+    //             pgIndex = Math.Max(PageNumber - 1, 1);          // Previous page
+    //             break;
+    //         case "r":
+    //             pgIndex = Math.Min(PageNumber + 1, PageCount);  // Next page
+    //             break;
+    //         case "R":
+    //             pgIndex = PageCount;                            // Last page
+    //             break;
+    //         default:
+    //             pgIndex = page.Id;                              // Go to page defined in the Id propery
+    //             break;
+    //     }
 
-        var rzlt = new StringBuilder($"/{Model.BaseUrl}/{PageSize}/{pgIndex}/");
-        return rzlt.ToString();
-    }
+    //     var rzlt = new StringBuilder($"/{Model.BaseUrl}/{PageSize}/{pgIndex}/");
+    //     return rzlt.ToString();
+    // }
 
     /// <summary>
     /// The returns label string.
@@ -228,7 +220,10 @@
             {
                 newPrintableButtons = newPrintableButtons.Skip(1).Take(PrintableButtons.Count - 1).ToList();
             }
-            var item = new PgData(i, i == Model.PageNumber, i == Model.PageNumber); // Append next button
+            var item = new PgData(i, i.ToString()) {
+                IsSelected = i == Model.PageNumber,
+                IsDisabled = i == Model.PageNumber
+            }; // Append next button
             newPrintableButtons.Add(item);
             if (item.IsSelected)
             {
@@ -247,11 +242,17 @@
     /// </summary>
     private void InsertPrevButtons()
     {
-        var item = new PgData(PageNumber - 1, false, PageNumber < 2);
-        item.PageIndex = "l";
+        var item = new PgData(Math.Max(PrintableButtons[0].Id - 1, 1), "l")
+        {
+            IsSelected = false,
+            //            IsDisabled = PrintableButtons[0].PageIndex == "1"
+        };
         PrintableButtons.Insert(0, item);
-        item = new PgData(1, false, PageNumber < 2);
-        item.PageIndex = "L";
+        item = new PgData(1, "L")
+        {
+            IsSelected = false,
+            //            IsDisabled = PrintableButtons[1].PageIndex == "1"
+        };
         PrintableButtons.Insert(0, item);
     }
 
@@ -260,46 +261,73 @@
     /// </summary>
     private void AppendTrailButtons()
     {
-        var item = new PgData(PageNumber + 1, false, PageNumber >= PageCount);
-        item.PageIndex = "r";
+        int lastItem = PrintableButtons[PrintableButtons.Count - 1].Id;
+        var item = new PgData(Math.Min(lastItem + 1, PageCount), "r")
+        {
+            IsSelected = false,
+            //            IsDisabled = lastItem >= PageCount
+        };
         PrintableButtons.Add(item);
-        item = new PgData(PageCount, false, PageNumber >= PageCount);
-        item.PageIndex = "R";
+        item = new PgData(PageCount, "R")
+        {
+            IsSelected = false,
+            //            IsDisabled = lastItem >= PageCount
+        };
         PrintableButtons.Add(item);
     }
 
-    private void NavigateLink(string pgIndex)
+    private void NavigateLink(string pgIndex, bool isDisabled)
     {
         Debug.Assert(Model != null);
-        int newPgNumber;
-        switch (pgIndex) 
+        if (!isDisabled)
         {
-            case "L":
-                newPgNumber = 1;
-                break;
-            case "l":
-                newPgNumber = Math.Max(Model.PageNumber - 1, 1);
-                break;
-            case "r":
-                newPgNumber = Math.Min(Model.PageNumber + 1, Model.PageCount);
-                break;
-            case "R":
-                newPgNumber = Model.PageCount;
-                break;
-            default:
-                if (!int.TryParse(pgIndex, out newPgNumber))
-                {
+            int newPgNumber;
+            switch (pgIndex)
+            {
+                case "L":
                     newPgNumber = 1;
-                }
-                break;
+                    break;
+                case "l":
+                    newPgNumber = Math.Max(Model.PageNumber - 1, 1);
+                    break;
+                case "r":
+                    newPgNumber = Math.Min(Model.PageNumber + 1, Model.PageCount);
+                    break;
+                case "R":
+                    newPgNumber = Model.PageCount;
+                    break;
+                default:
+                    if (!int.TryParse(pgIndex, out newPgNumber))
+                    {
+                        newPgNumber = 1;
+                    }
+                    break;
+            }
+            Model = Model with { PageNumber = newPgNumber };
+            EnableDisableLinks();
+            StateHasChanged();
+            var newState = currentState with { PagerState = Model };
+            lock (StateManager._lock)
+            {
+                StateManager.StateSubject.OnNext((StateForComponent)newState);
+            }
         }
-        Model.PageNumber = newPgNumber; // Send message to service
-        StateHasChanged();  // TODO:
+    }
+
+    private void EnableDisableLinks()
+    {
+        Debug.Assert(Model != null);
+        PrintableButtons[0].IsDisabled = Model.PageNumber == 1;
+        PrintableButtons[1].IsDisabled = Model.PageNumber == 1;
+        int lastIndex = PrintableButtons.Count - 1;
+        PrintableButtons[lastIndex].IsDisabled = Model.PageNumber == Model.PageCount;
+        PrintableButtons[lastIndex - 1].IsDisabled = Model.PageNumber == Model.PageCount;
     }
 
     private void NavigateForm()
     {
         Debug.Assert(Model != null);
+        int oldPageNumber = Model.PageNumber;
         int newPgNumber;
         if (!int.TryParse(Model.PageNumberStr, out newPgNumber))
         {
@@ -318,7 +346,21 @@
         {
             Model.PageNumber = newPgNumber;
         }
-        StateHasChanged();  // TODO:
+        if (Model.PageNumber != oldPageNumber)
+        {
+            EnableDisableLinks();
+            StateHasChanged();
+            var newState = currentState with { PagerState = Model };
+            lock (StateManager._lock)
+            {
+                StateManager.StateSubject.OnNext((StateForComponent)newState);
+            }
+        }
+    }
+
+    private string GetDisabled(PgData link)
+    {
+        return link.IsDisabled ? "disabled" : "";
     }
 
     // https://stackoverflow.com/questions/68308779/blazor-components-how-to-communicate-from-grandchild-to-child-to-parent-or-gran
