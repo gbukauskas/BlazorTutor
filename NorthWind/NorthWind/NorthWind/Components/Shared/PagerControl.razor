@@ -13,18 +13,11 @@
                @onclick='(() => NavigateLink(link.PageIndex, link.IsDisabled))' @onclick:preventDefault="true" @onclick:stopPropagation="true">
             @GenerateLabel(link)
         </a> 
-   
-@*         <button class="custom-link @GetClassName(link)" href="#" title="@GetTitle(link)" @GetDisabled(link)
-                @onclick='(() => NavigateLink(link.PageIndex))' @onclick:preventDefault="true" @onclick:stopPropagation="true">
-            @GenerateLabel(link)
-        </button>
- *@    }
+    }
     <span class="set-info">@Model!.RowCount rec. in @Model!.PageCount pages.</span>
 
-    @* <form method="GET" action="/@Model!.BaseUrl/@Model!.PageSize/" @formname="PagerNavigate" class="form-inline" name="pager-input"> *@
     <EditForm FormName="PagerNavigate" Model="Model" class="form-inline" Enhance OnValidSubmit="NavigateForm">
         <DataAnnotationsValidator />
-        @* <AntiforgeryToken /> *@
         <span>Go to page</span>
         <InputText @bind-Value="Model!.PageNumberStr" style="width: 6em;" name="current-page"  />
         <ValidationMessage For="() => Model!.PageNumberStr" />
@@ -346,15 +339,12 @@
         {
             Model.PageNumber = newPgNumber;
         }
-        if (Model.PageNumber != oldPageNumber)
+        EnableDisableLinks();
+        StateHasChanged();
+        var newState = currentState with { PagerState = Model };
+        lock (StateManager._lock)
         {
-            EnableDisableLinks();
-            StateHasChanged();
-            var newState = currentState with { PagerState = Model };
-            lock (StateManager._lock)
-            {
-                StateManager.StateSubject.OnNext((StateForComponent)newState);
-            }
+            StateManager.StateSubject.OnNext((StateForComponent)newState);
         }
     }
 

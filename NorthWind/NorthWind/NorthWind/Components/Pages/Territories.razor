@@ -8,6 +8,7 @@
 @using ClassLibraryDatabase.DB_Context.Models
 @using NorthWind.Components.Shared
 @using NorthWind.Services
+@using System.Reactive.Linq
 
 @*
   Parameter action defines type of parameters:
@@ -135,7 +136,17 @@ else
         }
 
         currentState = (StateForComponent)stateData;
-        theSubscribtion = StateManager.StateSubject.Subscribe<StateForComponent>(value => UpdateComponent(value));
+        IObservable<StateForComponent> myMessages = StateManager.StateSubject.AsObservable()
+                .Where<StateForComponent>(x => x.AppName == stateId.AppName && x.UserId == stateId.UserId && x.ComponentName == stateId.ComponentName);
+        myMessages.Subscribe(st => UpdateComponent(st));
+
+        // theSubscribtion = StateManager.StateSubject.Where<StateForComponent>(x => x.AppName == StateKey.AppName)
+        //     .Subscribe<StateForComponent>(value => UpdateComponent(value)); ;
+
+
+
+
+        // theSubscribtion = StateManager.StateSubject.Subscribe<StateForComponent>(value => UpdateComponent(value));
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
