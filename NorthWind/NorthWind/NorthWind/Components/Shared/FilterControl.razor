@@ -1,5 +1,263 @@
-﻿<h3>FilterControl</h3>
+﻿@using System.Diagnostics
+@using ClassLibraryDatabase.CustomFilter
+@using NorthWind.CustomErrors
+@using NorthWind.Services
+@using System.Reflection
+@using System.Text.RegularExpressions
+@typeparam T where T : class
+
+@implements IDisposable
+@inject StateSvc StateManager
+
+<div class="filter" name="custom-filter">
+    <span class="border-text">Filter</span>
+    <EditForm FormName="CustomerFilter" EditContext="editContext" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-controls">
+            <label class="item11">Field:</label>
+
+            <div class="item12">
+                <select name="field-name" @bind="Model!.Name" @bind:after="ChangeModel">
+                    @foreach (FilterElement item in ControlNames!)
+                    {
+                        <option value="@item.Name" selected="@item.IsSelected" disabled="@item.IsDisabled">@item.Name</option>
+                    }
+                </select>
+            </div>
+
+            
+            @if (Model?.IsDateValue == true || Model?.IsIntegerValue == true)
+            {
+                <label class="item21">Min:</label>
+                <div class="item22">
+                    <InputText id="value-min" @bind-Value="Model!.Value" name="search-value" title="Date interval: first value" />
+                </div>
+                <label class="item31">Max:</label>
+                <div class="item32">
+                    <InputText id="value-max" @bind-Value="Model!.MaxValue" name="search-value" title="Number: last value" />
+                </div>
+            }
+            else
+            {
+                <label class="item21">Value:</label>
+                <div class="item22">
+                    <InputText id="value" @bind-Value="Model!.Value" name="search-value" title="Part of text or first value" />
+                </div>
+            }
+            
+            <div class="item13">
+                <button class="btn btn-sm" type="submit" style="float: right;">
+                    <img src="/Images/icons8-search-50.png" alt="Search" width="50" height="50" title="Apply filter" />
+                </button>
+            </div>
+
+        </div>
+
+    </EditForm>
+</div>
 
 @code {
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+    private List<FilterElement>? ControlNames;
+
+    [SupplyParameterFromForm]
+    private FilterModel? Model { get; set; }
+
+    [CascadingParameter(Name = "StateForComponent")]
+    private StateForComponent? currentState { get; set; }
+
+    private string className = typeof(T).Name;
+    private string filterName = String.Empty;       // currentState!.FilterState!.Item1;
+    private string filterValue = String.Empty;      // currentState.FilterState!.Item2;
+    private string? filterMaxValue = null;          // currentState.FilterState!.Item3;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        ControlNames = GetControlNames();
+        if (ControlNames.Count < 1)
+        {
+            throw new DatabaseException($"Class {className} has no AllowFilteringAttribute");
+        }
+        int filterIndex = 0;
+        if (currentState != null && currentState.FilterState != null)
+        {
+            filterIndex = Math.Max(ControlNames.FindIndex(x => x.Name == currentState.FilterState.Item1), 0);
+            Model = new FilterModel(ControlNames[filterIndex]);
+        }
+        Model = new FilterModel(ControlNames[filterIndex]);
+
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+
+    }
+    private List<FilterElement> GetControlNames()
+    {
+        Debug.Assert(currentState != null && currentState.FilterState != null);
+
+        PropertyInfo[] myPropertyInfo = typeof(T).GetProperties();
+        var controlNames = new List<FilterElement>();
+        if (currentState != null)
+        {
+            filterName = currentState.FilterState.Item1;
+            filterValue = currentState.FilterState.Item2;
+            filterMaxValue = currentState.FilterState.Item3;
+        }
+        else
+        {
+            filterName = filterValue = String.Empty;
+            filterMaxValue = null;
+        }
+
+        controlNames.Add(new FilterElement(null)
+        {
+            Name = "Select Element",
+            Value = "",
+            IsDateValue = false,
+            IsIntegerValue = false,
+            IsSelected = String.IsNullOrEmpty(currentState!.FilterState.Item2),
+            IsDisabled = true
+        });
+
+
+        for (int i = 0; i < myPropertyInfo.Length; i++)
+        {
+            var propertyAttributes = myPropertyInfo[i].GetCustomAttributes(typeof(AllowFilteringAttribute), false);
+            //            Model!.Value = "No filtering";
+            if (propertyAttributes.Length > 0)      //  && propertyAttributes.Length < i
+            {
+                var item = FilterElement.CreateFilterElement(myPropertyInfo[i]);
+
+                if (!String.IsNullOrEmpty(filterName) && item.Name == filterName)
+                {
+                    item.IsSelected = true;
+                    item.Value = filterValue;
+                    item.MaxValue = filterMaxValue;
+                    Model = new FilterModel(item);
+                }
+                controlNames.Add(item);
+            }
+        }
+        return controlNames;
+    }
+
+    /// <summary>
+    /// The Regex verifies dates. It accepts ISO format only (YYYY-MM-DD)
+    /// </summary>
+    private static readonly Regex DateRegex = new Regex("^\\d{4}-\\d{1,2}-\\d{1,2}/$");
+    /// <summary>
+    /// The Regex verifies integer values. The value must have up to 6 digits with optional sign
+    /// </summary>
+    private static readonly Regex IntegerRegex = new Regex(@"^[+-]?[0-9]{1,6}$");
+
+    private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs args)
+    {
+        Func<string?, bool> dateIsValid = dateStr => String.IsNullOrEmpty(dateStr) || DateRegex.IsMatch(dateStr);
+        Func<string?, bool> integerIsValid = numberStr => String.IsNullOrEmpty(numberStr) || IntegerRegex.IsMatch(numberStr);
+
+        Debug.Assert(this.Model != null && !String.IsNullOrEmpty(this.Model.Name) && this.messageStore != null);
+        Debug.Assert(this.ControlNames != null && this.ControlNames.Count > 0);
+
+        messageStore.Clear();
+        FilterElement? currentElement = ControlNames.Find(x => x.Name == this.Model.Name);
+        if (currentElement == null)
+        {
+            throw new Exception($"Name {this.Model.Name} is invalid.");
+        }
+
+        Model.IsDateValue = currentElement.IsDateValue;
+        Model.IsIntegerValue = currentElement.IsIntegerValue;
+
+        if (currentElement.IsDateValue)
+        {
+            if (!dateIsValid(this.Model.Value) || !dateIsValid(this.Model.MaxValue))
+            {
+                messageStore.Add(() => Model.Name, $"Date {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
+        }
+        if (currentElement.IsIntegerValue)
+        {
+            if (!integerIsValid(this.Model.Value) || !integerIsValid(this.Model.MaxValue))
+            {
+                messageStore.Add(() => Model.Name, $"Number {this.Model.Value} has invalid format.");
+                editContext!.NotifyValidationStateChanged();
+            }
+        }
+
+        // Clear filtering when Model.Value and Model.MaxValue are not defined.
+        if (String.IsNullOrEmpty(Model.Value) && String.IsNullOrEmpty(Model.MaxValue))
+        {
+            for (int i = 0; i < ControlNames.Count; i++)
+            {
+                ControlNames[i].IsSelected = i < 1;
+            }
+            Model = ControlNames[0];
+            var filterState = new Tuple<string, string, string?, bool, bool>(Model.Name ?? "", "", "", false, false);
+            RefreshPage(filterState);
+        }
+
+    }
+
+    private void RefreshPage(Tuple<string, string, string?, bool, bool> newFilter)
+    {
+        Debug.Assert(currentState != null);
+
+        var newState = currentState with { FilterState = newFilter };
+        lock (StateManager._lock)
+        {
+            StateManager.StateSubject.OnNext((StateForComponent)newState);
+        }
+    }
+
+    private void Submit()
+    {
+        Debug.Assert(Model != null);
+        Debug.Assert(this.currentState != null);
+        Debug.Assert(this.ControlNames != null);
+
+        string searchValue = String.IsNullOrEmpty(Model.Value) ? "" : Model.Value;
+        string searchValueMax = String.IsNullOrEmpty(Model.MaxValue) ? "" : Model.MaxValue;
+        if (String.IsNullOrEmpty(searchValue) && String.IsNullOrEmpty(searchValueMax))
+        {
+            Model.Name = null;
+            ControlNames.ForEach(x => x.IsSelected = false);
+        }
+        var filterState = new Tuple<string, string, string?, bool, bool>(Model.Name ?? "", searchValue, searchValueMax, Model.IsDateValue, Model.IsIntegerValue);
+        RefreshPage(filterState);
+    }
+
+    public async Task ChangeModel()
+    {
+        Debug.Assert(this.ControlNames != null);
+
+        await Task.Delay(1);
+        if (Model != null && !String.IsNullOrEmpty(Model.Name))
+        {
+            string fieldName = Model.Name;
+            foreach (var currentModel in ControlNames)
+            {
+                currentModel.IsSelected = currentModel.Name == fieldName;
+                if (currentModel.IsSelected)
+                {
+                    Model.IsDateValue = currentModel.IsDateValue;
+                    Model.IsIntegerValue = currentModel.IsIntegerValue;
+                }
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (editContext != null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
 
 }

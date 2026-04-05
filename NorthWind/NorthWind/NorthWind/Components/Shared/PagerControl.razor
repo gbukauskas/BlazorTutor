@@ -21,7 +21,7 @@
         <span>Go to page</span>
         <InputText @bind-Value="Model!.PageNumberStr" style="width: 6em;" name="current-page"  />
         <ValidationMessage For="() => Model!.PageNumberStr" />
-        <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+        <button type="submit" class="btn btn-primary btn-sm" disabled="@Model!.RowCount > 0">Submit</button>
 
         @if (!String.IsNullOrEmpty(ErrorMessage))
         {
@@ -87,9 +87,12 @@
             Model.PageNumberStr =  Model == null ? "1" : Model.PageNumber.ToString();
         }
         PrintableButtons = PrepareButtonList();
-        InsertPrevButtons();
-        AppendTrailButtons();
-        EnableDisableLinks();
+        if (PrintableButtons.Count > 0)
+        {
+            InsertPrevButtons();
+            AppendTrailButtons();
+            EnableDisableLinks();
+        }
     }
 
     private string GetClassName(PgData page)

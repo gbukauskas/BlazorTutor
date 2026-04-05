@@ -138,7 +138,7 @@ else
         currentState = (StateForComponent)stateData;
         IObservable<StateForComponent> myMessages = StateManager.StateSubject.AsObservable()
                 .Where<StateForComponent>(x => x.AppName == stateId.AppName && x.UserId == stateId.UserId && x.ComponentName == stateId.ComponentName);
-        myMessages.Subscribe(st => UpdateComponent(st));
+        theSubscribtion = myMessages.Subscribe(async st => await UpdateComponent(st));
 
         // theSubscribtion = StateManager.StateSubject.Where<StateForComponent>(x => x.AppName == StateKey.AppName)
         //     .Subscribe<StateForComponent>(value => UpdateComponent(value)); ;

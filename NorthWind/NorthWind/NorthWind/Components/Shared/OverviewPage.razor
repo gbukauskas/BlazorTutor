@@ -1,4 +1,4 @@
-﻿@typeparam TItem
+﻿@typeparam TItem where TItem : class
 
 <div class="pg-layout">
     <div class="pg-content">
@@ -8,9 +8,16 @@
                 <tr>@TableHeader</tr>
             </thead>
             <tbody>
-                @foreach (var item in Items)
+                @if (Items.Count() > 0)
                 {
-                    <tr>@RowTemplate(item)</tr>
+                    @foreach (var item in Items)
+                    {
+                        <tr>@RowTemplate(item)</tr>
+                    }
+                }
+                else
+                {
+                    <h3>No records were found.</h3>
                 }
             </tbody>
         </table>
@@ -20,7 +27,7 @@
             <PagerControl />
         </div>
         <div class="pg-filter">
-            <FilterControl />
+            <FilterControl T="TItem" />
         </div>
     </div>
 </div>
