@@ -56,7 +56,7 @@ else
                 <td>@forecast.RegionId</td>
                 <td>@forecast.RegionDescription</td>
                 <td>
-                    <CrudLinksControl Url="/EditCustomer" Id="@forecast.TerritoryId" />
+                    <CrudLinksControl Url="/EditTerritory" Id="@forecast.TerritoryId" />
                 </td>
             </RowTemplate>
         </OverviewPage>
@@ -93,8 +93,8 @@ else
     [Parameter]
     public string ErrorMessage { get; set; } = "";
 
-    [SupplyParameterFromQuery(Name = "db_error")]
-    public string? DBerrorMessage { get; set; } = null;
+    // [SupplyParameterFromQuery(Name = "db_error")]
+    // public string? DBerrorMessage { get; set; } = null;
 
     [SupplyParameterFromQuery(Name = "new_id")]
     public string LastInsertedId { get; set; } = "-1";
@@ -108,7 +108,6 @@ else
     private int defaultPageSize;
     private int buttonCount;
 
-    // [PersistentState]
     public PgResponse<TerritoryWithRegion>? currentPage { get; set; } = null;
 
     private StateForComponent? currentState = null;
@@ -120,7 +119,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        string? userId = cookieService.GetCookie("WebTransitions");
+        string? userId = cookieService.GetCookie("NorthWind");
 
         string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
         this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Territories");
@@ -137,16 +136,8 @@ else
 
         currentState = (StateForComponent)stateData;
         IObservable<StateForComponent> myMessages = StateManager.StateSubject.AsObservable()
-                .Where<StateForComponent>(x => x.AppName == stateId.AppName && x.UserId == stateId.UserId && x.ComponentName == stateId.ComponentName);
+                .Where(x => x.AppName == stateId.AppName && x.UserId == stateId.UserId && x.ComponentName == stateId.ComponentName);
         theSubscribtion = myMessages.Subscribe(async st => await UpdateComponent(st));
-
-        // theSubscribtion = StateManager.StateSubject.Where<StateForComponent>(x => x.AppName == StateKey.AppName)
-        //     .Subscribe<StateForComponent>(value => UpdateComponent(value)); ;
-
-
-
-
-        // theSubscribtion = StateManager.StateSubject.Subscribe<StateForComponent>(value => UpdateComponent(value));
 
         SortParameter = new List<string>();
         for (int i = 0; i < FieldNames.Length; i++)
@@ -158,8 +149,6 @@ else
 
         await base.OnInitializedAsync();
     }
-
-
 
     protected override async Task OnParametersSetAsync()
     {

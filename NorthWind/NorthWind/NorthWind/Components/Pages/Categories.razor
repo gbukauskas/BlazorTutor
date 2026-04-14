@@ -1,4 +1,13 @@
 ﻿@page "/Categories/{action?}/{argument?}/{pagenumber:int?}/{errormessage?}"
+@implements IDisposable
+
+@using ClassLibraryDatabase.CustomPager
+@using ClassLibraryDatabase.DB_Context.Models
+@using NorthWind.Components.Shared
+@using NorthWind.Services
+@using System.Globalization
+@using System.Diagnostics
+@using System.Reactive.Linq
 
 @*
   Parameter action defines type of parameters:
@@ -14,9 +23,65 @@
     </list>
 *@
 
-<h3>Categories</h3>
+@inject StateSvc StateManager
+@inject CookieService cookieService
+@inject IConfiguration Configuration
+@inject NavigationManager NavManager
+
+@inject CategorySvc dbSVC
+
+<PageTitle>Categories</PageTitle>
+
+@if (currentPage == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <CascadingValue Value="@currentState" Name="StateForComponent">
+        <OverviewPage Items=@currentPage.Items TItem="Category">
+            <TableCaption>Categories</TableCaption>
+            <TableHeader>
+                <th>@FieldNames[0]</th>
+                <th>@FieldNames[1]</th>
+                <th>@FieldNames[2]</th>
+                <th>@FieldNames[3]</th>
+                <th>@CommandTitle</th>
+            </TableHeader>
+            <RowTemplate Context="forecast">
+                <td>
+                    <img src="@forecast.PictureUrl" class="row-image" />
+                </td>
+                <td>@forecast.CategoryId</td>
+                <td>@forecast.CategoryName</td>
+                <td>@forecast.Description</td>
+                <td>
+                    <CrudLinksControl Url="EditCategory" Id="@forecast.ItemKey" />
+                </td>
+            </RowTemplate>
+
+        </OverviewPage>
+    </CascadingValue>
+}
+
+<div class="confirm-delete">
+    <p class="grid-item-1">Do you want to delete this category?</p>
+    <span class="grid-item-2" name="category-id">4</span>
+    <span class="grid-item-3" name="category-name">Dairy Products and animals</span>
+    <span class="grid-item-4" name="button-yes">
+        <button type="button" class="btn btn-warning">Yes</button>
+    </span>
+    <span class="grid-item-5" name="button-no">
+        <button type="button" class="btn btn-secondary">No</button>
+    </span>
+</div>
+
 
 @code {
+    private CultureInfo ActiveCulture = CultureInfo.CurrentCulture;
+    private static readonly string[] FieldNames = { "Picture", "CategoryID", "CategoryName", "Description" };
+    public const string CommandTitle = "Command";
+    public List<string>? SortParameter;
 
     /// <summary>
     /// Action in the current page: read comments at beginnig of the file
@@ -36,6 +101,8 @@
     [Parameter]
     public int? PageNumber { get; set; } = null;
 
+    [SupplyParameterFromQuery(Name = "new_id")]
+    public string LastInsertedId { get; set; } = "-1";
 
     /// <summary>
     /// Error message
@@ -43,4 +110,101 @@
     [Parameter]
     public string ErrorMessage { get; set; } = "";
 
+    /// <summary>
+    /// This property has no BaseUrl
+    /// </summary>
+    [CascadingParameter(Name = "StateKey")]
+    public AppStateKey? StateKey { get; set; }
+
+    private int defaultPageSize;
+    private int buttonCount;
+
+    public PgResponse<Category>? currentPage { get; set; } = null;
+    private StateForComponent? currentState = null;
+    private AppStateKey? stateId;
+
+    internal IDisposable? theSubscribtion = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string? userId = cookieService.GetCookie("NorthWind");
+
+        string activeCultureStr = Configuration == null ? "en-US" : (Configuration["AppSettings:ActiveCulture"] ?? "en-US");
+        this.defaultPageSize = dbSVC.GetDefaultPageSize(Configuration, "Categories");
+        this.buttonCount = dbSVC.GetPGButtonCount(Configuration, "Categories");
+
+        Debug.Assert(StateKey != null && !String.IsNullOrEmpty(StateKey.AppName) && !String.IsNullOrEmpty(StateKey.UserId));
+        stateId = new AppStateKey(StateKey.AppName, userId ?? StateKey.UserId, "Categories");
+        AppState? stateData = await StateManager.GetEntityByIdAsync(stateId);
+        if (stateData == null)
+        {
+            AppState newState = dbSVC.CreateNewState(stateId, this.buttonCount, this.defaultPageSize, "Categories");
+            stateData = await StateManager.CreateEntity(newState);
+        }
+
+        currentState = (StateForComponent)stateData;
+        IObservable<StateForComponent> myMessages = StateManager.StateSubject.AsObservable()
+                .Where(x => x.AppName == stateId.AppName && x.UserId == stateId.UserId && x.ComponentName == stateId.ComponentName);
+        theSubscribtion = myMessages.Subscribe(async st => await UpdateComponent(st));
+
+        SortParameter = new List<string>();
+        for (int i = 0; i < FieldNames.Length; i++)
+        {
+            SortParameter.Add($"n_{FieldNames[i]}");
+        }
+
+        ActiveCulture = new CultureInfo(activeCultureStr);
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        if (!String.IsNullOrEmpty(Argument))
+        {
+            if (Action == "sort")
+            {
+                Tuple<string?, string> newSort = dbSVC.SetSort(Argument, true);
+                this.currentState!.SortState = $"{newSort.Item1}_{newSort.Item2}";
+            }
+            else if (Action == "page")
+            {
+                this.currentState!.PreparePaging(this.Argument, NavManager, "Categories", PageNumber ?? 1);
+            }
+            else
+            {
+                throw new Exception($"Action '{Action}' is invalid.");
+            }
+        }
+        if (!String.IsNullOrEmpty(this.LastInsertedId))
+        {
+            this.currentState!.LastInsertedId = this.LastInsertedId;
+        }
+        if (String.IsNullOrEmpty(Action))
+        {
+            this.Action = "page";
+        }
+
+        SortParameter = dbSVC.ProcessCurrentPage(this.currentState!, FieldNames);
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+    }
+
+    public async Task UpdateComponent(StateForComponent newSatate)
+    {
+        this.currentState = newSatate;
+        currentPage = await dbSVC.GetCurrentPageAsync(this.currentState!);
+        StateHasChanged();
+    }
+
+    void IDisposable.Dispose()
+    {
+        if (theSubscribtion != null)
+        {
+            theSubscribtion.Dispose();
+        }
+    }
+
+    // https://css-tricks.com/almanac/properties/g/grid-column/
 }
