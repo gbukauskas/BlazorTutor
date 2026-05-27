@@ -6,6 +6,7 @@
 
 @using ClassLibraryDatabase.CustomPager
 @using ClassLibraryDatabase.DB_Context.Models
+@using Microsoft.FluentUI.AspNetCore.Components
 @using NorthWind.Components.Shared
 @using NorthWind.Services
 @using System.Reactive.Linq
@@ -40,6 +41,7 @@
 }
 else
 {
+    @* <FluentHeader>Territories</FluentHeader> *@
     <CascadingValue Value="@currentState" Name="StateForComponent">
         <OverviewPage Items=@currentPage.Items TItem="TerritoryWithRegion">
             <TableCaption>Territories</TableCaption>

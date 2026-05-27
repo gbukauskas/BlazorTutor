@@ -1,8 +1,12 @@
-﻿@typeparam TItem where TItem : class
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+
+@typeparam TItem where TItem : class
 
 <div class="pg-layout">
     <div class="pg-content">
-        <h2>@TableCaption</h2>
+        <FluentHeader>
+            <div class="north-wind-table-caption">@TableCaption</div>
+        </FluentHeader>
         <table class="table">
             <thead>
                 <tr>@TableHeader</tr>
@@ -22,6 +26,18 @@
             </tbody>
         </table>
     </div>
+
+    <div name="page-footer">
+        <FluentFooter>
+            <div class="pg-pager">
+                <PagerControl />
+            </div>
+            <div class="pg-filter">
+                <FilterControl T="TItem" />
+            </div>
+        </FluentFooter>
+    </div>
+@* 
     <div class="pg-footer">
         <div class="pg-pager">
             <PagerControl />
@@ -30,6 +46,7 @@
             <FilterControl T="TItem" />
         </div>
     </div>
+ *@
 </div>
 
 @code {

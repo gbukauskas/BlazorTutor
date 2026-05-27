@@ -1,0 +1,32 @@
+﻿@using FluentUiNorthWind.Components.Shared
+@rendermode InteractiveServer
+
+<div class="navmenu">
+    <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon" />
+    <label for="navmenu-toggle" class="navmenu-icon"><FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill" /></label>
+    <nav class="sitenav" aria-labelledby="main-menu">
+        <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
+            <FluentNavLink Href="/" Match="NavLinkMatch.All" Icon="@(new Icons.Regular.Size20.Home())" IconColor="Color.Accent">Home</FluentNavLink>
+            <FluentNavLink Href="counter" Icon="@(new Icons.Regular.Size20.NumberSymbolSquare())" IconColor="Color.Accent">Counter</FluentNavLink>
+            <FluentNavLink Href="weather" Icon="@(new Icons.Regular.Size20.WeatherPartlyCloudyDay())" IconColor="Color.Accent">Weather</FluentNavLink>
+            <FluentNavGroup Title="Classificators" Icon="@(new Icons.Regular.Size20.EarthLeaf())">
+                @* <FluentNavLink Href="Employees" Icon="@(Icon.FromImageUrl("Images/user.png"))">Employees</FluentNavLink> *@
+                @* <FluentNavLink Href="Customers" Icon="@(Icon.FromImageUrl("Images/shopping-cart.png"))">Customers</FluentNavLink> *@
+                @* <FluentNavLink Href="Categories" Icon="@(Icon.FromImageUrl("Images/cat.png"))">Categories</FluentNavLink> *@
+                @* <FluentNavLink Href="Territories" Icon="@(Icon.FromImageUrl("Images/world.png"))">Territories</FluentNavLink> *@
+                <FluentNavLink Href="Employees" Icon="@(new NorthWindIcons.OfficeWorker())">Employees</FluentNavLink>
+                <FluentNavLink Href="Customers" Icon="@(new NorthWindIcons.BusinessCard())">Customers</FluentNavLink>
+                <FluentNavLink Href="Categories" Icon="@(new NorthWindIcons.OpenBook())">Categories</FluentNavLink>
+                <FluentNavLink Href="Territories" Icon="@(new NorthWindIcons.CampingTent())">Territories</FluentNavLink>
+
+            </FluentNavGroup>
+        </FluentNavMenu>
+    </nav>
+</div>
+
+@code {
+    private bool expanded = true;
+
+
+    // https://www.streamlinehq.com/icons/core-solid-free?icon=ico_igyhvvA6hrsIRWob
+}

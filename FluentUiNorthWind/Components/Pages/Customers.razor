@@ -1,0 +1,10 @@
+﻿@page "/customers"
+@rendermode InteractiveServer
+@using ClassLibraryDatabase.DB_Context.Models
+
+<h3>Customers</h3>
+
+@code {
+    private IQueryable<Customer>? currentPage = null;
+
+}

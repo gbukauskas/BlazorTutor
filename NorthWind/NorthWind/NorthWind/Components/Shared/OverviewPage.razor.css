@@ -1,5 +1,5 @@
 ﻿.pg-layout {
-    height: 100vh;
+    /*height: 100vh;*/
     /*    background-color: antiquewhite; */
     display: flex;
     flex-direction: column;
@@ -32,6 +32,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
+    align-items: flex-start;
 }
 
 .pg-pager {
@@ -43,10 +44,29 @@
 .pg-filter {
     flex-grow: 0;
     flex-shrink: 0;
-    flex-basis: 64ex;
 }
 
 tbody h3 {
     font-size: smaller;
     color: darkred;
+}
+
+.north-wind-table-caption {
+    text-align: center;
+    width: 100%;
+    font-size: larger;
+    font-style: italic;
+}
+
+div[name="page-footer"] {
+    width: 100%;
+    padding: 1ex 1em 1ex 1em;
+}
+
+::deep div[name="page-footer"] > footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
 }

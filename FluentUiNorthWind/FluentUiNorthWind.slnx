@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../ClassLibraryDatabase/ClassLibraryDatabase.csproj" Id="8c26b924-cec6-4e3b-8fb9-e9652ad5a97f" />
+  <Project Path="../TestBusinessPart/TestBusinessPart.csproj" Id="e6189988-6e60-4ec2-8520-4a4227a576d0" />
+  <Project Path="FluentUiNorthWind.csproj">
+    <BuildDependency Project="../ClassLibraryDatabase/ClassLibraryDatabase.csproj" />
+  </Project>
+</Solution>
