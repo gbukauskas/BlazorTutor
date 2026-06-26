@@ -47,9 +47,9 @@ namespace NorthWind.Services
             this.factory = factory;
         }
 
-        public IQueryable<Category> GetAllEntities()
+        public IQueryable<Territory> GetAllEntities()
         {
-            return this.Ctx.Categories;
+            return this.Ctx.Territories;
         }
 
         public Task<IEnumerable<Territory>> CreateEntities(IEnumerable<Territory> collection)

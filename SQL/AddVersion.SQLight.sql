@@ -248,3 +248,10 @@ CREATE TABLE IF NOT EXISTS AppStates(
 	DateCreated DATE DEFAULT CURRENT_DATE,
 	PRIMARY KEY ( AppName, UserId, ComponentName)
 );
+
+CREATE VIEW IF NOT EXISTS TerritoryWithRegion
+AS 
+   SELECT trt.*, rgn.RegionDescription
+   FROM Territories trt
+   LEFT OUTER JOIN Regions rgn ON trt.RegionID = rgn.RegionID AND rgn.IsDeleted = 0;
+

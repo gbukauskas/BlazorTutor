@@ -17,7 +17,9 @@ builder.Services.AddDbContextFactory<NorthwindContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<CustomerSvc>();
+builder.Services
+    .AddScoped<CustomerSvc>()
+    .AddScoped<TerritorySvc>();
 
 var app = builder.Build();
 

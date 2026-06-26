@@ -85,6 +85,7 @@ namespace ClassLibraryDatabase.DB_Context
 
         public virtual DbSet<Territory> Territories { get; set; }
         public virtual DbSet<AppState> AppStates { get; set; }
+        public virtual DbSet<TerritoryWithRegion> TerritoriesWithRegion { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -116,6 +117,7 @@ namespace ClassLibraryDatabase.DB_Context
             SummaryOfSalesByYear.Configure(modelBuilder);
             Supplier.Configure(modelBuilder);
             Territory.Configure(modelBuilder);
+            TerritoryWithRegion.Configure(modelBuilder);
             AppState.Configure(modelBuilder);
 
             OnModelCreatingPartial(modelBuilder);

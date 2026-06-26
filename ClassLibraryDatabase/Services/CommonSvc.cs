@@ -17,9 +17,9 @@ namespace ClassLibraryDatabase.Services
         public static readonly double DELTA = 0.000001;
 
         protected NorthwindContext? _ctx = null;
-        private IDbContextFactory<NorthwindContext>? factory = null;
+        protected IDbContextFactory<NorthwindContext>? factory = null;
 
-        public NorthwindContext Ctx
+        protected NorthwindContext Ctx
         {
             get
             {
